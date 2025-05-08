@@ -6,13 +6,16 @@
 </head>
 <body>
   <h1>Tạo QR Code redirect theo hệ điều hành</h1>
+
   <label>Link Android: <input type="text" id="android" /></label><br/>
   <label>Link iOS: <input type="text" id="ios" /></label><br/>
-  <label>Link fallback: <input type="text" id="fallback" /></label><br/>
+  <label>Link fallback: <input type="text" id="fallback" /></label><br/><br/>
   <button onclick="generate()">Tạo Link & QR</button>
 
-  <p id="linkOutput"></p>
+  <p><strong>Link redirect:</strong> <span id="linkOutput"></span></p>
+
   <div id="qr"></div>
+  <a id="downloadLink" download="qr_redirect.png" style="display:none;">Tải QR về (PNG)</a>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
   <script>
@@ -21,19 +24,27 @@
       const ios = encodeURIComponent(document.getElementById('ios').value);
       const fallback = encodeURIComponent(document.getElementById('fallback').value);
       const baseUrl = "https://bdangvnt.github.io/qr-generate/";
-
       const fullUrl = `${baseUrl}?android=${android}&ios=${ios}&fallback=${fallback}`;
+
       document.getElementById("linkOutput").innerText = fullUrl;
 
+      // Tạo mã QR chất lượng cao
       const qr = new QRious({
-        element: document.createElement("canvas"),
         value: fullUrl,
-        size: 200
+        size: 600, // 👈 tăng kích thước ảnh (px)
+        level: 'H' // 👈 High error correction
       });
 
+      // Hiển thị ảnh QR
       const qrContainer = document.getElementById("qr");
       qrContainer.innerHTML = "";
-      qrContainer.appendChild(qr.element);
+      const canvas = qr.canvas;
+      qrContainer.appendChild(canvas);
+
+      // Cung cấp link tải PNG
+      const downloadLink = document.getElementById("downloadLink");
+      downloadLink.href = canvas.toDataURL("image/png");
+      downloadLink.style.display = "inline-block";
     }
   </script>
 </body>
