@@ -20,7 +20,7 @@
       const android = encodeURIComponent(document.getElementById('android').value);
       const ios = encodeURIComponent(document.getElementById('ios').value);
       const fallback = encodeURIComponent(document.getElementById('fallback').value);
-      const baseUrl = "https://bdangvnt.github.io/redirect/";
+      const baseUrl = "https://bdangvnt.github.io/qr-generate/";
 
       const fullUrl = `${baseUrl}?android=${android}&ios=${ios}&fallback=${fallback}`;
       document.getElementById("linkOutput").innerText = fullUrl;
