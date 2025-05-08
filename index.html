@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <script>
+    function getParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+
+    const androidLink = getParam("android") || "";
+    const iosLink = getParam("ios") || "";
+    const fallbackLink = getParam("fallback") || "https://bdangvnt.github.com";
+
+    const ua = navigator.userAgent.toLowerCase();
+
+    if (ua.includes("android") && androidLink) {
+      window.location.href = androidLink;
+    } else if ((ua.includes("iphone") || ua.includes("ipad") || ua.includes("ipod")) && iosLink) {
+      window.location.href = iosLink;
+    } else {
+      window.location.href = fallbackLink;
+    }
+  </script>
+</head>
+<body>
+  <p>Đang chuyển hướng...</p>
+</body>
+</html>
