@@ -1,41 +1,74 @@
-function generate() {
-    const android = encodeURIComponent(document.getElementById('android').value);
-    const ios = encodeURIComponent(document.getElementById('ios').value);
-    const fallback = encodeURIComponent(document.getElementById('fallback').value);
-  
-    const baseUrl = "https://bdangvnt.github.io/qr-generate/";
-    const fullUrl = `${baseUrl}?android=${android}&ios=${ios}&fallback=${fallback}`;
-  
-    document.getElementById("linkOutput").innerText = fullUrl;
-  
-    // Tạo QR không viền - cố định size 378px (~10cm)
-    const qr = qrcode(0, 'H');
-    qr.addData(fullUrl);
-    qr.make();
-  
-    const moduleCount = qr.getModuleCount();
-    const finalSize = 378; // pixels ~ 10cm
-    const cellSize = Math.floor(finalSize / moduleCount);
-  
-    const canvasSize = cellSize * moduleCount;
-  
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = canvasSize;
-    const ctx = canvas.getContext('2d');
-  
-    for (let row = 0; row < moduleCount; row++) {
-      for (let col = 0; col < moduleCount; col++) {
-        ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
-        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-      }
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>QR Redirect Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
     }
-  
-    const qrContainer = document.getElementById("qr");
-    qrContainer.innerHTML = "";
-    qrContainer.appendChild(canvas);
-  
-    const downloadLink = document.getElementById("downloadLink");
-    downloadLink.href = canvas.toDataURL("image/png");
-    downloadLink.style.display = "inline-block";
-  }
-  
+    #qr canvas {
+      display: block;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tạo QR Code redirect theo hệ điều hành</h1>
+
+  <label>Link Android: <input type="text" id="android" /></label><br/>
+  <label>Link iOS: <input type="text" id="ios" /></label><br/>
+  <label>Link fallback: <input type="text" id="fallback" /></label><br/><br/>
+  <button onclick="generate()">Tạo Link & QR</button>
+
+  <p><strong>Link redirect:</strong> <span id="linkOutput"></span></p>
+
+  <div id="qr"></div>
+  <a id="downloadLink" download="qr_redirect.png" style="display:none;">Tải QR về (PNG)</a>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script>
+    function generate() {
+        const android = encodeURIComponent(document.getElementById('android').value);
+        const ios = encodeURIComponent(document.getElementById('ios').value);
+        const fallback = encodeURIComponent(document.getElementById('fallback').value);
+
+        const baseUrl = "https://bdangvnt.github.io/qr-generate/";
+        const fullUrl = `${baseUrl}?android=${android}&ios=${ios}&fallback=${fallback}`;
+
+        document.getElementById("linkOutput").innerText = fullUrl;
+
+        // Tạo QR không viền - cố định size 378px (~10cm)
+        const qr = qrcode(0, 'H');
+        qr.addData(fullUrl);
+        qr.make();
+
+        const moduleCount = qr.getModuleCount();
+        const finalSize = 378; // pixels ~ 10cm
+        const cellSize = Math.floor(finalSize / moduleCount);
+
+        const canvasSize = cellSize * moduleCount;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = canvasSize;
+        const ctx = canvas.getContext('2d');
+
+        for (let row = 0; row < moduleCount; row++) {
+            for (let col = 0; col < moduleCount; col++) {
+            ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
+            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+            }
+        }
+
+        const qrContainer = document.getElementById("qr");
+        qrContainer.innerHTML = "";
+        qrContainer.appendChild(canvas);
+
+        const downloadLink = document.getElementById("downloadLink");
+        downloadLink.href = canvas.toDataURL("image/png");
+        downloadLink.style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>
