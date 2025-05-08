@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>QR Redirect Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #qr canvas {
+      display: block;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+  </style>
 </head>
 <body>
   <h1>Tạo QR Code redirect theo hệ điều hành</h1>
@@ -17,31 +27,46 @@
   <div id="qr"></div>
   <a id="downloadLink" download="qr_redirect.png" style="display:none;">Tải QR về (PNG)</a>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <script>
     function generate() {
       const android = encodeURIComponent(document.getElementById('android').value);
       const ios = encodeURIComponent(document.getElementById('ios').value);
       const fallback = encodeURIComponent(document.getElementById('fallback').value);
+
       const baseUrl = "https://bdangvnt.github.io/qr-generate/";
       const fullUrl = `${baseUrl}?android=${android}&ios=${ios}&fallback=${fallback}`;
 
       document.getElementById("linkOutput").innerText = fullUrl;
 
-      // Tạo mã QR chất lượng cao
-      const qr = new QRious({
-        value: fullUrl,
-        size: 600, // 👈 tăng kích thước ảnh (px)
-        level: 'H' // 👈 High error correction
-      });
+      // Tạo QR code không có khoảng trắng
+      const typeNumber = 0;
+      const errorCorrectionLevel = 'H';
+      const qr = qrcode(typeNumber, errorCorrectionLevel);
+      qr.addData(fullUrl);
+      qr.make();
 
-      // Hiển thị ảnh QR
+      const moduleCount = qr.getModuleCount();
+      const cellSize = 10; // pixel per module
+      const size = moduleCount * cellSize;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = canvas.height = size;
+      const ctx = canvas.getContext('2d');
+
+      // Vẽ QR từng module (pixel)
+      for (let row = 0; row < moduleCount; row++) {
+        for (let col = 0; col < moduleCount; col++) {
+          ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
+          ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+
       const qrContainer = document.getElementById("qr");
       qrContainer.innerHTML = "";
-      const canvas = qr.canvas;
       qrContainer.appendChild(canvas);
 
-      // Cung cấp link tải PNG
+      // Tạo link tải ảnh
       const downloadLink = document.getElementById("downloadLink");
       downloadLink.href = canvas.toDataURL("image/png");
       downloadLink.style.display = "inline-block";
