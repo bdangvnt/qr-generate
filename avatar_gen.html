@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tạo Avatar Online — Bản clone đơn giản</title>
+  <title>Tạo Avatar Offline — Bản clone hoạt động 100%</title>
   <style>
     :root{--gap:12px;--radius:16px;--shadow:0 6px 30px rgba(0,0,0,.25)}
     html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0b0b12;color:#e9e9f1}
@@ -33,8 +33,8 @@
 <body>
   <div class="container">
     <header>
-      <h1>Tạo Avatar Online — Bản clone đơn giản</h1>
-      <div class="small">Thay ảnh nền, font chữ, vị trí theo nhu cầu của bạn.</div>
+      <h1>Tạo Avatar Offline</h1>
+      <div class="small">Chạy hoàn toàn offline. Không lỗi CORS. Nút hoạt động đầy đủ.</div>
     </header>
 
     <div class="grid">
@@ -56,12 +56,12 @@
             <div>
               <label for="avatar">Ảnh đại diện</label>
               <input id="avatar" type="file" accept="image/*" />
-              <div class="hint">Khuyên dùng ảnh vuông (tối thiểu 600×600).</div>
+              <div class="hint">Khuyên dùng ảnh vuông (≥ 600×600).</div>
             </div>
             <div>
-              <label for="template">Mẫu nền (BG)</label>
+              <label for="template">Mẫu nền</label>
               <select id="template"></select>
-              <div class="hint">Bạn có thể thay đường dẫn ảnh nền của mình.</div>
+              <div class="hint">Có sẵn 2 mẫu chạy offline. Bạn có thể thêm mẫu riêng.</div>
             </div>
           </div>
 
@@ -82,8 +82,8 @@
 
           <div class="btns">
             <button class="primary" id="btn-generate">Tạo ngay</button>
-            <button class="ghost" id="btn-clear">Hủy</button>
-            <a id="btn-download" class="button ghost" download="thumoi.png">Tải về máy</a>
+            <button class="ghost" id="btn-clear" type="button">Hủy</button>
+            <a id="btn-download" class="button ghost" download="thumoi.png" href="#">Tải về máy</a>
           </div>
         </div>
       </section>
@@ -98,30 +98,87 @@
       </section>
     </div>
 
-    <footer>Clone bởi bạn với mã nguồn single-file. Không dùng dữ liệu cá nhân bên thứ ba.</footer>
+    <footer>Clone hoạt động offline. Bạn có thể thay đổi layout/ảnh nền trong phần cấu hình JS.</footer>
   </div>
 
 <script>
-// ============ Cấu hình ============
-// Bạn có thể thay thế bằng ảnh của bạn. Mặc định dùng ảnh demo công khai trên trang gốc.
+/*******************
+ * CẤU HÌNH MẪU   *
+ *******************/
+// 2 mẫu chạy hoàn toàn offline:
+// - Mẫu 1: vẽ nền gradient + hoạ tiết bằng Canvas (không cần ảnh)
+// - Mẫu 2: dùng ảnh SVG nhúng (data URL) không bị CORS
 const TEMPLATES = [
   {
-    name: "BG 1 (demo)",
-    url: "https://gameverse.vtcmobile.vn/thumoi/Content/images/bg1.png",
-    // Các thông số vị trí (đơn vị px, theo kích thước 1080x1080)
-    avatarRect: { x: 340, y: 330, size: 400, radius: 20 },
-    namePos: { x: 540, y: 770 },
-    titlePos: { x: 540, y: 810 },
+    name: "Nền Gradient (Canvas)",
+    type: "draw", // tự vẽ bằng canvas
+    avatarRect: { x: 340, y: 300, size: 400, radius: 24 },
+    namePos: { x: 540, y: 750 },
+    titlePos: { x: 540, y: 800 },
     textAlign: "center",
-    nameSize: 44,
+    nameSize: 46,
     titleSize: 34,
-    nameShadow: true
+    drawBackground: (ctx, w, h) => {
+      // Gradient nền
+      const g = ctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, "#1a1a4a");
+      g.addColorStop(1, "#0b0b22");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,w,h);
+      // Hoạ tiết tròn mờ
+      ctx.globalAlpha = 0.25;
+      for (let i=0;i<6;i++){
+        const r = 140 + Math.random()*220;
+        const x = Math.random()*w;
+        const y = Math.random()*h;
+        const g2 = ctx.createRadialGradient(x,y,0,x,y,r);
+        g2.addColorStop(0, i%2?"#6cf":"#a8a8ff");
+        g2.addColorStop(1, "transparent");
+        ctx.fillStyle = g2;
+        ctx.beginPath();
+        ctx.arc(x,y,r,0,Math.PI*2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+  },
+  {
+    name: "Nền SVG (Data URL)",
+    type: "image", // dùng ảnh nhúng (không cần mạng)
+    url: (()=>{
+      const svg = encodeURIComponent(`
+        <svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1080'>
+          <defs>
+            <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+              <stop offset='0%' stop-color='#2a2a72'/>
+              <stop offset='100%' stop-color='#009ffd'/>
+            </linearGradient>
+          </defs>
+          <rect width='100%' height='100%' fill='url(#g)'/>
+          <g fill='rgba(255,255,255,0.12)'>
+            <circle cx='200' cy='220' r='120'/>
+            <circle cx='860' cy='320' r='90'/>
+            <circle cx='300' cy='880' r='110'/>
+          </g>
+        </svg>`);
+      return `data:image/svg+xml;charset=utf-8,${svg}`;
+    })(),
+    avatarRect: { x: 340, y: 300, size: 400, radius: 24 },
+    namePos: { x: 540, y: 750 },
+    titlePos: { x: 540, y: 800 },
+    textAlign: "center",
+    nameSize: 46,
+    titleSize: 34
   }
 ];
 
-// ============ Logic vẽ Canvas ============
+/*******************
+ * TIỆN ÍCH VẼ     *
+ *******************/
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = 'high';
 
 const $ = (id)=>document.getElementById(id);
 const fullname = $('fullname');
@@ -145,50 +202,73 @@ TEMPLATES.forEach((t, i)=>{
 let state = { tplIdx: 0, avatarImg: null };
 
 function loadImage(src){
-  return new Promise((res, rej)=>{ const i = new Image(); i.crossOrigin = 'anonymous'; i.onload=()=>res(i); i.onerror=rej; i.src=src; });
+  return new Promise((res, rej)=>{ 
+    const i = new Image(); 
+    // data URLs không cần CORS
+    i.onload=()=>res(i); 
+    i.onerror=()=>rej(new Error('Không tải được ảnh nền.'));
+    i.src=src; 
+  });
+}
+
+function roundedRectPath(x, y, size, r){
+  const p = new Path2D();
+  p.moveTo(x+r, y);
+  p.arcTo(x+size, y, x+size, y+size, r);
+  p.arcTo(x+size, y+size, x, y+size, r);
+  p.arcTo(x, y+size, x, y, r);
+  p.arcTo(x, y, x+size, y, r);
+  p.closePath();
+  return p;
 }
 
 function drawRoundImage(img, x, y, size, radius){
+  const path = roundedRectPath(x, y, size, radius||0);
   ctx.save();
-  ctx.beginPath();
-  const r = radius||0;
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+size, y, x+size, y+size, r);
-  ctx.arcTo(x+size, y+size, x, y+size, r);
-  ctx.arcTo(x, y+size, x, y, r);
-  ctx.arcTo(x, y, x+size, y, r);
-  ctx.closePath();
-  ctx.clip();
-  // cover entire box
-  // auto-fit: center-crop square
+  ctx.clip(path);
+  // center-crop vuông
   const s = Math.min(img.width, img.height);
   const sx = (img.width - s)/2;
   const sy = (img.height - s)/2;
   ctx.drawImage(img, sx, sy, s, s, x, y, size, size);
   ctx.restore();
+  // viền
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = 'rgba(255,255,255,.92)';
+  ctx.stroke(path);
+}
+
+async function drawBackground(tpl){
+  if (tpl.type === 'draw' && typeof tpl.drawBackground === 'function'){
+    tpl.drawBackground(ctx, canvas.width, canvas.height);
+  } else if (tpl.type === 'image' && tpl.url){
+    const bg = await loadImage(tpl.url);
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  } else {
+    // fallback màu trơn
+    ctx.fillStyle = '#101022';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
 }
 
 async function render(){
   const tpl = TEMPLATES[state.tplIdx];
-  // nền
-  const bg = await loadImage(tpl.url);
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  await drawBackground(tpl);
 
-  // avatar
+  // avatar (nếu có)
   if(state.avatarImg){
     drawRoundImage(state.avatarImg, tpl.avatarRect.x, tpl.avatarRect.y, tpl.avatarRect.size, tpl.avatarRect.radius);
-    // viền trắng nhẹ
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = 'rgba(255,255,255,.9)';
-    ctx.strokeRect(tpl.avatarRect.x, tpl.avatarRect.y, tpl.avatarRect.size, tpl.avatarRect.size);
   }
 
   // chữ
   ctx.textAlign = tpl.textAlign || 'center';
   ctx.fillStyle = textColor.value || '#fff';
   ctx.font = `700 ${tpl.nameSize||48}px ${fontSel.value}`;
-  if(tpl.nameShadow){ ctx.shadowColor='rgba(0,0,0,.65)'; ctx.shadowBlur=8; ctx.shadowOffsetY=2; }
+  // bóng chữ nhẹ để nổi bật
+  ctx.shadowColor='rgba(0,0,0,.55)'; 
+  ctx.shadowBlur=8; 
+  ctx.shadowOffsetY=2; 
   ctx.fillText(fullname.value || 'Tên của bạn', tpl.namePos.x, tpl.namePos.y);
 
   ctx.shadowBlur=0; ctx.shadowOffsetY=0; // reset shadow
@@ -196,12 +276,18 @@ async function render(){
   ctx.fillText(title.value || 'Chức vụ', tpl.titlePos.x, tpl.titlePos.y);
 
   // cập nhật link tải
-  btnDownload.href = canvas.toDataURL('image/png');
+  try {
+    btnDownload.href = canvas.toDataURL('image/png');
+  } catch (e) {
+    // luôn an toàn với data URL, nhưng đề phòng
+    btnDownload.removeAttribute('href');
+  }
 }
 
-btnGen.addEventListener('click', ()=>{
-  render();
-});
+/*******************
+ * SỰ KIỆN/NÚT     *
+ *******************/
+btnGen.addEventListener('click', render);
 
 btnClear.addEventListener('click', ()=>{
   fullname.value = '';
@@ -217,17 +303,345 @@ tplSel.addEventListener('change', (e)=>{
 
 fontSel.addEventListener('change', render);
 textColor.addEventListener('input', render);
+fullname.addEventListener('input', render);
+title.addEventListener('input', render);
 
 avatar.addEventListener('change', (e)=>{
   const file = e.target.files?.[0];
-  if(!file) return;
+  if(!file) { state.avatarImg = null; render(); return; }
   const url = URL.createObjectURL(file);
   const img = new Image();
   img.onload = ()=>{ state.avatarImg = img; URL.revokeObjectURL(url); render(); };
+  img.onerror = ()=>{ state.avatarImg = null; URL.revokeObjectURL(url); render(); };
   img.src = url;
 });
 
-// Lần đầu render
+// Khởi tạo template mặc định và render lần đầu
+tplSel.value = '0';
+render();
+</script>
+</body>
+</html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tạo Avatar Offline — Bản clone hoạt động 100%</title>
+  <style>
+    :root{--gap:12px;--radius:16px;--shadow:0 6px 30px rgba(0,0,0,.25)}
+    html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0b0b12;color:#e9e9f1}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+    header h1{font-size:clamp(18px,3.2vw,28px);margin:0}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--gap)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr;}}
+    .card{background:#121227;border:1px solid #22254a;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card h2{margin:0 0 8px;font-size:18px}
+    .card .inner{padding:18px}
+    label{font-weight:600;font-size:14px;margin-bottom:6px;display:block}
+    input[type="text"], input[type="file"], select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #2a2e57;background:#0f1030;color:#fff;box-sizing:border-box}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    button, .button{cursor:pointer;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
+    button.primary{background:#6cf;color:#00102a}
+    button.ghost{background:#1b1e44;color:#e9e9f1;border:1px solid #2c3266}
+    .hint{opacity:.8;font-size:12px}
+    .preview-wrap{padding:16px}
+    .preview{width:100%;aspect-ratio:1/1;background:#050514;border-radius:12px;border:1px solid #22254a;display:flex;align-items:center;justify-content:center}
+    canvas{max-width:100%;height:auto;border-radius:12px}
+    footer{opacity:.7;text-align:center;margin-top:20px;font-size:12px}
+    .small{font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tạo Avatar Offline</h1>
+      <div class="small">Chạy hoàn toàn offline. Không lỗi CORS. Nút hoạt động đầy đủ.</div>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <div class="inner">
+          <h2>Điền thông tin</h2>
+          <div class="row">
+            <div>
+              <label for="fullname">Họ và tên</label>
+              <input id="fullname" type="text" placeholder="VD: Nguyễn Văn A" />
+            </div>
+            <div>
+              <label for="title">Chức danh</label>
+              <input id="title" type="text" placeholder="VD: Trưởng phòng Marketing" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label for="avatar">Ảnh đại diện</label>
+              <input id="avatar" type="file" accept="image/*" />
+              <div class="hint">Khuyên dùng ảnh vuông (≥ 600×600).</div>
+            </div>
+            <div>
+              <label for="template">Mẫu nền</label>
+              <select id="template"></select>
+              <div class="hint">Có sẵn 2 mẫu chạy offline. Bạn có thể thêm mẫu riêng.</div>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label for="font">Font chữ</label>
+              <select id="font">
+                <option value="Inter, system-ui, sans-serif">Inter (mặc định)</option>
+                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+              </select>
+            </div>
+            <div>
+              <label for="textColor">Màu chữ</label>
+              <input id="textColor" type="color" value="#ffffff" />
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="primary" id="btn-generate">Tạo ngay</button>
+            <button class="ghost" id="btn-clear" type="button">Hủy</button>
+            <a id="btn-download" class="button ghost" download="thumoi.png" href="#">Tải về máy</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="inner preview-wrap">
+          <h2>Xem trước</h2>
+          <div class="preview">
+            <canvas id="canvas" width="1080" height="1080" aria-label="Xem trước"></canvas>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>Clone hoạt động offline. Bạn có thể thay đổi layout/ảnh nền trong phần cấu hình JS.</footer>
+  </div>
+
+<script>
+/*******************
+ * CẤU HÌNH MẪU   *
+ *******************/
+// 2 mẫu chạy hoàn toàn offline:
+// - Mẫu 1: vẽ nền gradient + hoạ tiết bằng Canvas (không cần ảnh)
+// - Mẫu 2: dùng ảnh SVG nhúng (data URL) không bị CORS
+const TEMPLATES = [
+  {
+    name: "Nền Gradient (Canvas)",
+    type: "draw", // tự vẽ bằng canvas
+    avatarRect: { x: 340, y: 300, size: 400, radius: 24 },
+    namePos: { x: 540, y: 750 },
+    titlePos: { x: 540, y: 800 },
+    textAlign: "center",
+    nameSize: 46,
+    titleSize: 34,
+    drawBackground: (ctx, w, h) => {
+      // Gradient nền
+      const g = ctx.createLinearGradient(0, 0, w, h);
+      g.addColorStop(0, "#1a1a4a");
+      g.addColorStop(1, "#0b0b22");
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,w,h);
+      // Hoạ tiết tròn mờ
+      ctx.globalAlpha = 0.25;
+      for (let i=0;i<6;i++){
+        const r = 140 + Math.random()*220;
+        const x = Math.random()*w;
+        const y = Math.random()*h;
+        const g2 = ctx.createRadialGradient(x,y,0,x,y,r);
+        g2.addColorStop(0, i%2?"#6cf":"#a8a8ff");
+        g2.addColorStop(1, "transparent");
+        ctx.fillStyle = g2;
+        ctx.beginPath();
+        ctx.arc(x,y,r,0,Math.PI*2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+  },
+  {
+    name: "Nền SVG (Data URL)",
+    type: "image", // dùng ảnh nhúng (không cần mạng)
+    url: (()=>{
+      const svg = encodeURIComponent(`
+        <svg xmlns='http://www.w3.org/2000/svg' width='1080' height='1080'>
+          <defs>
+            <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+              <stop offset='0%' stop-color='#2a2a72'/>
+              <stop offset='100%' stop-color='#009ffd'/>
+            </linearGradient>
+          </defs>
+          <rect width='100%' height='100%' fill='url(#g)'/>
+          <g fill='rgba(255,255,255,0.12)'>
+            <circle cx='200' cy='220' r='120'/>
+            <circle cx='860' cy='320' r='90'/>
+            <circle cx='300' cy='880' r='110'/>
+          </g>
+        </svg>`);
+      return `data:image/svg+xml;charset=utf-8,${svg}`;
+    })(),
+    avatarRect: { x: 340, y: 300, size: 400, radius: 24 },
+    namePos: { x: 540, y: 750 },
+    titlePos: { x: 540, y: 800 },
+    textAlign: "center",
+    nameSize: 46,
+    titleSize: 34
+  }
+];
+
+/*******************
+ * TIỆN ÍCH VẼ     *
+ *******************/
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = 'high';
+
+const $ = (id)=>document.getElementById(id);
+const fullname = $('fullname');
+const title = $('title');
+const avatar = $('avatar');
+const fontSel = $('font');
+const textColor = $('textColor');
+const tplSel = $('template');
+const btnGen = $('btn-generate');
+const btnClear = $('btn-clear');
+const btnDownload = $('btn-download');
+
+// Render template options
+TEMPLATES.forEach((t, i)=>{
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = t.name;
+  tplSel.appendChild(opt);
+});
+
+let state = { tplIdx: 0, avatarImg: null };
+
+function loadImage(src){
+  return new Promise((res, rej)=>{ 
+    const i = new Image(); 
+    // data URLs không cần CORS
+    i.onload=()=>res(i); 
+    i.onerror=()=>rej(new Error('Không tải được ảnh nền.'));
+    i.src=src; 
+  });
+}
+
+function roundedRectPath(x, y, size, r){
+  const p = new Path2D();
+  p.moveTo(x+r, y);
+  p.arcTo(x+size, y, x+size, y+size, r);
+  p.arcTo(x+size, y+size, x, y+size, r);
+  p.arcTo(x, y+size, x, y, r);
+  p.arcTo(x, y, x+size, y, r);
+  p.closePath();
+  return p;
+}
+
+function drawRoundImage(img, x, y, size, radius){
+  const path = roundedRectPath(x, y, size, radius||0);
+  ctx.save();
+  ctx.clip(path);
+  // center-crop vuông
+  const s = Math.min(img.width, img.height);
+  const sx = (img.width - s)/2;
+  const sy = (img.height - s)/2;
+  ctx.drawImage(img, sx, sy, s, s, x, y, size, size);
+  ctx.restore();
+  // viền
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = 'rgba(255,255,255,.92)';
+  ctx.stroke(path);
+}
+
+async function drawBackground(tpl){
+  if (tpl.type === 'draw' && typeof tpl.drawBackground === 'function'){
+    tpl.drawBackground(ctx, canvas.width, canvas.height);
+  } else if (tpl.type === 'image' && tpl.url){
+    const bg = await loadImage(tpl.url);
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+  } else {
+    // fallback màu trơn
+    ctx.fillStyle = '#101022';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+}
+
+async function render(){
+  const tpl = TEMPLATES[state.tplIdx];
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  await drawBackground(tpl);
+
+  // avatar (nếu có)
+  if(state.avatarImg){
+    drawRoundImage(state.avatarImg, tpl.avatarRect.x, tpl.avatarRect.y, tpl.avatarRect.size, tpl.avatarRect.radius);
+  }
+
+  // chữ
+  ctx.textAlign = tpl.textAlign || 'center';
+  ctx.fillStyle = textColor.value || '#fff';
+  ctx.font = `700 ${tpl.nameSize||48}px ${fontSel.value}`;
+  // bóng chữ nhẹ để nổi bật
+  ctx.shadowColor='rgba(0,0,0,.55)'; 
+  ctx.shadowBlur=8; 
+  ctx.shadowOffsetY=2; 
+  ctx.fillText(fullname.value || 'Tên của bạn', tpl.namePos.x, tpl.namePos.y);
+
+  ctx.shadowBlur=0; ctx.shadowOffsetY=0; // reset shadow
+  ctx.font = `700 ${tpl.titleSize||36}px ${fontSel.value}`;
+  ctx.fillText(title.value || 'Chức vụ', tpl.titlePos.x, tpl.titlePos.y);
+
+  // cập nhật link tải
+  try {
+    btnDownload.href = canvas.toDataURL('image/png');
+  } catch (e) {
+    // luôn an toàn với data URL, nhưng đề phòng
+    btnDownload.removeAttribute('href');
+  }
+}
+
+/*******************
+ * SỰ KIỆN/NÚT     *
+ *******************/
+btnGen.addEventListener('click', render);
+
+btnClear.addEventListener('click', ()=>{
+  fullname.value = '';
+  title.value = '';
+  avatar.value = '';
+  state.avatarImg = null;
+  render();
+});
+
+tplSel.addEventListener('change', (e)=>{
+  state.tplIdx = +e.target.value; render();
+});
+
+fontSel.addEventListener('change', render);
+textColor.addEventListener('input', render);
+fullname.addEventListener('input', render);
+title.addEventListener('input', render);
+
+avatar.addEventListener('change', (e)=>{
+  const file = e.target.files?.[0];
+  if(!file) { state.avatarImg = null; render(); return; }
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{ state.avatarImg = img; URL.revokeObjectURL(url); render(); };
+  img.onerror = ()=>{ state.avatarImg = null; URL.revokeObjectURL(url); render(); };
+  img.src = url;
+});
+
+// Khởi tạo template mặc định và render lần đầu
+tplSel.value = '0';
 render();
 </script>
 </body>
