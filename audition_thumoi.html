@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tạo Avatar Online - Thư Mời</title>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tạo Avatar Online - Thư Mời</title>
+        <style>
         body {
             font-family: Arial, sans-serif;
             min-height: 100vh;
@@ -146,45 +146,60 @@
             font-weight: bold;
         }
     </style>
-</head>
-<body>
-    <div class="main-card">
-        <h2>Tạo Avatar Online</h2>
-        <div class="invite-frame">
-            <div class="invite-header">
-                <img src="https://gameverse.vtcmobile.vn/thumoi/Content/images/logo-vtc.png" alt="VTC" style="height:28px;vertical-align:middle;margin-right:8px;">
-                <img src="https://gameverse.vtcmobile.vn/thumoi/Content/images/logo-gameverse.png" alt="Gameverse" style="height:28px;vertical-align:middle;">
-                <br>Thư mời tham dự
+    </head>
+    <body>
+        <div class="main-card">
+            <h2>Tạo Avatar Online</h2>
+            <div class="invite-frame">
+                <div class="invite-header">
+                    <img
+                        src="https://gameverse.vtcmobile.vn/thumoi/Content/images/logo-vtc.png"
+                        alt="VTC"
+                        style="height:28px;vertical-align:middle;margin-right:8px;">
+                    <img
+                        src="https://gameverse.vtcmobile.vn/thumoi/Content/images/logo-gameverse.png"
+                        alt="Gameverse"
+                        style="height:28px;vertical-align:middle;">
+                    <br>Thư mời tham dự
+                </div>
+                <div class="invite-title">VIETNAM GAMEVERSE 2025<br><span
+                        style="font-size:1rem;color:#fff;font-weight:400;">Kính
+                        mời</span></div>
+                <div class="avatar-box" id="avatarPreview">
+                    <!-- Avatar sẽ hiển thị ở đây -->
+                </div>
+                <div class="invite-names" id="inviteNames">
+                    Tên của bạn<br>Chức vụ
+                </div>
+                <div class="invite-footer">
+                    <div
+                        style="font-size:0.95rem;color:#fff;font-weight:400;">9.
+                        GIAN HÀNG VTC<br>Trung tâm Hội nghị và Triển lãm
+                        SECC<br>799 Nguyễn Văn Linh, Quận 7, HCM</div>
+                    <div
+                        style="margin-top:6px;font-size:1.1rem;"><b>26.05-27.05</b></div>
+                </div>
             </div>
-            <div class="invite-title">VIETNAM GAMEVERSE 2025<br><span style="font-size:1rem;color:#fff;font-weight:400;">Kính mời</span></div>
-            <div class="avatar-box" id="avatarPreview">
-                <!-- Avatar sẽ hiển thị ở đây -->
-            </div>
-            <div class="invite-names" id="inviteNames">
-                Tên của bạn<br>Chức vụ
-            </div>
-            <div class="invite-footer">
-                <div style="font-size:0.95rem;color:#fff;font-weight:400;">9. GIAN HÀNG VTC<br>Trung tâm Hội nghị và Triển lãm SECC<br>799 Nguyễn Văn Linh, Quận 7, HCM</div>
-                <div style="margin-top:6px;font-size:1.1rem;"><b>26.05-27.05</b></div>
-            </div>
+            <form id="avatarForm" autocomplete="off" class="form-section">
+                <label for="fullname">Họ và tên:</label>
+                <input type="text" id="fullname" name="fullname" required>
+
+                <label for="title">Chức danh:</label>
+                <input type="text" id="title" name="title" required>
+
+                <label for="avatar">Ảnh đại diện:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/*"
+                    required>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-cancel"
+                        onclick="resetForm()">Hủy</button>
+                    <button type="submit" class="btn btn-submit">Tạo
+                        ngay!</button>
+                </div>
+            </form>
         </div>
-        <form id="avatarForm" autocomplete="off" class="form-section">
-            <label for="fullname">Họ và tên:</label>
-            <input type="text" id="fullname" name="fullname" required>
-
-            <label for="title">Chức danh:</label>
-            <input type="text" id="title" name="title" required>
-
-            <label for="avatar">Ảnh đại diện:</label>
-            <input type="file" id="avatar" name="avatar" accept="image/*" required>
-
-            <div class="actions">
-                <button type="button" class="btn btn-cancel" onclick="resetForm()">Hủy</button>
-                <button type="submit" class="btn btn-submit">Tạo ngay!</button>
-            </div>
-        </form>
-    </div>
-    <script>
+        <script>
         const avatarInput = document.getElementById('avatar');
         const avatarPreview = document.getElementById('avatarPreview');
         const form = document.getElementById('avatarForm');
@@ -226,5 +241,5 @@
             alert('Tạo avatar thành công! (Demo)');
         });
     </script>
-</body>
+    </body>
 </html>
