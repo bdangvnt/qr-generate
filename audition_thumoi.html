@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Avatar Online - Thư Mời</title>
+    <style>
+        body {
+            background: #f5f6fa;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 32px 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            color: #2d3a4b;
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #444;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 18px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-submit {
+            background: #1e90ff;
+            color: #fff;
+        }
+        .avatar-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        .avatar-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 50%;
+            border: 2px solid #d1d5db;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Tạo Avatar Online</h2>
+        <form id="avatarForm" autocomplete="off">
+            <label for="fullname">Họ và tên:</label>
+            <input type="text" id="fullname" name="fullname" required>
+
+            <label for="title">Chức danh:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="avatar">Ảnh đại diện:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+
+            <div class="avatar-preview" id="avatarPreview"></div>
+
+            <div class="actions">
+                <button type="button" class="btn btn-cancel" onclick="resetForm()">Hủy</button>
+                <button type="submit" class="btn btn-submit">Tạo ngay!</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        const avatarInput = document.getElementById('avatar');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const form = document.getElementById('avatarForm');
+
+        avatarInput.addEventListener('change', function() {
+            avatarPreview.innerHTML = '';
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    avatarPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function resetForm() {
+            form.reset();
+            avatarPreview.innerHTML = '';
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Tạo avatar thành công! (Demo)');
+        });
+    </script>
+</body>
+</html>
