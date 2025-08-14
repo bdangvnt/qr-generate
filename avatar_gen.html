@@ -1,217 +1,234 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tạo Avatar Offline — ĐÃ SỬA: dùng Base64 overlay khung Gameverse</title>
-    <style>
-      :root{--gap:12px;--radius:16px;--shadow:0 6px 30px rgba(0,0,0,.25)}
-      html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0b0b12;color:#e9e9f1}
-      .container{max-width:1100px;margin:0 auto;padding:20px}
-      header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
-      header h1{font-size:clamp(18px,3.2vw,28px);margin:0}
-      .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--gap)}
-      @media (max-width:900px){.grid{grid-template-columns:1fr;}}
-      .card{background:#121227;border:1px solid #22254a;border-radius:var(--radius);box-shadow:var(--shadow)}
-      .card h2{margin:0 0 8px;font-size:18px}
-      .card .inner{padding:18px}
-      label{font-weight:600;font-size:14px;margin-bottom:6px;display:block}
-      input[type="text"], input[type="file"], select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #2a2e57;background:#0f1030;color:#fff;box-sizing:border-box}
-      .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-      .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
-      button, .button{cursor:pointer;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
-      button.primary{background:#6cf;color:#00102a}
-      button.ghost{background:#1b1e44;color:#e9e9f1;border:1px solid #2c3266}
-      .hint{opacity:.8;font-size:12px}
-      .preview-wrap{padding:16px}
-      .preview{width:100%;aspect-ratio:1080/1350;background:#050514;border-radius:12px;border:1px solid #22254a;display:flex;align-items:center;justify-content:center}
-      canvas{max-width:100%;height:auto;border-radius:12px}
-      footer{opacity:.7;text-align:center;margin-top:20px;font-size:12px}
-      .small{font-size:12px}
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>Tạo Avatar Offline (Gameverse 2025)</h1>
-        <div class="small">ĐÃ SỬA: xóa bản HTML trùng lặp; thêm khung PNG Base64, vẽ overlay cuối cùng.</div>
-      </header>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tạo Avatar Online — Bản clone đơn giản</title>
+  <style>
+    :root{--gap:12px;--radius:16px;--shadow:0 6px 30px rgba(0,0,0,.25)}
+    html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#0b0b12;color:#e9e9f1}
+    .container{max-width:1100px;margin:0 auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
+    header h1{font-size:clamp(18px,3.2vw,28px);margin:0}
+    .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--gap)}
+    @media (max-width:900px){.grid{grid-template-columns:1fr;}}
+    .card{background:#121227;border:1px solid #22254a;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card h2{margin:0 0 8px;font-size:18px}
+    .card .inner{padding:18px}
+    label{font-weight:600;font-size:14px;margin-bottom:6px;display:block}
+    input[type="text"], input[type="file"], select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #2a2e57;background:#0f1030;color:#fff;box-sizing:border-box}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    button, .button{cursor:pointer;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
+    button.primary{background:#6cf;color:#00102a}
+    button.ghost{background:#1b1e44;color:#e9e9f1;border:1px solid #2c3266}
+    .hint{opacity:.8;font-size:12px}
+    .preview-wrap{padding:16px}
+    .preview{width:100%;aspect-ratio:1/1;background:#050514;border-radius:12px;border:1px solid #22254a;display:flex;align-items:center;justify-content:center}
+    canvas{max-width:100%;height:auto;border-radius:12px}
+    footer{opacity:.7;text-align:center;margin-top:20px;font-size:12px}
+    .small{font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Tạo Avatar Online — Bản clone đơn giản</h1>
+      <div class="small">Thay ảnh nền, font chữ, vị trí theo nhu cầu của bạn.</div>
+    </header>
 
-      <div class="grid">
-        <section class="card">
-          <div class="inner">
-            <h2>Điền thông tin</h2>
-            <div class="row">
-              <div>
-                <label for="fullname">Họ và tên</label>
-                <input id="fullname" type="text" placeholder="VD: Nguyễn Văn A" />
-              </div>
-              <div>
-                <label for="title">Chức danh</label>
-                <input id="title" type="text" placeholder="VD: Trưởng phòng Marketing" />
-              </div>
+    <div class="grid">
+      <section class="card">
+        <div class="inner">
+          <h2>Điền thông tin</h2>
+          <div class="row">
+            <div>
+              <label for="fullname">Họ và tên</label>
+              <input id="fullname" type="text" placeholder="VD: Nguyễn Văn A" />
             </div>
-
-            <div class="row" style="margin-top:12px">
-              <div>
-                <label for="avatar">Ảnh đại diện</label>
-                <input id="avatar" type="file" accept="image/*" />
-                <div class="hint">Khuyên dùng ảnh vuông (≥ 600×600).</div>
-              </div>
-              <div>
-                <label for="font">Font chữ</label>
-                <select id="font">
-                  <option value="Inter, system-ui, sans-serif">Inter (mặc định)</option>
-                  <option value="Arial, Helvetica, sans-serif">Arial</option>
-                  <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:12px">
-              <div>
-                <label for="textColor">Màu chữ</label>
-                <input id="textColor" type="color" value="#ffffff" />
-              </div>
-              <div>
-                <label for="nameSize">Cỡ chữ tên</label>
-                <input id="nameSize" type="range" min="28" max="72" step="1" value="46" />
-              </div>
-            </div>
-
-            <div class="btns">
-              <button class="primary" id="btn-generate">Tạo ngay</button>
-              <button class="ghost" id="btn-clear" type="button">Hủy</button>
-              <a id="btn-download" class="button ghost" download="thumoi.png" href="#">Tải về máy</a>
+            <div>
+              <label for="title">Chức danh</label>
+              <input id="title" type="text" placeholder="VD: Trưởng phòng Marketing" />
             </div>
           </div>
-        </section>
 
-        <section class="card">
-          <div class="inner preview-wrap">
-            <h2>Xem trước</h2>
-            <div class="preview">
-              <canvas id="canvas" width="1080" height="1350" aria-label="Xem trước"></canvas>
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label for="avatar">Ảnh đại diện</label>
+              <input id="avatar" type="file" accept="image/*" />
+              <div class="hint">Khuyên dùng ảnh vuông (tối thiểu 600×600).</div>
+            </div>
+            <div>
+              <label for="template">Mẫu nền (BG)</label>
+              <select id="template"></select>
+              <div class="hint">Bạn có thể thay đường dẫn ảnh nền của mình.</div>
             </div>
           </div>
-        </section>
-      </div>
 
-      <footer>Khung PNG nhúng Base64, vẽ sau cùng để overlay đúng. Canvas 1080×1350 khớp với khung.</footer>
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label for="font">Font chữ</label>
+              <select id="font">
+                <option value="Inter, system-ui, sans-serif">Inter (mặc định)</option>
+                <option value="Arial, Helvetica, sans-serif">Arial</option>
+                <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+              </select>
+            </div>
+            <div>
+              <label for="textColor">Màu chữ</label>
+              <input id="textColor" type="color" value="#ffffff" />
+            </div>
+          </div>
+
+          <div class="btns">
+            <button class="primary" id="btn-generate">Tạo ngay</button>
+            <button class="ghost" id="btn-clear">Hủy</button>
+            <a id="btn-download" class="button ghost" download="thumoi.png">Tải về máy</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="inner preview-wrap">
+          <h2>Xem trước</h2>
+          <div class="preview">
+            <canvas id="canvas" width="1080" height="1080" aria-label="Xem trước"></canvas>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <script>
-    // ====== Khung PNG Base64 từ file bg1.png ======
-    const FRAME_BASE64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...TRUNCATED_PLACEHOLDER...";
+    <footer>Clone bởi bạn với mã nguồn single-file. Không dùng dữ liệu cá nhân bên thứ ba.</footer>
+  </div>
 
-    // ====== Tham chiếu DOM ======
-    const $ = (id)=>document.getElementById(id);
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
+<script>
+// ============ Cấu hình ============
+// Bạn có thể thay thế bằng ảnh của bạn. Mặc định dùng ảnh demo công khai trên trang gốc.
+const TEMPLATES = [
+  {
+    name: "BG 1 (demo)",
+    url: "https://gameverse.vtcmobile.vn/thumoi/Content/images/bg1.png",
+    // Các thông số vị trí (đơn vị px, theo kích thước 1080x1080)
+    avatarRect: { x: 340, y: 330, size: 400, radius: 20 },
+    namePos: { x: 540, y: 770 },
+    titlePos: { x: 540, y: 810 },
+    textAlign: "center",
+    nameSize: 44,
+    titleSize: 34,
+    nameShadow: true
+  }
+];
 
-    const fullname = $('fullname');
-    const title = $('title');
-    const avatar = $('avatar');
-    const fontSel = $('font');
-    const textColor = $('textColor');
-    const nameSize = $('nameSize');
-    const btnGen = $('btn-generate');
-    const btnClear = $('btn-clear');
-    const btnDownload = $('btn-download');
+// ============ Logic vẽ Canvas ============
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-    // ====== Vị trí bố cục (khớp mẫu) ======
-    const layout = {
-      avatarRect: { x: 270, y: 430, size: 540, radius: 18 },
-      namePos: { x: 540, y: 1040 },
-      titlePos: { x: 540, y: 1090 }
-    };
+const $ = (id)=>document.getElementById(id);
+const fullname = $('fullname');
+const title = $('title');
+const avatar = $('avatar');
+const fontSel = $('font');
+const textColor = $('textColor');
+const tplSel = $('template');
+const btnGen = $('btn-generate');
+const btnClear = $('btn-clear');
+const btnDownload = $('btn-download');
 
-    function loadImage(src) {
-      return new Promise((res, rej)=>{ const i = new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=src; });
-    }
+// Render template options
+TEMPLATES.forEach((t, i)=>{
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = t.name;
+  tplSel.appendChild(opt);
+});
 
-    function roundedRectPath(x, y, size, r){
-      const p = new Path2D();
-      p.moveTo(x+r, y);
-      p.arcTo(x+size, y, x+size, y+size, r);
-      p.arcTo(x+size, y+size, x, y+size, r);
-      p.arcTo(x, y+size, x, y, r);
-      p.arcTo(x, y, x+size, y, r);
-      p.closePath();
-      return p;
-    }
+let state = { tplIdx: 0, avatarImg: null };
 
-    function drawRoundImage(img, x, y, size, radius){
-      const path = roundedRectPath(x, y, size, radius||0);
-      ctx.save();
-      ctx.clip(path);
-      // crop vuông giữa
-      const s = Math.min(img.width, img.height);
-      const sx = (img.width - s)/2;
-      const sy = (img.height - s)/2;
-      ctx.drawImage(img, sx, sy, s, s, x, y, size, size);
-      ctx.restore();
-    }
+function loadImage(src){
+  return new Promise((res, rej)=>{ const i = new Image(); i.crossOrigin = 'anonymous'; i.onload=()=>res(i); i.onerror=rej; i.src=src; });
+}
 
-    async function render(){
-      const W = canvas.width, H = canvas.height;
-      ctx.clearRect(0,0,W,H);
+function drawRoundImage(img, x, y, size, radius){
+  ctx.save();
+  ctx.beginPath();
+  const r = radius||0;
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+size, y, x+size, y+size, r);
+  ctx.arcTo(x+size, y+size, x, y+size, r);
+  ctx.arcTo(x, y+size, x, y, r);
+  ctx.arcTo(x, y, x+size, y, r);
+  ctx.closePath();
+  ctx.clip();
+  // cover entire box
+  // auto-fit: center-crop square
+  const s = Math.min(img.width, img.height);
+  const sx = (img.width - s)/2;
+  const sy = (img.height - s)/2;
+  ctx.drawImage(img, sx, sy, s, s, x, y, size, size);
+  ctx.restore();
+}
 
-      // nền phụ (phía sau frame — chỉ để lấp vùng trong suốt)
-      const g = ctx.createLinearGradient(0,0,0,H);
-      g.addColorStop(0,'#1a1144'); g.addColorStop(1,'#0a0828');
-      ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+async function render(){
+  const tpl = TEMPLATES[state.tplIdx];
+  // nền
+  const bg = await loadImage(tpl.url);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
-      // avatar
-      if (window._avatarImage) {
-        drawRoundImage(window._avatarImage, layout.avatarRect.x, layout.avatarRect.y, layout.avatarRect.size, layout.avatarRect.radius);
-      }
+  // avatar
+  if(state.avatarImg){
+    drawRoundImage(state.avatarImg, tpl.avatarRect.x, tpl.avatarRect.y, tpl.avatarRect.size, tpl.avatarRect.radius);
+    // viền trắng nhẹ
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = 'rgba(255,255,255,.9)';
+    ctx.strokeRect(tpl.avatarRect.x, tpl.avatarRect.y, tpl.avatarRect.size, tpl.avatarRect.size);
+  }
 
-      // chữ
-      ctx.textAlign = 'center';
-      ctx.fillStyle = textColor.value || '#fff';
-      ctx.shadowColor='rgba(0,0,0,.55)'; ctx.shadowBlur=10; ctx.shadowOffsetY=3;
-      ctx.font = `700 ${parseInt(nameSize.value)||46}px ${fontSel.value}`;
-      ctx.fillText(fullname.value || 'Tên của bạn', layout.namePos.x, layout.namePos.y);
-      ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-      ctx.font = `700 36px ${fontSel.value}`;
-      ctx.fillText(title.value || 'Chức vụ', layout.titlePos.x, layout.titlePos.y);
+  // chữ
+  ctx.textAlign = tpl.textAlign || 'center';
+  ctx.fillStyle = textColor.value || '#fff';
+  ctx.font = `700 ${tpl.nameSize||48}px ${fontSel.value}`;
+  if(tpl.nameShadow){ ctx.shadowColor='rgba(0,0,0,.65)'; ctx.shadowBlur=8; ctx.shadowOffsetY=2; }
+  ctx.fillText(fullname.value || 'Tên của bạn', tpl.namePos.x, tpl.namePos.y);
 
-      // FRAME overlay — vẽ CUỐI CÙNG
-      try {
-        const frameImg = await loadImage(FRAME_BASE64);
-        ctx.drawImage(frameImg, 0, 0, W, H);
-      } catch (e) {
-        console.error('Lỗi tải khung:', e);
-      }
+  ctx.shadowBlur=0; ctx.shadowOffsetY=0; // reset shadow
+  ctx.font = `700 ${tpl.titleSize||36}px ${fontSel.value}`;
+  ctx.fillText(title.value || 'Chức vụ', tpl.titlePos.x, tpl.titlePos.y);
 
-      // cập nhật nút tải
-      try { btnDownload.href = canvas.toDataURL('image/png'); }
-      catch { btnDownload.removeAttribute('href'); }
-    }
+  // cập nhật link tải
+  btnDownload.href = canvas.toDataURL('image/png');
+}
 
-    // ====== Sự kiện ======
-    btnGen.addEventListener('click', render);
-    [fullname, title, textColor, nameSize, fontSel].forEach(el=>el.addEventListener('input', render));
+btnGen.addEventListener('click', ()=>{
+  render();
+});
 
-    btnClear.addEventListener('click', ()=>{
-      fullname.value=''; title.value=''; avatar.value=''; window._avatarImage=null; render();
-    });
+btnClear.addEventListener('click', ()=>{
+  fullname.value = '';
+  title.value = '';
+  avatar.value = '';
+  state.avatarImg = null;
+  render();
+});
 
-    avatar.addEventListener('change', (e)=>{
-      const file = e.target.files?.[0];
-      if(!file) { window._avatarImage = null; render(); return; }
-      const url = URL.createObjectURL(file);
-      const img = new Image();
-      img.onload = ()=>{ window._avatarImage = img; URL.revokeObjectURL(url); render(); };
-      img.onerror = ()=>{ window._avatarImage = null; URL.revokeObjectURL(url); render(); };
-      img.src = url;
-    });
+tplSel.addEventListener('change', (e)=>{
+  state.tplIdx = +e.target.value; render();
+});
 
-    // render đầu
-    render();
-    </script>
-  </body>
+fontSel.addEventListener('change', render);
+textColor.addEventListener('input', render);
+
+avatar.addEventListener('change', (e)=>{
+  const file = e.target.files?.[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = ()=>{ state.avatarImg = img; URL.revokeObjectURL(url); render(); };
+  img.src = url;
+});
+
+// Lần đầu render
+render();
+</script>
+</body>
 </html>
