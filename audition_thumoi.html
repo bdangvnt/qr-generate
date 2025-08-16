@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AU - Thư Mời</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:900,700,400&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,50 +101,74 @@
             font-size: 1rem;
             font-weight: 500;
         }
+        /* Form section rộng hơn frame */
         .form-section {
-            width: 100%;
-            margin-top: 12px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-            width: 100%;
-            display: flex;
-            align-items: stretch;
-        }
-        .form-label-img {
-            width: 140px;
-            margin-right: 12px;
-            object-fit: contain;
-            height: 48px;
+            width: 820px;
+            max-width: 100vw;
+            margin-top: 32px;
+            /* background: #eaf6f0; */
+            border-radius: 24px;
+            padding: 32px 32px 24px 32px;
+            box-sizing: border-box;
+            /* box-shadow: 0 2px 16px rgba(0,0,0,0.06); */
             display: block;
         }
-        .input-img-wrap {
-            position: relative;
+        /* Form table layout */
+        .form-table {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .form-label {
+            width: 240px; /* tăng chiều rộng */
+            min-width: 180px;
+            font-weight: 900;
+            color: #18302b;
+            font-size: 1.25rem; /* giảm font-size một chút */
+            letter-spacing: 0.5px; /* giảm khoảng cách chữ */
+            text-align: left;
+            font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+            text-transform: uppercase;
+            white-space: nowrap; /* không cho xuống dòng */
+        }
+        .form-field {
             flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        .input-img-wrap {
+            width: 100%;
             height: 48px;
+            position: relative;
             display: flex;
             align-items: center;
             cursor: pointer;
         }
-        .input-img-wrap .input-bg-img {
+        .input-img-wrap input[type="text"] {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            color: #18302b;
+            z-index: 2;
+            padding: 8px 18px;
+        }
+        .input-bg-img {
             position: absolute;
             left: 0; top: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             z-index: 1;
             pointer-events: none;
-        }
-        .input-img-wrap input[type="text"] {
-            position: relative;
-            z-index: 2;
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 1rem;
-            padding: 8px 12px;
-            color: #fff;
         }
         .location-btns {
             display: flex;
@@ -170,15 +195,19 @@
             pointer-events: none;
         }
         .actions {
+            margin-top: 24px;
             display: flex;
-            justify-content: space-between;
+            gap: 16px;
+            justify-content: flex-end;
         }
         .btn {
-            padding: 8px 20px;
+            padding: 10px 0;
+            min-width: 120px;
             border: none;
-            border-radius: 6px;
-            font-size: 15px;
+            border-radius: 24px;
+            font-size: 1.1rem;
             cursor: pointer;
+            font-weight: bold;
         }
         .btn-cancel {
             background: #e0e0e0;
@@ -187,7 +216,17 @@
         .btn-submit {
             background: #ffe082;
             color: #1a0a3c;
-            font-weight: bold;
+        }
+        @media (max-width: 900px) {
+            .form-section {
+                width: 98vw;
+                padding: 18px 6vw 18px 6vw;
+            }
+            .form-label {
+                width: 120px;
+                min-width: 90px;
+                font-size: 1rem;
+            }
         }
         @media (max-width: 700px) {
             .main-card {
@@ -229,15 +268,25 @@
                 font-size: 1rem;
             }
             .form-section {
-                width: 100%;
-                min-width: 0;
+                width: 100vw;
+                padding: 12px 0 12px 0;
+                border-radius: 0;
+                margin-top: 18px;
+                box-shadow: none;
             }
-            .form-label-img {
-                width: 28vw;
-                min-width: 60px;
-                max-width: 120px;
-                height: 40px;
-                margin-right: 8px;
+            .form-table {
+                gap: 12px;
+            }
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            .form-label {
+                display: none;
+            }
+            .form-field {
+                width: 100%;
             }
             .input-img-wrap {
                 height: 40px;
@@ -254,6 +303,7 @@
             .actions {
                 flex-direction: column;
                 gap: 10px;
+                margin-top: 18px;
             }
             .btn {
                 width: 100%;
@@ -273,43 +323,54 @@
             <img id="addressImg" class="address-img" style="display:none;" alt="Địa chỉ">
         </div>
         <form id="avatarForm" class="form-section" autocomplete="off">
-            <!-- Danh hiệu -->
-            <div class="form-group">
-                <img src="title_danh_hieu.png" alt="Danh hiệu" class="form-label-img">
-                <div class="input-img-wrap">
-                    <input type="text" id="title" name="title" placeholder="Nhập danh hiệu..." oninput="handleInputImg(this, 'danh_hieu')">
-                    <img id="danh_hieu_img" src="text_nhap_danh_hieu.png" class="input-bg-img">
+            <div class="form-table">
+                <!-- Danh hiệu -->
+                <div class="form-row">
+                    <div class="form-label">DANH HIỆU</div>
+                    <div class="form-field">
+                        <div class="input-img-wrap">
+                            <input type="text" id="title" name="title" placeholder="Nhập danh hiệu..." oninput="handleInputImg(this, 'danh_hieu')">
+                            <img id="danh_hieu_img" src="text_nhap_danh_hieu.png" class="input-bg-img">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <!-- Họ tên -->
-            <div class="form-group">
-                <img src="title_ho_va_ten.png" alt="Họ tên" class="form-label-img">
-                <div class="input-img-wrap">
-                    <input type="text" id="fullname" name="fullname" placeholder="Nhập họ tên..." oninput="handleInputImg(this, 'ho_ten')">
-                    <img id="ho_ten_img" src="text_nhap_ho_ten.png" class="input-bg-img">
+                <!-- Họ tên -->
+                <div class="form-row">
+                    <div class="form-label">HỌ TÊN CỦA BẠN</div>
+                    <div class="form-field">
+                        <div class="input-img-wrap">
+                            <input type="text" id="fullname" name="fullname" placeholder="Nhập họ tên..." oninput="handleInputImg(this, 'ho_ten')">
+                            <img id="ho_ten_img" src="text_nhap_ho_ten.png" class="input-bg-img">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <!-- Nơi tham gia -->
-            <div class="form-group">
-                <img src="title_ho_va_ten.png" alt="Họ tên" class="form-label-img">
-                <div class="location-btns">
-                    <img src="btn_hn.png" id="btn_hn" class="location-btn" onclick="selectLocation('hn')" alt="Hà Nội">
-                    <img src="btn_dn.png" id="btn_dn" class="location-btn" onclick="selectLocation('dn')" alt="Đà Nẵng">
-                    <img src="btn_hcm.png" id="btn_hcm" class="location-btn" onclick="selectLocation('hcm')" alt="Hồ Chí Minh">
-                    <input type="hidden" id="location" name="location">
+                <!-- Nơi tham gia -->
+                <div class="form-row">
+                    <div class="form-label">NƠI BẠN THAM GIA</div>
+                    <div class="form-field">
+                        <div class="location-btns">
+                            <img src="btn_hn.png" id="btn_hn" class="location-btn" onclick="selectLocation('hn')" alt="Hà Nội">
+                            <img src="btn_dn.png" id="btn_dn" class="location-btn" onclick="selectLocation('dn')" alt="Đà Nẵng">
+                            <img src="btn_hcm.png" id="btn_hcm" class="location-btn" onclick="selectLocation('hcm')" alt="Hồ Chí Minh">
+                            <input type="hidden" id="location" name="location">
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <!-- Ảnh đại diện -->
-            <div class="form-group">
-                <img src="title_ho_va_ten.png" alt="Chọn ảnh" class="form-label-img">
-                <div class="input-img-wrap" onclick="document.getElementById('avatar').click()">
-                    <img src="text_chon_anh.png" alt="Chọn ảnh đại diện" class="input-bg-img" id="chonAnhImg">
+                <!-- Ảnh đại diện -->
+                <div class="form-row">
+                    <div class="form-label">ẢNH ĐẠI DIỆN</div>
+                    <div class="form-field">
+                        <div class="input-img-wrap" onclick="document.getElementById('avatar').click()">
+                            <img src="text_chon_anh.png" alt="Chọn ảnh đại diện" class="input-bg-img" id="chonAnhImg">
+                        </div>
+                        <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
+                    </div>
                 </div>
-                <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
-            </div>
-            <div class="actions">
-                <button type="button" class="btn btn-cancel" onclick="resetForm()">Hủy</button>
-                <button type="submit" class="btn btn-submit">Tạo Avatar</button>
+                <!-- Nút -->
+                <div class="actions">
+                    <button type="button" class="btn btn-cancel" onclick="resetForm()">Hủy</button>
+                    <button type="submit" class="btn btn-submit">Tạo Avatar</button>
+                </div>
             </div>
         </form>
     </div>
