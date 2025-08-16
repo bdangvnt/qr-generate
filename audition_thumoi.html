@@ -8,7 +8,6 @@
         body {
             font-family: Arial, sans-serif;
             min-height: 100vh;
-            max-height: 100vh;/* Giới hạn chiều cao tối đa */
             min-width: 100vw;      /* Sửa từ 100vh thành 100vw để fit chiều rộng màn hình */
             max-width: 100vw;      /* Đảm bảo không vượt quá chiều rộng màn hình */
             width: 100vw;          /* Fit đúng chiều rộng màn hình */
@@ -20,7 +19,7 @@
             background-image: url("body_bg.png");
             background-size: cover;
             background-repeat: no-repeat;
-            /*overflow: hidden; Ngăn tràn nội dung ra ngoài màn hình */
+            overflow: auto; 
         }
         .main-card {
             /* background: #1a0a3c; */
