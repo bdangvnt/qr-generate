@@ -53,10 +53,10 @@
             position: relative;
             width: 100%;
             height: 100%;
-            background: url('1_back.png') no-repeat center center;
+            /* background: url('1_back.png') no-repeat center center; */
             background-size: cover;
             border-radius: 16px;
-            border: 2px solid #ffe082;
+            /* border: 2px solid #ffe082; */
             margin-bottom: 18px;
             box-shadow: 0 2px 16px rgba(0,0,0,0.18);
         }
@@ -64,8 +64,8 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 79%;              /* 50% chiều rộng của .invite-frame */
-            aspect-ratio: 1 / 1;     /* luôn là hình tròn */
+            width: 79%;
+            aspect-ratio: 1 / 1;
             transform: translate(-50%, -50%);
             background: rgba(255,255,255,0.12);
             border: 3px solid #ffe082;
@@ -81,6 +81,16 @@
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
+        }
+        .frame-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3; /* nằm trên avatar-box */
+            pointer-events: none;
+            border-radius: 16px;
+            border: 2px solid #ffe082;
         }
         .invite-names {
             position: absolute;
@@ -101,6 +111,7 @@
             color: #18302b;
             pointer-events: none;
             overflow: hidden;
+            z-index: 4;
         }
         .invite-footer {
             position: absolute;
@@ -344,6 +355,7 @@
         <div class="invite-frame-wrapper">
             <div class="invite-frame">
                 <div class="avatar-box" id="avatarPreview"></div>
+                <img src="1_back.png" class="frame-overlay" alt="Khung overlay">
                 <div class="invite-names" id="inviteNames">Tên của bạn<br>Chức vụ</div>
             </div>
             <img id="addressImg" class="address-img" style="display:none; scale: 0.92;" alt="Địa chỉ">
