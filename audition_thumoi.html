@@ -96,7 +96,7 @@
         .invite-names {
             position: absolute;
             top: 16.4%;      /* ~105px / 640 */
-            right: 0.9%;     /* ~20px / 640 */
+            right: -0.9%;     /* ~20px / 640 */
             width: 50%;      /* ~320px / 640 */
             height: 11%;     /* ~70px / 640 */
             display: flex;
@@ -113,6 +113,22 @@
             pointer-events: none;
             overflow: hidden;
             z-index: 4;
+        }
+        .invite-names .invite-fullname {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'Montserrat', Helvetica, sans-serif;
+            letter-spacing: 0.5px;
+            color: #18302b;
+            display: block;
+        }
+        .invite-names .invite-title {
+            font-size: 18px;
+            font-weight: 700;
+            font-family: 'Montserrat', Helvetica, sans-serif;
+            letter-spacing: 0.5px;
+            color: #18302b;
+            display: block;
         }
         .invite-footer {
             position: absolute;
@@ -154,9 +170,27 @@
             font-size: 1.25rem; /* giảm font-size một chút */
             letter-spacing: 0.5px; /* giảm khoảng cách chữ */
             text-align: left;
-            font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+            font-family: 'Montserrat', Helvetica, sans-serif;
             text-transform: uppercase;
             white-space: nowrap; /* không cho xuống dòng */
+        }
+        #fullname {
+            font-family: 'Montserrat', Helvetica, sans-serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #18302b;
+            padding-left: 35px;
+        }
+        #title {
+            font-family: 'Montserrat', Helvetica, sans-serif;
+            font-weight: 900;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #18302b;
+            padding-left: 35px;
         }
         .form-field {
             flex: 1;
@@ -266,6 +300,12 @@
             .form-label {
                 display: none;
             }
+            .invite-names .invite-fullname {
+                font-size: 18px;
+            }
+            .invite-names .invite-title {
+                font-size: 15px;
+            }
         }
         @media (max-width: 700px) {
             .main-card {
@@ -338,12 +378,23 @@
             .invite-names {
                 font-size: 17px;
             }
+            .invite-names .invite-fullname {
+                font-size: 15px;
+            }
+            .invite-names .invite-title {
+                font-size: 12px;
+            }
         }
         @media (max-width: 380px) {
             .invite-names {
                 font-size: 14px;
             }
-            
+            .invite-names .invite-fullname {
+                font-size: 13px;
+            }
+            .invite-names .invite-title {
+                font-size: 10px;
+            }
             .input-img-wrap {
                 height: 40px;
                 border-radius: 20px;
@@ -360,8 +411,10 @@
                     <div class="avatar-box" id="avatarPreview"></div>
                     <img src="1_back.png" class="frame-overlay"
                         alt="Khung overlay">
-                    <div class="invite-names" id="inviteNames">Tên của
-                        bạn<br>Danh hiệu</div>
+                    <div class="invite-names" id="inviteNames">
+                        <span class="invite-fullname">Tên của bạn</span><br>
+                        <span class="invite-title">Danh hiệu</span>
+                    </div>
                 </div>
                 <img id="addressImg" class="address-img"
                     style="display:none; scale: 0.92;" alt="Địa chỉ">
@@ -374,9 +427,9 @@
                         <div class="form-field">
                             <div class="input-img-wrap">
                                 <input type="text" id="fullname" name="fullname"
-                                    placeholder
+                                    placeholder="Nhập họ tên"
                                     oninput="handleInputImg(this, 'ho_ten')">
-                                <img id="ho_ten_img" src="text_nhap_ho_ten.png"
+                                <img id="ho_ten_img" src="text_nhap_bg.png"
                                     class="input-bg-img">
                             </div>
                         </div>
@@ -387,10 +440,10 @@
                         <div class="form-field">
                             <div class="input-img-wrap">
                                 <input type="text" id="title" name="title"
-                                    placeholder
+                                    placeholder="Nhập danh hiệu"
                                     oninput="handleInputImg(this, 'danh_hieu')">
                                 <img id="danh_hieu_img"
-                                    src="text_nhap_danh_hieu.png"
+                                    src="text_nhap_bg.png"
                                     class="input-bg-img">
                             </div>
                         </div>
@@ -495,8 +548,8 @@
             form.reset();
             avatarPreview.innerHTML = '';
             inviteNames.innerHTML = 'Tên của bạn<br>Danh hiệu';
-            document.getElementById('danh_hieu_img').src = 'text_nhap_danh_hieu.png';
-            document.getElementById('ho_ten_img').src = 'text_nhap_ho_ten.png';
+            document.getElementById('danh_hieu_img').src = 'text_nhap_bg.png';
+            document.getElementById('ho_ten_img').src = 'text_nhap_bg.png';
             selectLocation('hn');
         }
 
@@ -507,14 +560,15 @@
         function updateNames() {
             const name = fullnameInput.value || 'Tên của bạn';
             const title = titleInput.value || 'Danh hiệu';
-            inviteNames.innerHTML = name + '<br>' + title;
+            inviteNames.innerHTML =
+                `<span class="invite-fullname">${name}</span><br><span class="invite-title">${title}</span>`;
         }
 
         // Xử lý input ảnh nền cho input text
         function handleInputImg(input, type) {
             const img = document.getElementById(type === 'danh_hieu' ? 'danh_hieu_img' : 'ho_ten_img');
             if (input.value.trim() === '') {
-                img.src = type === 'danh_hieu' ? 'text_nhap_danh_hieu.png' : 'text_nhap_ho_ten.png';
+                img.src = type === 'danh_hieu' ? 'text_nhap_bg.png' : 'text_nhap_bg.png';
             } else {
                 img.src = 'text_nhap_bg.png';
             }
