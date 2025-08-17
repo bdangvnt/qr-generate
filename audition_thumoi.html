@@ -427,9 +427,30 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const img = document.createElement('img');
+                    const img = new window.Image();
+                    img.onload = function() {
+                        // Crop thành hình vuông
+                        const size = Math.min(img.width, img.height);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = canvas.height = size;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(
+                            img,
+                            (img.width - size) / 2,
+                            (img.height - size) / 2,
+                            size,
+                            size,
+                            0,
+                            0,
+                            size,
+                            size
+                        );
+                        const croppedUrl = canvas.toDataURL('image/png');
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = croppedUrl;
+                        avatarPreview.appendChild(avatarImg);
+                    };
                     img.src = e.target.result;
-                    avatarPreview.appendChild(img);
                 };
                 reader.readAsDataURL(file);
             }
