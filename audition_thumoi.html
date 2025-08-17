@@ -5,7 +5,7 @@
         <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
         <meta name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>AU - Thư Mời</title>
+        <title>Audition - Thư Mời</title>
         <link
             href="https://fonts.googleapis.com/css?family=Montserrat:900,700,400&display=swap"
             rel="stylesheet">
@@ -105,10 +105,7 @@
             align-items: center;
             padding: 0 4%;
             text-align: center;
-            line-height: 1.15;
             font-family: 'Montserrat', Helvetica, sans-serif;
-            font-weight: 700;
-            font-size: 1.25rem;
             color: #18302b;
             pointer-events: none;
             overflow: hidden;
@@ -410,7 +407,7 @@
                     <img src="1_back.png" class="frame-overlay"
                         alt="Khung overlay">
                     <div class="invite-names" id="inviteNames">
-                        <span class="invite-fullname">Tên của bạn</span><br>
+                        <span class="invite-fullname">Tên của bạn</span>
                         <span class="invite-title">Danh hiệu</span>
                     </div>
                 </div>
@@ -559,7 +556,7 @@
             const name = fullnameInput.value || 'Tên của bạn';
             const title = titleInput.value || 'Danh hiệu';
             inviteNames.innerHTML =
-                `<span class="invite-fullname">${name}</span><br><span class="invite-title">${title}</span>`;
+                `<span class="invite-fullname">${name}</span><span class="invite-title">${title}</span>`;
         }
 
         // Xử lý input ảnh nền cho input text
