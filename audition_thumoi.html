@@ -318,7 +318,7 @@
         <div class="invite-frame-wrapper">
             <div class="invite-frame">
                 <div class="avatar-box" id="avatarPreview"></div>
-                <div class="invite-names" id="inviteNames">Tên của bạn<br>Chức vụ</div>
+                <div class="invite-names" id="inviteNames">Tên của bạn<br>Danh hiệu</div>
             </div>
             <img id="addressImg" class="address-img" style="display:none;" alt="Địa chỉ">
         </div>
@@ -369,7 +369,7 @@
                 <!-- Nút -->
                 <div class="actions">
                     <button type="button" class="btn btn-cancel" onclick="resetForm()">Hủy</button>
-                    <button type="submit" class="btn btn-submit">Tạo Avatar</button>
+                    <button type="submit" class="btn btn-submit">Tạo thư mời</button>
                 </div>
             </div>
         </form>
@@ -407,20 +407,20 @@
         function resetForm() {
             form.reset();
             avatarPreview.innerHTML = '';
-            inviteNames.innerHTML = 'Tên của bạn<br>Chức vụ';
+            inviteNames.innerHTML = 'Tên của bạn<br>Danh hiệu';
             document.getElementById('danh_hieu_img').src = 'text_nhap_danh_hieu.png';
             document.getElementById('ho_ten_img').src = 'text_nhap_ho_ten.png';
             selectLocation('hn');
         }
 
-        // Cập nhật tên và chức vụ
+        // Cập nhật tên và danh hiệu
         fullnameInput.addEventListener('input', updateNames);
         titleInput.addEventListener('input', updateNames);
 
         function updateNames() {
             const name = fullnameInput.value || 'Tên của bạn';
-            const title = titleInput.value || 'Chức vụ';
-            inviteNames.innerHTML = name + '<br>' + title;
+            const title = titleInput.value || 'Danh hiệu';
+            inviteNames.innerHTML = title + '<br>' + name;
         }
 
         // Xử lý input ảnh nền cho input text
