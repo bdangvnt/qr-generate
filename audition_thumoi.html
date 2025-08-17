@@ -368,6 +368,19 @@
             </div>
             <form id="avatarForm" class="form-section" autocomplete="off">
                 <div class="form-table">
+                    <!-- Họ tên -->
+                    <div class="form-row">
+                        <div class="form-label">HỌ TÊN CỦA BẠN</div>
+                        <div class="form-field">
+                            <div class="input-img-wrap">
+                                <input type="text" id="fullname" name="fullname"
+                                    placeholder
+                                    oninput="handleInputImg(this, 'ho_ten')">
+                                <img id="ho_ten_img" src="text_nhap_ho_ten.png"
+                                    class="input-bg-img">
+                            </div>
+                        </div>
+                    </div>
                     <!-- Danh hiệu -->
                     <div class="form-row">
                         <div class="form-label">DANH HIỆU</div>
@@ -378,19 +391,6 @@
                                     oninput="handleInputImg(this, 'danh_hieu')">
                                 <img id="danh_hieu_img"
                                     src="text_nhap_danh_hieu.png"
-                                    class="input-bg-img">
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Họ tên -->
-                    <div class="form-row">
-                        <div class="form-label">HỌ TÊN CỦA BẠN</div>
-                        <div class="form-field">
-                            <div class="input-img-wrap">
-                                <input type="text" id="fullname" name="fullname"
-                                    placeholder
-                                    oninput="handleInputImg(this, 'ho_ten')">
-                                <img id="ho_ten_img" src="text_nhap_ho_ten.png"
                                     class="input-bg-img">
                             </div>
                         </div>
