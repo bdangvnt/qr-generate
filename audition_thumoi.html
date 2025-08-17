@@ -334,6 +334,10 @@
                 width: 100%;
                 font-size: 1rem;
             }
+
+            .invite-names {
+                font-size: 18px;
+            }
         }
         @media (max-width: 380px) {
             .invite-names {
@@ -357,7 +361,7 @@
                     <img src="1_back.png" class="frame-overlay"
                         alt="Khung overlay">
                     <div class="invite-names" id="inviteNames">Tên của
-                        bạn<br>Chức vụ</div>
+                        bạn<br>Danh hiệu</div>
                 </div>
                 <img id="addressImg" class="address-img"
                     style="display:none; scale: 0.92;" alt="Địa chỉ">
@@ -490,19 +494,19 @@
         function resetForm() {
             form.reset();
             avatarPreview.innerHTML = '';
-            inviteNames.innerHTML = 'Tên của bạn<br>Chức vụ';
+            inviteNames.innerHTML = 'Tên của bạn<br>Danh hiệu';
             document.getElementById('danh_hieu_img').src = 'text_nhap_danh_hieu.png';
             document.getElementById('ho_ten_img').src = 'text_nhap_ho_ten.png';
             selectLocation('hn');
         }
 
-        // Cập nhật tên và chức vụ
+        // Cập nhật tên và danh hiệu
         fullnameInput.addEventListener('input', updateNames);
         titleInput.addEventListener('input', updateNames);
 
         function updateNames() {
             const name = fullnameInput.value || 'Tên của bạn';
-            const title = titleInput.value || 'Chức vụ';
+            const title = titleInput.value || 'Danh hiệu';
             inviteNames.innerHTML = name + '<br>' + title;
         }
 
