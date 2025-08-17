@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AU - Thư Mời</title>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:900,700,400&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>AU - Thư Mời</title>
+        <link
+            href="https://fonts.googleapis.com/css?family=Montserrat:900,700,400&display=swap"
+            rel="stylesheet">
+        <script
+            src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+        <style>
         body {
             font-family: Arial, sans-serif;
             min-height: 100vh;
@@ -47,10 +51,11 @@
             position: relative;
             width: 640px;
             height: 640px;
-            max-width: 100%;
-            aspect-ratio: 1 / 1;   /* Giữ vuông, không cần height cố định */
+            max-width: 100vw;
+            max-height: 100vw;
             border-radius: 16px;
             border: 3px solid #ffe082;
+            overflow: hidden;
         }
         .invite-frame {
             position: absolute;
@@ -60,6 +65,7 @@
             height: 100%;
             overflow: hidden;
             border-radius: 16px;
+            overflow: hidden;
         }
         .avatar-box {
             position: absolute;
@@ -319,9 +325,6 @@
                 max-width: 110px;
                 height: 40px;
             }
-            .address-img {
-                /* bottom: 8px; */
-            }
             .actions {
                 flex-direction: column;
                 gap: 10px;
@@ -343,71 +346,97 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="main-card">
-        <img src="title.png" alt="Tạo Avatar Online" class="invite-title-img">
-        <div class="invite-frame-wrapper">
-            <div class="invite-frame">
-                <div class="avatar-box" id="avatarPreview"></div>
-                <img src="1_back.png" class="frame-overlay" alt="Khung overlay">
-                <div class="invite-names" id="inviteNames">Tên của bạn<br>Chức vụ</div>
+    </head>
+    <body>
+        <div class="main-card">
+            <img src="title.png" alt="Tạo Avatar Online"
+                class="invite-title-img">
+            <div class="invite-frame-wrapper">
+                <div class="invite-frame">
+                    <div class="avatar-box" id="avatarPreview"></div>
+                    <img src="1_back.png" class="frame-overlay"
+                        alt="Khung overlay">
+                    <div class="invite-names" id="inviteNames">Tên của
+                        bạn<br>Chức vụ</div>
+                </div>
+                <img id="addressImg" class="address-img"
+                    style="display:none; scale: 0.92;" alt="Địa chỉ">
             </div>
-            <img id="addressImg" class="address-img" style="display:none; scale: 0.92;" alt="Địa chỉ">
+            <form id="avatarForm" class="form-section" autocomplete="off">
+                <div class="form-table">
+                    <!-- Danh hiệu -->
+                    <div class="form-row">
+                        <div class="form-label">DANH HIỆU</div>
+                        <div class="form-field">
+                            <div class="input-img-wrap">
+                                <input type="text" id="title" name="title"
+                                    placeholder
+                                    oninput="handleInputImg(this, 'danh_hieu')">
+                                <img id="danh_hieu_img"
+                                    src="text_nhap_danh_hieu.png"
+                                    class="input-bg-img">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Họ tên -->
+                    <div class="form-row">
+                        <div class="form-label">HỌ TÊN CỦA BẠN</div>
+                        <div class="form-field">
+                            <div class="input-img-wrap">
+                                <input type="text" id="fullname" name="fullname"
+                                    placeholder
+                                    oninput="handleInputImg(this, 'ho_ten')">
+                                <img id="ho_ten_img" src="text_nhap_ho_ten.png"
+                                    class="input-bg-img">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Nơi tham gia -->
+                    <div class="form-row">
+                        <div class="form-label">NƠI BẠN THAM GIA</div>
+                        <div class="form-field">
+                            <div class="location-btns">
+                                <img src="btn_hn.png" id="btn_hn"
+                                    class="location-btn"
+                                    onclick="selectLocation('hn')" alt="Hà Nội">
+                                <img src="btn_dn.png" id="btn_dn"
+                                    class="location-btn"
+                                    onclick="selectLocation('dn')"
+                                    alt="Đà Nẵng">
+                                <img src="btn_hcm.png" id="btn_hcm"
+                                    class="location-btn"
+                                    onclick="selectLocation('hcm')"
+                                    alt="Hồ Chí Minh">
+                                <input type="hidden" id="location"
+                                    name="location">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ảnh đại diện -->
+                    <div class="form-row">
+                        <div class="form-label">ẢNH ĐẠI DIỆN</div>
+                        <div class="form-field">
+                            <div class="input-img-wrap"
+                                onclick="document.getElementById('avatar').click()">
+                                <img src="text_chon_anh.png"
+                                    alt="Chọn ảnh đại diện" class="input-bg-img"
+                                    id="chonAnhImg">
+                            </div>
+                            <input type="file" id="avatar" name="avatar"
+                                accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+                    <!-- Nút -->
+                    <div class="actions">
+                        <button type="button" class="btn btn-cancel"
+                            onclick="resetForm()">Hủy</button>
+                        <button type="submit" class="btn btn-submit">Tạo
+                            Avatar</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <form id="avatarForm" class="form-section" autocomplete="off">
-            <div class="form-table">
-                <!-- Danh hiệu -->
-                <div class="form-row">
-                    <div class="form-label">DANH HIỆU</div>
-                    <div class="form-field">
-                        <div class="input-img-wrap">
-                            <input type="text" id="title" name="title" placeholder="" oninput="handleInputImg(this, 'danh_hieu')">
-                            <img id="danh_hieu_img" src="text_nhap_danh_hieu.png" class="input-bg-img">
-                        </div>
-                    </div>
-                </div>
-                <!-- Họ tên -->
-                <div class="form-row">
-                    <div class="form-label">HỌ TÊN CỦA BẠN</div>
-                    <div class="form-field">
-                        <div class="input-img-wrap">
-                            <input type="text" id="fullname" name="fullname" placeholder="" oninput="handleInputImg(this, 'ho_ten')">
-                            <img id="ho_ten_img" src="text_nhap_ho_ten.png" class="input-bg-img">
-                        </div>
-                    </div>
-                </div>
-                <!-- Nơi tham gia -->
-                <div class="form-row">
-                    <div class="form-label">NƠI BẠN THAM GIA</div>
-                    <div class="form-field">
-                        <div class="location-btns">
-                            <img src="btn_hn.png" id="btn_hn" class="location-btn" onclick="selectLocation('hn')" alt="Hà Nội">
-                            <img src="btn_dn.png" id="btn_dn" class="location-btn" onclick="selectLocation('dn')" alt="Đà Nẵng">
-                            <img src="btn_hcm.png" id="btn_hcm" class="location-btn" onclick="selectLocation('hcm')" alt="Hồ Chí Minh">
-                            <input type="hidden" id="location" name="location">
-                        </div>
-                    </div>
-                </div>
-                <!-- Ảnh đại diện -->
-                <div class="form-row">
-                    <div class="form-label">ẢNH ĐẠI DIỆN</div>
-                    <div class="form-field">
-                        <div class="input-img-wrap" onclick="document.getElementById('avatar').click()">
-                            <img src="text_chon_anh.png" alt="Chọn ảnh đại diện" class="input-bg-img" id="chonAnhImg">
-                        </div>
-                        <input type="file" id="avatar" name="avatar" accept="image/*" style="display: none;">
-                    </div>
-                </div>
-                <!-- Nút -->
-                <div class="actions">
-                    <button type="button" class="btn btn-cancel" onclick="resetForm()">Hủy</button>
-                    <button type="submit" class="btn btn-submit">Tạo Avatar</button>
-                </div>
-            </div>
-        </form>
-    </div>
-    <script>
+        <script>
         // Khai báo biến
         const avatarInput = document.getElementById('avatar');
         const avatarPreview = document.getElementById('avatarPreview');
@@ -520,5 +549,5 @@
             });
         });
     </script>
-</body>
+    </body>
 </html>
