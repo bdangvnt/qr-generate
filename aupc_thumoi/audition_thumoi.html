@@ -43,6 +43,7 @@
             width: 100%;
             max-width: 640px;
             height: auto;
+            margin-top: 16px;
             margin-bottom: 8px;
             border-radius: 12px;
             box-sizing: border-box;
@@ -399,13 +400,16 @@
     </head>
     <body>
         <div class="main-card">
-            <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/title.png" alt="Tạo Thư mời Online"
-                class="invite-title-img">
+            <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/title1.png"
+                alt="Tạo Thư mời Online"
+                class="invite-title-img" crossorigin="anonymous">
             <div class="invite-frame-wrapper">
                 <div class="invite-frame">
                     <div class="avatar-box" id="avatarPreview"></div>
-                    <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/1_back.png" class="frame-overlay"
-                        alt="Khung overlay">
+                    <img
+                        src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/1_back.png"
+                        class="frame-overlay"
+                        alt="Khung overlay" crossorigin="anonymous">
                     <div class="invite-names" id="inviteNames">
                         <span class="invite-fullname">Tên của bạn</span>
                         <span class="invite-title">Danh hiệu</span>
@@ -424,8 +428,10 @@
                                 <input type="text" id="fullname" name="fullname"
                                     placeholder="Nhập họ tên"
                                     oninput="handleInputImg(this, 'ho_ten')">
-                                <img id="ho_ten_img" src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/text_nhap_bg.png"
-                                    class="input-bg-img">
+                                <img id="ho_ten_img"
+                                    src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/text_nhap_bg.png"
+                                    class="input-bg-img"
+                                    crossorigin="anonymous">
                             </div>
                         </div>
                     </div>
@@ -439,7 +445,8 @@
                                     oninput="handleInputImg(this, 'danh_hieu')">
                                 <img id="danh_hieu_img"
                                     src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/text_nhap_bg.png"
-                                    class="input-bg-img">
+                                    class="input-bg-img"
+                                    crossorigin="anonymous">
                             </div>
                         </div>
                     </div>
@@ -448,17 +455,24 @@
                         <div class="form-label">NƠI BẠN THAM GIA</div>
                         <div class="form-field">
                             <div class="location-btns">
-                                <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/btn_hn.png" id="btn_hn"
+                                <img
+                                    src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/btn_hn.png"
+                                    id="btn_hn"
                                     class="location-btn"
-                                    onclick="selectLocation('hn')" alt="Hà Nội">
-                                <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/btn_dn.png" id="btn_dn"
+                                    onclick="selectLocation('hn')" alt="Hà Nội"
+                                    crossorigin="anonymous">
+                                <img
+                                    src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/btn_dn.png"
+                                    id="btn_dn"
                                     class="location-btn"
                                     onclick="selectLocation('dn')"
-                                    alt="Đà Nẵng">
-                                <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/btn_hcm.png" id="btn_hcm"
+                                    alt="Đà Nẵng" crossorigin="anonymous">
+                                <img
+                                    src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/btn_hcm.png"
+                                    id="btn_hcm"
                                     class="location-btn"
                                     onclick="selectLocation('hcm')"
-                                    alt="Hồ Chí Minh">
+                                    alt="Hồ Chí Minh" crossorigin="anonymous">
                                 <input type="hidden" id="location"
                                     name="location">
                             </div>
@@ -470,20 +484,22 @@
                         <div class="form-field">
                             <div class="input-img-wrap"
                                 onclick="document.getElementById('avatar').click()">
-                                <img src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/text_chon_anh.png"
+                                <img
+                                    src="https://cdnvtcplus2.vtcgame.vn/aupc/thiep_moi/text_chon_anh.png"
                                     alt="Chọn ảnh đại diện" class="input-bg-img"
-                                    id="chonAnhImg">
+                                    id="chonAnhImg" crossorigin="anonymous">
                             </div>
                             <input type="file" id="avatar" name="avatar"
-                                accept="image/*" style="display: none;">
+                                accept="image/png, image/jpeg, image/jpg, image/bmp"
+                                style="display: none;">
                         </div>
                     </div>
                     <!-- Nút -->
                     <div class="actions">
                         <button type="button" class="btn btn-cancel"
                             onclick="resetForm()">Hủy</button>
-                        <button type="submit" class="btn btn-submit">Tạo
-                            Thư Mời</button>
+                        <button type="submit" class="btn btn-submit">Tải
+                            về</button>
                     </div>
                 </div>
             </form>
@@ -507,6 +523,12 @@
             avatarPreview.innerHTML = '';
             const file = this.files[0];
             if (file) {
+                const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Chỉ chấp nhận ảnh định dạng PNG, JPG, JPEG, BMP.');
+                    avatarInput.value = '';
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = new window.Image();

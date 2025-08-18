@@ -43,6 +43,7 @@
             width: 100%;
             max-width: 640px;
             height: auto;
+            margin-top: 16px;
             margin-bottom: 8px;
             border-radius: 12px;
             box-sizing: border-box;
@@ -399,7 +400,7 @@
     </head>
     <body>
         <div class="main-card">
-            <img src="title.png" alt="Tạo Thư mời Online"
+            <img src="title1.png" alt="Tạo Thư mời Online"
                 class="invite-title-img">
             <div class="invite-frame-wrapper">
                 <div class="invite-frame">
@@ -475,15 +476,16 @@
                                     id="chonAnhImg">
                             </div>
                             <input type="file" id="avatar" name="avatar"
-                                accept="image/*" style="display: none;">
+                                accept="image/png, image/jpeg, image/jpg, image/bmp"
+                                style="display: none;">
                         </div>
                     </div>
                     <!-- Nút -->
                     <div class="actions">
                         <button type="button" class="btn btn-cancel"
                             onclick="resetForm()">Hủy</button>
-                        <button type="submit" class="btn btn-submit">Tạo
-                            Thư Mời</button>
+                        <button type="submit" class="btn btn-submit">Tải
+                            về</button>
                     </div>
                 </div>
             </form>
@@ -507,6 +509,12 @@
             avatarPreview.innerHTML = '';
             const file = this.files[0];
             if (file) {
+                const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/bmp'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Chỉ chấp nhận ảnh định dạng PNG, JPG, JPEG, BMP.');
+                    avatarInput.value = '';
+                    return;
+                }
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = new window.Image();
