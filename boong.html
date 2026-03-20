@@ -308,17 +308,29 @@
         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
     </div>
 
-    <!-- Audio Elements -->
-    <audio id="audio-chuong" src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Singing_bowl_1.ogg" preload="auto"></audio>
-    <audio id="audio-mo" src="https://upload.wikimedia.org/wikipedia/commons/5/59/Woodblock.ogg" preload="auto"></audio>
-
     <script>
+        let audioCtx;
+        let masterGain;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioCtx.createGain();
+                masterGain.connect(audioCtx.destination);
+                
+                const slider = document.getElementById('volume-slider');
+                masterGain.gain.value = slider.value;
+                slider.addEventListener('input', (e) => {
+                    masterGain.gain.value = e.target.value;
+                });
+            }
+        }
+
         function createFloatingText(e, text) {
             const el = document.createElement('div');
             el.className = 'floating-text';
             el.innerText = text;
             
-            // Lấy vị trí click hoặc vị trí của phần tử
             const rect = e.currentTarget.getBoundingClientRect();
             const x = rect.left + rect.width / 2;
             const y = rect.top;
@@ -327,52 +339,137 @@
             el.style.top = `${y}px`;
             
             document.body.appendChild(el);
-            
-            setTimeout(() => {
-                el.remove();
-            }, 2000);
+            setTimeout(() => el.remove(), 2000);
         }
 
         function triggerRipple(btnId) {
             const btn = document.getElementById(btnId);
             btn.classList.remove('playing');
-            void btn.offsetWidth; // trigger reflow
+            void btn.offsetWidth;
             btn.classList.add('playing');
         }
 
-        // Cập nhật âm lượng cho các thẻ audio
-        const volumeSlider = document.getElementById('volume-slider');
-        const audioChuong = document.getElementById('audio-chuong');
-        const audioMo = document.getElementById('audio-mo');
-
-        volumeSlider.addEventListener('input', (e) => {
-            const vol = e.target.value;
-            audioChuong.volume = vol;
-            audioMo.volume = vol;
-        });
-
-        // Đặt âm lượng mặc định
-        audioChuong.volume = volumeSlider.value;
-        audioMo.volume = volumeSlider.value;
-
-        function playChuong(e) {
+        async function playChuong(e) {
+            initAudio();
+            if(audioCtx.state === 'suspended') await audioCtx.resume();
             triggerRipple('btn-chuong');
             createFloatingText(e, 'Boong...');
+
+            const t = audioCtx.currentTime;
             
-            // Tạo một bản sao (clone) của audio để có thể gõ liên tục không bị ngắt quãng
-            const sound = audioChuong.cloneNode();
-            sound.volume = audioChuong.volume;
-            sound.play();
+            // Physical Modeling of a Temple Bell
+            // Frequencies based on modal analysis of a singing bowl / temple bell
+            // Using slightly detuned pairs to create the characteristic "beating" (vibrato) effect
+
+            const modes = [
+                { f: 220, A: 1.0, decay: 15.0 },
+                { f: 222, A: 0.9, decay: 15.0 }, // Beating pair for fundamental
+                { f: 600, A: 0.6, decay: 8.0 },
+                { f: 603, A: 0.5, decay: 8.0 },  // Beating pair
+                { f: 1050, A: 0.3, decay: 4.0 },
+                { f: 1500, A: 0.15, decay: 2.0 },
+                { f: 2100, A: 0.08, decay: 1.0 },
+                { f: 3300, A: 0.02, decay: 0.5 }
+            ];
+
+            modes.forEach((mode) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(mode.f, t);
+                
+                gain.gain.setValueAtTime(0, t);
+                // Sharper attack for higher frequencies
+                const attackTime = mode.f > 1000 ? 0.005 : 0.02;
+                gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
+                
+                osc.connect(gain).connect(masterGain);
+                osc.start(t);
+                osc.stop(t + mode.decay);
+            });
+
+            // Strike noise (the mallet hitting metal)
+            const noiseLength = audioCtx.sampleRate * 0.05; // 50ms of noise
+            const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < noiseLength; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noiseSrc = audioCtx.createBufferSource();
+            noiseSrc.buffer = buffer;
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.value = 800;
+            noiseFilter.Q.value = 1.0;
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(0.5, t);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+            
+            noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+            noiseSrc.start(t);
         }
 
-        function playMo(e) {
+        async function playMo(e) {
+            initAudio();
+            if(audioCtx.state === 'suspended') await audioCtx.resume();
             triggerRipple('btn-mo');
             createFloatingText(e, 'Cốc...');
+
+            const t = audioCtx.currentTime;
+
+            // Physical Modeling of a Wood Block (Mõ)
+            // Wood block consists of a sharp hit and a resonant hollow body.
+
+            // 1. Resonant Body (Main tone, sweeps down quickly)
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, t);
+            osc.frequency.exponentialRampToValueAtTime(500, t + 0.05);
             
-            // Tạo bản sao audio để gõ liên tục
-            const sound = audioMo.cloneNode();
-            sound.volume = audioMo.volume;
-            sound.play();
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(1.2, t + 0.005);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            
+            osc.connect(gain).connect(masterGain);
+            osc.start(t);
+            osc.stop(t + 0.15);
+
+            // 2. High Frequency "Tap"
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'triangle';
+            osc2.frequency.setValueAtTime(1500, t);
+            osc2.frequency.exponentialRampToValueAtTime(800, t + 0.03);
+            
+            gain2.gain.setValueAtTime(0, t);
+            gain2.gain.linearRampToValueAtTime(0.8, t + 0.002);
+            gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+
+            osc2.connect(gain2).connect(masterGain);
+            osc2.start(t);
+            osc2.stop(t + 0.08);
+
+            // 3. Wood Attack Noise
+            const noiseLength = audioCtx.sampleRate * 0.02; // 20ms
+            const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < noiseLength; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            const noiseSrc = audioCtx.createBufferSource();
+            noiseSrc.buffer = buffer;
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'highpass';
+            noiseFilter.frequency.value = 2000;
+            const noiseGain = audioCtx.createGain();
+            noiseGain.gain.setValueAtTime(1.0, t);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
+            
+            noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+            noiseSrc.start(t);
         }
     </script>
 </body>
