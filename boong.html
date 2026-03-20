@@ -197,12 +197,14 @@
         }
 
         input[type=range] {
+            appearance: none;
             -webkit-appearance: none;
             width: 150px;
             background: transparent;
         }
 
         input[type=range]::-webkit-slider-thumb {
+            appearance: none;
             -webkit-appearance: none;
             height: 16px;
             width: 16px;
@@ -306,24 +308,11 @@
         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
     </div>
 
+    <!-- Audio Elements -->
+    <audio id="audio-chuong" src="https://upload.wikimedia.org/wikipedia/commons/3/3d/Singing_bowl_1.ogg" preload="auto"></audio>
+    <audio id="audio-mo" src="https://upload.wikimedia.org/wikipedia/commons/5/59/Woodblock.ogg" preload="auto"></audio>
+
     <script>
-        let audioCtx;
-        let masterGain;
-
-        function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                masterGain = audioCtx.createGain();
-                masterGain.connect(audioCtx.destination);
-                
-                const slider = document.getElementById('volume-slider');
-                masterGain.gain.value = slider.value;
-                slider.addEventListener('input', (e) => {
-                    masterGain.gain.value = e.target.value;
-                });
-            }
-        }
-
         function createFloatingText(e, text) {
             const el = document.createElement('div');
             el.className = 'floating-text';
@@ -351,98 +340,39 @@
             btn.classList.add('playing');
         }
 
-        async function playChuong(e) {
-            initAudio();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
-            
+        // Cập nhật âm lượng cho các thẻ audio
+        const volumeSlider = document.getElementById('volume-slider');
+        const audioChuong = document.getElementById('audio-chuong');
+        const audioMo = document.getElementById('audio-mo');
+
+        volumeSlider.addEventListener('input', (e) => {
+            const vol = e.target.value;
+            audioChuong.volume = vol;
+            audioMo.volume = vol;
+        });
+
+        // Đặt âm lượng mặc định
+        audioChuong.volume = volumeSlider.value;
+        audioMo.volume = volumeSlider.value;
+
+        function playChuong(e) {
             triggerRipple('btn-chuong');
             createFloatingText(e, 'Boong...');
-
-            const t = audioCtx.currentTime;
             
-            // Âm thanh chuông chùa (Temple Bell) - Ngân dài, trầm ấm
-            const freqs = [180, 360, 540, 720, 900, 1200];
-            const gains = [0.8, 0.4, 0.2, 0.1, 0.05, 0.02];
-            const decays = [12.0, 8.0, 5.0, 3.0, 2.0, 1.0];
-
-            freqs.forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                const panNode = audioCtx.createStereoPanner ? audioCtx.createStereoPanner() : null;
-                
-                osc.frequency.value = freq;
-                osc.type = 'sine';
-                
-                if (panNode) {
-                    panNode.pan.value = (Math.random() - 0.5) * 0.2; // Stereo nhè nhẹ
-                    osc.connect(gainNode).connect(panNode).connect(masterGain);
-                } else {
-                    osc.connect(gainNode).connect(masterGain);
-                }
-                
-                gainNode.gain.setValueAtTime(0, t);
-                gainNode.gain.linearRampToValueAtTime(gains[i], t + 0.02);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, t + decays[i]);
-                
-                osc.start(t);
-                osc.stop(t + decays[i]);
-            });
-
-            // Tiếng chày gõ chạm vào chuông (Impact)
-            const attackOsc = audioCtx.createOscillator();
-            const attackGain = audioCtx.createGain();
-            attackOsc.type = 'triangle';
-            attackOsc.frequency.setValueAtTime(300, t);
-            attackOsc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
-            
-            attackGain.gain.setValueAtTime(0, t);
-            attackGain.gain.linearRampToValueAtTime(0.3, t + 0.01);
-            attackGain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
-            
-            attackOsc.connect(attackGain).connect(masterGain);
-            attackOsc.start(t);
-            attackOsc.stop(t + 0.2);
+            // Tạo một bản sao (clone) của audio để có thể gõ liên tục không bị ngắt quãng
+            const sound = audioChuong.cloneNode();
+            sound.volume = audioChuong.volume;
+            sound.play();
         }
 
-        async function playMo(e) {
-            initAudio();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
-            
+        function playMo(e) {
             triggerRipple('btn-mo');
-            createFloatingText(e, 'Cốc');
-
-            const t = audioCtx.currentTime;
+            createFloatingText(e, 'Cốc...');
             
-            // Âm thanh mõ (Wooden Fish) - Ngắn, đanh, rỗng
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            
-            // Tần số giảm nhanh tạo cảm giác tiếng gõ đồ mộc
-            osc.frequency.setValueAtTime(600, t);
-            osc.frequency.exponentialRampToValueAtTime(300, t + 0.08);
-            osc.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0, t);
-            gainNode.gain.linearRampToValueAtTime(1.0, t + 0.005);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-            
-            osc.connect(gainNode).connect(masterGain);
-            osc.start(t);
-            osc.stop(t + 0.15);
-            
-            // Tiếng chạm đanh (Click)
-            const clickOsc = audioCtx.createOscillator();
-            const clickGain = audioCtx.createGain();
-            clickOsc.type = 'square';
-            clickOsc.frequency.setValueAtTime(1500, t);
-            clickOsc.frequency.exponentialRampToValueAtTime(200, t + 0.02);
-            
-            clickGain.gain.setValueAtTime(0.3, t);
-            clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
-            
-            clickOsc.connect(clickGain).connect(masterGain);
-            clickOsc.start(t);
-            clickOsc.stop(t + 0.03);
+            // Tạo bản sao audio để gõ liên tục
+            const sound = audioMo.cloneNode();
+            sound.volume = audioMo.volume;
+            sound.play();
         }
     </script>
 </body>
