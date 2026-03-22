@@ -312,14 +312,20 @@
         let audioCtx;
         let masterGain;
         const MO_SAMPLE_URL = 'assets/mo_click.m4a';
+        const MO_GAIN = 2.0;
         let moSampleBuffer = null;
         let moSampleLoading = null;
+        let moGain;
 
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 masterGain = audioCtx.createGain();
                 masterGain.connect(audioCtx.destination);
+
+                moGain = audioCtx.createGain();
+                moGain.gain.value = MO_GAIN;
+                moGain.connect(masterGain);
                 
                 const slider = document.getElementById('volume-slider');
                 masterGain.gain.value = slider.value;
@@ -347,7 +353,7 @@
             if (!moSampleBuffer) return false;
             const src = audioCtx.createBufferSource();
             src.buffer = moSampleBuffer;
-            src.connect(masterGain);
+            src.connect(moGain);
             src.start(t);
             return true;
         }
