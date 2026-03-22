@@ -311,6 +311,9 @@
     <script>
         let audioCtx;
         let masterGain;
+        const MO_SAMPLE_URL = 'assets/mo_click.m4a';
+        let moSampleBuffer = null;
+        let moSampleLoading = null;
 
         function initAudio() {
             if (!audioCtx) {
@@ -323,7 +326,30 @@
                 slider.addEventListener('input', (e) => {
                     masterGain.gain.value = e.target.value;
                 });
+
+                // Preload short mo sample
+                moSampleLoading = fetch(MO_SAMPLE_URL)
+                    .then((res) => {
+                        if (!res.ok) throw new Error('Cannot load mo sample');
+                        return res.arrayBuffer();
+                    })
+                    .then((arr) => audioCtx.decodeAudioData(arr))
+                    .then((buf) => {
+                        moSampleBuffer = buf;
+                    })
+                    .catch(() => {
+                        moSampleBuffer = null;
+                    });
             }
+        }
+
+        function playMoSample(t) {
+            if (!moSampleBuffer) return false;
+            const src = audioCtx.createBufferSource();
+            src.buffer = moSampleBuffer;
+            src.connect(masterGain);
+            src.start(t);
+            return true;
         }
 
         function createFloatingText(e, text) {
@@ -419,64 +445,10 @@
 
             const t = audioCtx.currentTime;
 
-            // Physical Modeling of a Temple Woodblock (Mõ Gia Trì)
-            // A real wooden fish has a deep hollow "thwack" caused by a tuned cavity and a sharp wooden attack.
-
-            // 1. Fundamental Cavity Resonance (Main tone, slight pitch drop to give the "thud")
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            // Start around 500Hz, drop to 400Hz to make it sound percussive rather than electronic
-            osc.frequency.setValueAtTime(500, t);
-            osc.frequency.exponentialRampToValueAtTime(380, t + 0.04);
-            
-            gain.gain.setValueAtTime(0, t);
-            gain.gain.linearRampToValueAtTime(1.5, t + 0.002); // Sharp attack
-            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12); // Short decay typical of hard wood
-            
-            osc.connect(gain).connect(masterGain);
-            osc.start(t);
-            osc.stop(t + 0.12);
-
-            // 2. Inharmonic Overtone (The brightness of the wood)
-            // In a real Mõ, the first overtone is usually around 2.4 - 2.8x the fundamental.
-            const osc2 = audioCtx.createOscillator();
-            const gain2 = audioCtx.createGain();
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(1200, t);
-            osc2.frequency.exponentialRampToValueAtTime(1000, t + 0.03);
-            
-            gain2.gain.setValueAtTime(0, t);
-            gain2.gain.linearRampToValueAtTime(0.6, t + 0.001);
-            gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.06); // Decays faster than the fundamental
-
-            osc2.connect(gain2).connect(masterGain);
-            osc2.start(t);
-            osc2.stop(t + 0.06);
-
-            // 3. Wood Attack Impact (Click/Noise burst)
-            // The sound of the wooden mallet hitting the hard wood exterior
-            const noiseLength = audioCtx.sampleRate * 0.02; // 20ms of noise burst
-            const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < noiseLength; i++) {
-                data[i] = Math.random() * 2 - 1;
+            if (moSampleLoading) {
+                await moSampleLoading;
             }
-            const noiseSrc = audioCtx.createBufferSource();
-            noiseSrc.buffer = buffer;
-            
-            // Bandpass filter to make the noise sound woody and hollow
-            const noiseFilter = audioCtx.createBiquadFilter();
-            noiseFilter.type = 'bandpass';
-            noiseFilter.frequency.value = 1500;
-            noiseFilter.Q.value = 0.8;
-            
-            const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(2.0, t);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.02);
-            
-            noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
-            noiseSrc.start(t);
+            playMoSample(t);
         }
     </script>
 </body>
