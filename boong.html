@@ -327,7 +327,65 @@
             z-index: 20;
         }
 
+        /* Bell Type Selector */
+        .bell-selector {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .selector-label {
+            font-size: 0.85rem;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .selector-options {
+            display: flex;
+            background-color: rgba(212, 175, 55, 0.15);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 20px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .selector-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background-color: transparent;
+            color: var(--gold-light);
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            font-family: inherit;
+            text-transform: uppercase;
+        }
+
+        .selector-btn.active {
+            background-color: rgba(212, 175, 55, 0.4);
+            color: var(--gold);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .selector-btn:hover:not(.active) {
+            background-color: rgba(212, 175, 55, 0.2);
+        }
+
         @media (max-width: 600px) {
+            .bell-selector {
+                top: 1rem;
+                left: 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
             .toggle-container {
                 top: 1rem;
                 right: 1rem;
@@ -335,6 +393,15 @@
             
             .toggle-label {
                 font-size: 0.75rem;
+            }
+
+            .selector-label {
+                font-size: 0.75rem;
+            }
+
+            .selector-btn {
+                padding: 4px 8px;
+                font-size: 0.7rem;
             }
 
             .container { flex-direction: column; gap: 3rem; }
@@ -346,6 +413,14 @@
 <body>
     <div class="particles"></div>
     <div class="mandala"></div>
+
+    <div class="bell-selector">
+        <span class="selector-label">Chuông</span>
+        <div class="selector-options">
+            <button class="selector-btn active" id="bell-far" data-type="far">Xa</button>
+            <button class="selector-btn" id="bell-near" data-type="near">Gần</button>
+        </div>
+    </div>
 
     <div class="toggle-container">
         <span class="toggle-label">TỰ ĐỘNG</span>
@@ -401,6 +476,7 @@
         // Auto mode variables
         let autoMode = false;
         let autoTimeouts = [];
+        let bellType = 'far'; // 'far' or 'near'
         const AUTO_RHYTHM_CYCLE = 23000; // 23 seconds cycle for deep meditation
         
         // Rhythm pattern (in ms from cycle start)
@@ -544,59 +620,126 @@
             }
         }
 
-        function playChuongSound(t) {
-            // Physical Modeling of a Temple Bell - extracted from playChuong
-            const modes = [
-                { f: 220, A: 1.0, decay: 15.0 },
-                { f: 222, A: 0.9, decay: 15.0 },
-                { f: 600, A: 0.6, decay: 8.0 },
-                { f: 603, A: 0.5, decay: 8.0 },
-                { f: 1050, A: 0.3, decay: 4.0 },
-                { f: 1500, A: 0.15, decay: 2.0 },
-                { f: 2100, A: 0.08, decay: 1.0 },
-                { f: 3300, A: 0.02, decay: 0.5 }
-            ];
+        function playChuongSound(t, type = bellType) {
+            if (type === 'near') {
+                // Close bell - sharp, bright, like mallet striking
+                const modes = [
+                    { f: 450, A: 1.0, decay: 2.5 },   // Higher fundamental
+                    { f: 453, A: 0.9, decay: 2.5 },   // Beating pair
+                    { f: 1200, A: 0.7, decay: 1.8 },  // Strong overtone
+                    { f: 1206, A: 0.6, decay: 1.8 },  // Beating pair
+                    { f: 2100, A: 0.4, decay: 1.2 },  // Bright harmonic
+                    { f: 3300, A: 0.2, decay: 0.7 },  // High frequency
+                    { f: 4500, A: 0.1, decay: 0.4 }   // Brightness
+                ];
 
-            modes.forEach((mode) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(mode.f, t);
-                
-                gain.gain.setValueAtTime(0, t);
-                const attackTime = mode.f > 1000 ? 0.005 : 0.02;
-                gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
-                
-                osc.connect(gain).connect(masterGain);
-                osc.start(t);
-                osc.stop(t + mode.decay);
-            });
+                modes.forEach((mode) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(mode.f, t);
+                    
+                    gain.gain.setValueAtTime(0, t);
+                    const attackTime = 0.008; // Sharp attack
+                    gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
+                    
+                    osc.connect(gain).connect(masterGain);
+                    osc.start(t);
+                    osc.stop(t + mode.decay);
+                });
 
-            // Strike noise
-            const noiseLength = audioCtx.sampleRate * 0.05;
-            const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < noiseLength; i++) {
-                data[i] = Math.random() * 2 - 1;
+                // More pronounced strike noise for sharp impact
+                const noiseLength = audioCtx.sampleRate * 0.08;
+                const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < noiseLength; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noiseSrc = audioCtx.createBufferSource();
+                noiseSrc.buffer = buffer;
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.value = 1200; // Higher noise frequency
+                noiseFilter.Q.value = 1.5;
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.7, t);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+                
+                noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+                noiseSrc.start(t);
+            } else {
+                // Far bell - deep, resonant, traditional (original)
+                const modes = [
+                    { f: 220, A: 1.0, decay: 15.0 },
+                    { f: 222, A: 0.9, decay: 15.0 },
+                    { f: 600, A: 0.6, decay: 8.0 },
+                    { f: 603, A: 0.5, decay: 8.0 },
+                    { f: 1050, A: 0.3, decay: 4.0 },
+                    { f: 1500, A: 0.15, decay: 2.0 },
+                    { f: 2100, A: 0.08, decay: 1.0 },
+                    { f: 3300, A: 0.02, decay: 0.5 }
+                ];
+
+                modes.forEach((mode) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(mode.f, t);
+                    
+                    gain.gain.setValueAtTime(0, t);
+                    const attackTime = mode.f > 1000 ? 0.005 : 0.02;
+                    gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
+                    
+                    osc.connect(gain).connect(masterGain);
+                    osc.start(t);
+                    osc.stop(t + mode.decay);
+                });
+
+                // Strike noise
+                const noiseLength = audioCtx.sampleRate * 0.05;
+                const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < noiseLength; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noiseSrc = audioCtx.createBufferSource();
+                noiseSrc.buffer = buffer;
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.value = 800;
+                noiseFilter.Q.value = 1.0;
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.5, t);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+                
+                noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+                noiseSrc.start(t);
             }
-            const noiseSrc = audioCtx.createBufferSource();
-            noiseSrc.buffer = buffer;
-            const noiseFilter = audioCtx.createBiquadFilter();
-            noiseFilter.type = 'bandpass';
-            noiseFilter.frequency.value = 800;
-            noiseFilter.Q.value = 1.0;
-            const noiseGain = audioCtx.createGain();
-            noiseGain.gain.setValueAtTime(0.5, t);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-            
-            noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
-            noiseSrc.start(t);
         }
 
-        // Setup toggle event listener
+        // Setup event listeners
         document.addEventListener('DOMContentLoaded', () => {
+            // Bell selector
+            const bellFarBtn = document.getElementById('bell-far');
+            const bellNearBtn = document.getElementById('bell-near');
+            
+            bellFarBtn.addEventListener('click', () => {
+                bellType = 'far';
+                bellFarBtn.classList.add('active');
+                bellNearBtn.classList.remove('active');
+            });
+            
+            bellNearBtn.addEventListener('click', () => {
+                bellType = 'near';
+                bellNearBtn.classList.add('active');
+                bellFarBtn.classList.remove('active');
+            });
+            
+            // Auto toggle
             const autoToggle = document.getElementById('auto-toggle');
             autoToggle.addEventListener('click', async () => {
                 autoMode = !autoMode;
