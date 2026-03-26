@@ -262,7 +262,81 @@
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
+        /* Toggle Switch */
+        .toggle-container {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle-label {
+            font-size: 0.85rem;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background-color: rgba(212, 175, 55, 0.2);
+            border-radius: 14px;
+            cursor: pointer;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background-color: rgba(212, 175, 55, 0.5);
+            border-color: var(--gold);
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        .toggle-switch.active::before {
+            left: 24px;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+        }
+
+        .auto-mode-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.7rem;
+            color: var(--bg-edge);
+            font-weight: bold;
+            letter-spacing: 1px;
+            pointer-events: none;
+            z-index: 20;
+        }
+
         @media (max-width: 600px) {
+            .toggle-container {
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .toggle-label {
+                font-size: 0.75rem;
+            }
+
             .container { flex-direction: column; gap: 3rem; }
             .item { width: 140px; height: 140px; }
             .item svg { width: 60px; height: 60px; }
@@ -272,6 +346,13 @@
 <body>
     <div class="particles"></div>
     <div class="mandala"></div>
+
+    <div class="toggle-container">
+        <span class="toggle-label">TỰ ĐỘNG</span>
+        <div class="toggle-switch" id="auto-toggle">
+            <span class="auto-mode-indicator">TỰ</span>
+        </div>
+    </div>
 
     <div class="header">
         <h1>TĨNH TÂM</h1>
@@ -316,6 +397,17 @@
         let moSampleBuffer = null;
         let moSampleLoading = null;
         let moGain;
+
+        // Auto mode variables
+        let autoMode = false;
+        let autoTimeouts = [];
+        const AUTO_RHYTHM_CYCLE = 23000; // 23 seconds cycle for deep meditation
+        
+        // Rhythm pattern (in ms from cycle start)
+        const RHYTHM_PATTERN = {
+            chuong: [0],           // 1 bell at start
+            mo: [2000, 3000, 4000, 5000, 6000, 7000, 8000] // 7 mallet strikes starting at 2s
+        };
 
         function initAudio() {
             if (!audioCtx) {
@@ -387,17 +479,78 @@
             triggerRipple('btn-chuong');
             createFloatingText(e, 'Boong...');
 
-            const t = audioCtx.currentTime;
-            
-            // Physical Modeling of a Temple Bell
-            // Frequencies based on modal analysis of a singing bowl / temple bell
-            // Using slightly detuned pairs to create the characteristic "beating" (vibrato) effect
+            playChuongSound(audioCtx.currentTime);
+        }
 
+        async function playMo(e) {
+            initAudio();
+            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            triggerRipple('btn-mo');
+            createFloatingText(e, 'Cốc...');
+
+            const t = audioCtx.currentTime;
+
+            if (moSampleLoading) {
+                await moSampleLoading;
+            }
+            playMoSample(t);
+        }
+
+        function stopAutoMode() {
+            autoTimeouts.forEach(id => clearTimeout(id));
+            autoTimeouts = [];
+        }
+
+        function playAutoRhythm() {
+            const startTime = audioCtx.currentTime;
+
+            // Schedule chuông strikes
+            RHYTHM_PATTERN.chuong.forEach(time => {
+                const timeoutId = setTimeout(() => {
+                    if (autoMode) {
+                        const btn = document.getElementById('btn-chuong');
+                        triggerRipple('btn-chuong');
+                        // Play chuông sound directly
+                        playChuongSound(audioCtx.currentTime);
+                    }
+                }, time);
+                autoTimeouts.push(timeoutId);
+            });
+
+            // Schedule mõ strikes
+            RHYTHM_PATTERN.mo.forEach(time => {
+                const timeoutId = setTimeout(() => {
+                    if (autoMode) {
+                        const btn = document.getElementById('btn-mo');
+                        triggerRipple('btn-mo');
+                        // Play mõ sound directly
+                        if (moSampleBuffer) {
+                            playMoSample(audioCtx.currentTime);
+                        }
+                    }
+                }, time);
+                autoTimeouts.push(timeoutId);
+            });
+
+            // Schedule next cycle
+            if (autoMode) {
+                const nextCycleId = setTimeout(() => {
+                    autoTimeouts = autoTimeouts.filter(id => id !== nextCycleId);
+                    if (autoMode) {
+                        playAutoRhythm();
+                    }
+                }, AUTO_RHYTHM_CYCLE);
+                autoTimeouts.push(nextCycleId);
+            }
+        }
+
+        function playChuongSound(t) {
+            // Physical Modeling of a Temple Bell - extracted from playChuong
             const modes = [
                 { f: 220, A: 1.0, decay: 15.0 },
-                { f: 222, A: 0.9, decay: 15.0 }, // Beating pair for fundamental
+                { f: 222, A: 0.9, decay: 15.0 },
                 { f: 600, A: 0.6, decay: 8.0 },
-                { f: 603, A: 0.5, decay: 8.0 },  // Beating pair
+                { f: 603, A: 0.5, decay: 8.0 },
                 { f: 1050, A: 0.3, decay: 4.0 },
                 { f: 1500, A: 0.15, decay: 2.0 },
                 { f: 2100, A: 0.08, decay: 1.0 },
@@ -412,7 +565,6 @@
                 osc.frequency.setValueAtTime(mode.f, t);
                 
                 gain.gain.setValueAtTime(0, t);
-                // Sharper attack for higher frequencies
                 const attackTime = mode.f > 1000 ? 0.005 : 0.02;
                 gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
                 gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
@@ -422,8 +574,8 @@
                 osc.stop(t + mode.decay);
             });
 
-            // Strike noise (the mallet hitting metal)
-            const noiseLength = audioCtx.sampleRate * 0.05; // 50ms of noise
+            // Strike noise
+            const noiseLength = audioCtx.sampleRate * 0.05;
             const buffer = audioCtx.createBuffer(1, noiseLength, audioCtx.sampleRate);
             const data = buffer.getChannelData(0);
             for (let i = 0; i < noiseLength; i++) {
@@ -443,19 +595,24 @@
             noiseSrc.start(t);
         }
 
-        async function playMo(e) {
-            initAudio();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
-            triggerRipple('btn-mo');
-            createFloatingText(e, 'Cốc...');
-
-            const t = audioCtx.currentTime;
-
-            if (moSampleLoading) {
-                await moSampleLoading;
-            }
-            playMoSample(t);
-        }
+        // Setup toggle event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const autoToggle = document.getElementById('auto-toggle');
+            autoToggle.addEventListener('click', async () => {
+                autoMode = !autoMode;
+                autoToggle.classList.toggle('active');
+                
+                if (autoMode) {
+                    initAudio();
+                    if (audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+                    playAutoRhythm();
+                } else {
+                    stopAutoMode();
+                }
+            });
+        });
     </script>
 </body>
 </html>
