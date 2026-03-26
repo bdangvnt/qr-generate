@@ -624,13 +624,13 @@
             if (type === 'near') {
                 // Close bell - sharp, bright, like mallet striking
                 const modes = [
-                    { f: 450, A: 1.0, decay: 2.5 },   // Higher fundamental
-                    { f: 453, A: 0.9, decay: 2.5 },   // Beating pair
-                    { f: 1200, A: 0.7, decay: 1.8 },  // Strong overtone
-                    { f: 1206, A: 0.6, decay: 1.8 },  // Beating pair
-                    { f: 2100, A: 0.4, decay: 1.2 },  // Bright harmonic
-                    { f: 3300, A: 0.2, decay: 0.7 },  // High frequency
-                    { f: 4500, A: 0.1, decay: 0.4 }   // Brightness
+                    { f: 520, A: 0.5, decay: 4.0 },   // Higher fundamental - thanh cao hơn, amplitude thấp, vang lâu
+                    { f: 526, A: 0.4, decay: 4.0 },   // Beating pair
+                    { f: 1400, A: 0.35, decay: 3.0 }, // Strong overtone - tần số cao hơn
+                    { f: 1408, A: 0.28, decay: 3.0 }, // Beating pair
+                    { f: 2600, A: 0.22, decay: 2.0 }, // Bright harmonic - tần số cao hơn
+                    { f: 4000, A: 0.12, decay: 1.2 }, // High frequency - tần số cao hơn
+                    { f: 5500, A: 0.08, decay: 0.8 }  // Brightness - tần số rất cao
                 ];
 
                 modes.forEach((mode) => {
@@ -664,7 +664,7 @@
                 noiseFilter.frequency.value = 1200; // Higher noise frequency
                 noiseFilter.Q.value = 1.5;
                 const noiseGain = audioCtx.createGain();
-                noiseGain.gain.setValueAtTime(0.7, t);
+                noiseGain.gain.setValueAtTime(0.4, t);
                 noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
                 
                 noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
