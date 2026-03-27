@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gõ Chuông - Gõ Mõ Trực Tuyến</title>
+    <title>An Nhiên - Online</title>
     <style>
         :root {
             --gold: #d4af37;
@@ -42,13 +43,13 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, #ffffff33, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 40px 70px, #ffffff22, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 50px 160px, #ffffff22, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 90px 40px, #ffffff33, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 130px 80px, #ffffff22, rgba(0,0,0,0)),
-                radial-gradient(2px 2px at 160px 120px, #ffffff22, rgba(0,0,0,0));
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #ffffff33, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff22, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 50px 160px, #ffffff22, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 90px 40px, #ffffff33, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 130px 80px, #ffffff22, rgba(0, 0, 0, 0)),
+                radial-gradient(2px 2px at 160px 120px, #ffffff22, rgba(0, 0, 0, 0));
             background-repeat: repeat;
             background-size: 200px 200px;
             animation: drift 60s linear infinite;
@@ -56,8 +57,13 @@
         }
 
         @keyframes drift {
-            from { transform: translateY(0); }
-            to { transform: translateY(-200px); }
+            from {
+                transform: translateY(0);
+            }
+
+            to {
+                transform: translateY(-200px);
+            }
         }
 
         .header {
@@ -141,7 +147,10 @@
         .item::after {
             content: '';
             position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
             border-radius: 50%;
             background: transparent;
             border: 2px solid var(--gold);
@@ -158,6 +167,7 @@
                 transform: scale(1);
                 opacity: 0.6;
             }
+
             100% {
                 transform: scale(1.8);
                 opacity: 0;
@@ -185,7 +195,7 @@
             opacity: 0.6;
             transition: opacity 0.3s;
         }
-        
+
         .controls:hover {
             opacity: 1;
         }
@@ -235,9 +245,20 @@
         }
 
         @keyframes floatUp {
-            0% { transform: translate(-50%, 0) scale(0.8); opacity: 0; }
-            20% { opacity: 0.8; transform: translate(-50%, -20px) scale(1.1); }
-            100% { transform: translate(-50%, -100px) scale(1); opacity: 0; }
+            0% {
+                transform: translate(-50%, 0) scale(0.8);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: 0.8;
+                transform: translate(-50%, -20px) scale(1.1);
+            }
+
+            100% {
+                transform: translate(-50%, -100px) scale(1);
+                opacity: 0;
+            }
         }
 
         .mandala {
@@ -258,8 +279,13 @@
         }
 
         @keyframes spin {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+            from {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
         }
 
         /* Toggle Switch */
@@ -390,7 +416,7 @@
                 top: 1rem;
                 right: 1rem;
             }
-            
+
             .toggle-label {
                 font-size: 0.75rem;
             }
@@ -404,13 +430,49 @@
                 font-size: 0.7rem;
             }
 
-            .container { flex-direction: column; gap: 3rem; }
-            .item { width: 140px; height: 140px; }
-            .item svg { width: 60px; height: 60px; }
+            .container {
+                flex-direction: column;
+                gap: 3rem;
+            }
+
+            .item {
+                width: 140px;
+                height: 140px;
+            }
+
+            .item svg {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 </head>
+
 <body>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyCrikmFLWuKmvPrFGws3DDKkwg3SEE3Q04",
+            authDomain: "an-nhien-boong.firebaseapp.com",
+            projectId: "an-nhien-boong",
+            storageBucket: "an-nhien-boong.firebasestorage.app",
+            messagingSenderId: "309236762685",
+            appId: "1:309236762685:web:8dd30dfa55d2ce85838254",
+            measurementId: "G-2GRWG4NNYY"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
+
     <div class="particles"></div>
     <div class="mandala"></div>
 
@@ -439,7 +501,8 @@
         <div class="item-wrapper">
             <div class="item" id="btn-chuong" onclick="playChuong(event)">
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16ZM16 17H8V11C8 8.52 9.51 6.5 12 6.5C14.49 6.5 16 8.52 16 11V17Z"/>
+                    <path
+                        d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22ZM18 16V11C18 7.93 16.36 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.63 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16ZM16 17H8V11C8 8.52 9.51 6.5 12 6.5C14.49 6.5 16 8.52 16 11V17Z" />
                 </svg>
             </div>
             <div class="item-label">Chuông</div>
@@ -450,7 +513,8 @@
             <div class="item" id="btn-mo" onclick="playMo(event)">
                 <!-- Biểu tượng hoa sen cách điệu thay cho mõ -->
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C12 2 8 6 8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2ZM3.5 10C3.5 10 2 13 4 17.5C6 22 12 22 12 22C12 22 6.5 21 5.5 15C5 12 3.5 10 3.5 10ZM20.5 10C20.5 10 22 13 20 17.5C18 22 12 22 12 22C12 22 17.5 21 18.5 15C19 12 20.5 10 20.5 10Z"/>
+                    <path
+                        d="M12 2C12 2 8 6 8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2ZM3.5 10C3.5 10 2 13 4 17.5C6 22 12 22 12 22C12 22 6.5 21 5.5 15C5 12 3.5 10 3.5 10ZM20.5 10C20.5 10 22 13 20 17.5C18 22 12 22 12 22C12 22 17.5 21 18.5 15C19 12 20.5 10 20.5 10Z" />
                 </svg>
             </div>
             <div class="item-label">Mõ</div>
@@ -459,7 +523,8 @@
 
     <div class="controls">
         <svg class="volume-icon" viewBox="0 0 24 24">
-            <path d="M3 9V15H7L12 20V4L7 9H3ZM16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.77 16.5 12ZM14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z"/>
+            <path
+                d="M3 9V15H7L12 20V4L7 9H3ZM16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.77 16.5 12ZM14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z" />
         </svg>
         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
     </div>
@@ -478,7 +543,7 @@
         let autoTimeouts = [];
         let bellType = 'near'; // 'far' or 'near'
         const AUTO_RHYTHM_CYCLE = 23000; // 23 seconds cycle for deep meditation
-        
+
         // Rhythm pattern (in ms from cycle start)
         const RHYTHM_PATTERN = {
             chuong: [0],           // 1 bell at start
@@ -494,7 +559,7 @@
                 moGain = audioCtx.createGain();
                 moGain.gain.value = MO_GAIN;
                 moGain.connect(masterGain);
-                
+
                 const slider = document.getElementById('volume-slider');
                 masterGain.gain.value = slider.value;
                 slider.addEventListener('input', (e) => {
@@ -530,14 +595,14 @@
             const el = document.createElement('div');
             el.className = 'floating-text';
             el.innerText = text;
-            
+
             const rect = e.currentTarget.getBoundingClientRect();
             const x = rect.left + rect.width / 2;
             const y = rect.top;
-            
+
             el.style.left = `${x}px`;
             el.style.top = `${y}px`;
-            
+
             document.body.appendChild(el);
             setTimeout(() => el.remove(), 2000);
         }
@@ -551,7 +616,7 @@
 
         async function playChuong(e) {
             initAudio();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
             triggerRipple('btn-chuong');
             createFloatingText(e, 'Boong...');
 
@@ -560,7 +625,7 @@
 
         async function playMo(e) {
             initAudio();
-            if(audioCtx.state === 'suspended') await audioCtx.resume();
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
             triggerRipple('btn-mo');
             createFloatingText(e, 'Cốc...');
 
@@ -636,15 +701,15 @@
                 modes.forEach((mode) => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-                    
+
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(mode.f, t);
-                    
+
                     gain.gain.setValueAtTime(0, t);
                     const attackTime = 0.008; // Sharp attack
                     gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
                     gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
-                    
+
                     osc.connect(gain).connect(masterGain);
                     osc.start(t);
                     osc.stop(t + mode.decay);
@@ -666,7 +731,7 @@
                 const noiseGain = audioCtx.createGain();
                 noiseGain.gain.setValueAtTime(0.4, t);
                 noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-                
+
                 noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
                 noiseSrc.start(t);
             } else {
@@ -685,15 +750,15 @@
                 modes.forEach((mode) => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
-                    
+
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(mode.f, t);
-                    
+
                     gain.gain.setValueAtTime(0, t);
                     const attackTime = mode.f > 1000 ? 0.005 : 0.02;
                     gain.gain.linearRampToValueAtTime(mode.A, t + attackTime);
                     gain.gain.exponentialRampToValueAtTime(0.0001, t + mode.decay);
-                    
+
                     osc.connect(gain).connect(masterGain);
                     osc.start(t);
                     osc.stop(t + mode.decay);
@@ -715,7 +780,7 @@
                 const noiseGain = audioCtx.createGain();
                 noiseGain.gain.setValueAtTime(0.5, t);
                 noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
-                
+
                 noiseSrc.connect(noiseFilter).connect(noiseGain).connect(masterGain);
                 noiseSrc.start(t);
             }
@@ -726,25 +791,25 @@
             // Bell selector
             const bellFarBtn = document.getElementById('bell-far');
             const bellNearBtn = document.getElementById('bell-near');
-            
+
             bellFarBtn.addEventListener('click', () => {
                 bellType = 'far';
                 bellFarBtn.classList.add('active');
                 bellNearBtn.classList.remove('active');
             });
-            
+
             bellNearBtn.addEventListener('click', () => {
                 bellType = 'near';
                 bellNearBtn.classList.add('active');
                 bellFarBtn.classList.remove('active');
             });
-            
+
             // Auto toggle
             const autoToggle = document.getElementById('auto-toggle');
             autoToggle.addEventListener('click', async () => {
                 autoMode = !autoMode;
                 autoToggle.classList.toggle('active');
-                
+
                 if (autoMode) {
                     initAudio();
                     if (audioCtx.state === 'suspended') {
@@ -758,4 +823,5 @@
         });
     </script>
 </body>
+
 </html>
