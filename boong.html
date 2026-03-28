@@ -699,7 +699,7 @@
         }
 
         .music-progress-wrap span {
-            min-width: 2.5rem;
+            min-width: 1.8rem;
             text-align: center;
         }
 
@@ -1423,6 +1423,12 @@
             return `${mins}:${String(secs).padStart(2, '0')}`;
         }
 
+        function formatDurationMinutesOnly(seconds) {
+            if (!Number.isFinite(seconds) || seconds <= 0) return '0';
+            const mins = Math.round(seconds / 60);
+            return String(mins);
+        }
+
         function isVietnameseTrack(track) {
             const blob = `${track.title || ''} ${track.tags || ''}`.toLowerCase();
             const viPattern = /[\u00c0-\u017f\u1ea0-\u1ef9]/;
@@ -1809,8 +1815,8 @@
             const percent = bgAudio.duration ? (bgAudio.currentTime / bgAudio.duration) * 100 : 0;
             progressBar.value = percent;
             
-            if (timeCurrentEl) timeCurrentEl.textContent = formatDuration(bgAudio.currentTime);
-            if (timeDurationEl) timeDurationEl.textContent = formatDuration(bgAudio.duration);
+            if (timeCurrentEl) timeCurrentEl.textContent = formatDurationMinutesOnly(bgAudio.currentTime);
+            if (timeDurationEl) timeDurationEl.textContent = formatDurationMinutesOnly(bgAudio.duration);
         }
 
         function initMusicProgressListener() {
