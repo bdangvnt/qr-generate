@@ -1171,6 +1171,7 @@
         let lastResolvedMode = 'focus';
         let isMusicPanelCollapsed = true;
         let musicPanelPosition = null;
+        let selectedPlaylistMode = 'profile';
 
         const CURATED_BUCKETS = {
             focus: [
@@ -1237,6 +1238,7 @@
 
             if (typeof prefs.shortTrackOnly === 'boolean') shortTrackOnly = prefs.shortTrackOnly;
             if (typeof prefs.skipMeditationMusic === 'boolean') skipMeditationMusic = prefs.skipMeditationMusic;
+            if (typeof prefs.selectedPlaylistMode === 'string') selectedPlaylistMode = prefs.selectedPlaylistMode;
         }
 
         function saveMusicPreferences() {
@@ -1244,7 +1246,8 @@
                 MUSIC_PREFERENCE_KEY,
                 JSON.stringify({
                     shortTrackOnly,
-                    skipMeditationMusic
+                    skipMeditationMusic,
+                    selectedPlaylistMode
                 })
             );
         }
@@ -1429,10 +1432,24 @@
             return `${mins}:${String(secs).padStart(2, '0')}`;
         }
 
-        function formatDurationMinutesOnly(seconds) {
-            if (!Number.isFinite(seconds) || seconds <= 0) return '0';
-            const mins = Math.round(seconds / 60);
-            return String(mins);
+        function formatDurationDynamic(seconds, totalDuration) {
+            if (!Number.isFinite(seconds) || seconds <= 0) return '0:00';
+            
+            // Determine format based on total duration
+            const showHours = Number.isFinite(totalDuration) && totalDuration >= 3600;
+            
+            if (showHours) {
+                // Format as hh:mm:ss
+                const hours = Math.floor(seconds / 3600);
+                const mins = Math.floor((seconds % 3600) / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${hours}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            } else {
+                // Format as mm:ss
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${String(secs).padStart(2, '0')}`;
+            }
         }
 
         function isVietnameseTrack(track) {
@@ -1821,8 +1838,8 @@
             const percent = bgAudio.duration ? (bgAudio.currentTime / bgAudio.duration) * 100 : 0;
             progressBar.value = percent;
             
-            if (timeCurrentEl) timeCurrentEl.textContent = formatDurationMinutesOnly(bgAudio.currentTime);
-            if (timeDurationEl) timeDurationEl.textContent = formatDurationMinutesOnly(bgAudio.duration);
+            if (timeCurrentEl) timeCurrentEl.textContent = formatDurationDynamic(bgAudio.currentTime, bgAudio.duration);
+            if (timeDurationEl) timeDurationEl.textContent = formatDurationDynamic(bgAudio.duration, bgAudio.duration);
         }
 
         function initMusicProgressListener() {
@@ -2005,10 +2022,16 @@
             applyMusicSkipState();
 
             const modeSelect = document.getElementById('playlist-mode');
-            const selectedMode = modeSelect ? modeSelect.value : 'profile';
-
+            const selectedMode = modeSelect ? modeSelect.value : selectedPlaylistMode;
+            
             await loadChantCatalog(false);
             await rebuildPlaylist(selectedMode);
+            
+            // Reset currentTrackIndex to -1 so next PLAY will start from first track
+            if (currentPlaylist.length && currentTrackIndex < 0) {
+                currentTrackIndex = -1;
+            }
+            
             setMusicStatus('Đã bật nhạc. Bạn có thể bấm Play để phát.');
         }
 
@@ -2019,7 +2042,7 @@
             applyMusicSkipState();
 
             const modeSelect = document.getElementById('playlist-mode');
-            const selectedMode = modeSelect ? modeSelect.value : 'profile';
+            const selectedMode = modeSelect ? modeSelect.value : selectedPlaylistMode;
 
             await loadChantCatalog(false);
             await rebuildPlaylist(selectedMode);
@@ -2494,6 +2517,19 @@
             const resumePlayBtn = document.getElementById('resume-music-play');
             const musicPanelToggleBtn = document.getElementById('music-panel-toggle');
             const musicMiniToggleBtn = document.getElementById('music-mini-toggle');
+            
+            // Restore selected playlist mode
+            if (modeSelect) {
+                modeSelect.value = selectedPlaylistMode;
+            }
+            
+            // Save playlist mode when changed
+            if (modeSelect) {
+                modeSelect.addEventListener('change', () => {
+                    selectedPlaylistMode = modeSelect.value;
+                    saveMusicPreferences();
+                });
+            }
 
             volumeSlider.addEventListener('input', () => {
                 bgAudio.volume = Number(volumeSlider.value);
