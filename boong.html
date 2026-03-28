@@ -458,18 +458,14 @@
         }
 
         .music-panel-toggle {
-            position: absolute;
-            top: 5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 11;
+            position: static;
             border: 1px solid rgba(212, 175, 55, 0.45);
             background: rgba(15, 11, 8, 0.75);
             color: var(--gold-light);
             border-radius: 999px;
-            font-size: 0.74rem;
+            font-size: 0.68rem;
             letter-spacing: 0.9px;
-            padding: 6px 14px;
+            padding: 5px 10px;
             cursor: pointer;
             transition: all 0.25s ease;
             text-transform: uppercase;
@@ -534,28 +530,17 @@
             justify-content: space-between;
             flex-wrap: wrap;
             margin-bottom: 0.75rem;
+            cursor: grab;
+        }
+
+        .music-top:active {
+            cursor: grabbing;
         }
 
         .music-status {
             font-size: 0.78rem;
             opacity: 0.8;
             letter-spacing: 0.5px;
-        }
-
-        .music-drag-handle {
-            border: 1px dashed rgba(212, 175, 55, 0.45);
-            border-radius: 999px;
-            background: rgba(212, 175, 55, 0.08);
-            color: var(--gold-light);
-            padding: 4px 10px;
-            font-size: 0.68rem;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            cursor: grab;
-        }
-
-        .music-drag-handle:active {
-            cursor: grabbing;
         }
 
         .music-mode-hint {
@@ -818,8 +803,6 @@
             }
 
             .music-panel-toggle {
-                top: auto;
-                bottom: 3.2rem;
                 font-size: 0.68rem;
                 padding: 5px 12px;
             }
@@ -884,7 +867,6 @@
     </div>
 
     <button class="profile-trigger" id="profile-trigger">Onboarding</button>
-    <button class="music-panel-toggle" id="music-panel-toggle" type="button">Thu gọn khung nhạc</button>
 
     <div class="header">
         <h1>TĨNH TÂM</h1>
@@ -917,8 +899,8 @@
     </div>
 
     <div class="music-panel" id="music-panel">
-        <div class="music-top">
-            <button class="music-drag-handle" id="music-drag-handle" type="button">Kéo khung</button>
+        <div class="music-top" id="music-titlebar">
+            <button class="music-panel-toggle" id="music-panel-toggle" type="button">Thu gọn khung nhạc</button>
             <div class="profile-summary" id="profile-summary">Bạn chưa nhập hồ sơ. Vẫn có thể nghe ngay hoặc bấm Onboarding.</div>
             <div class="music-status" id="music-status">Danh sách nhạc đang sẵn sàng tải...</div>
             <div class="music-mode-hint" id="music-mode-hint">Gợi ý theo hồ sơ đang dùng mode: Focus curated (văn phòng).</div>
@@ -1744,8 +1726,8 @@
 
         function initMusicPanelDrag() {
             const panelEl = document.getElementById('music-panel');
-            const dragHandle = document.getElementById('music-drag-handle');
-            if (!panelEl || !dragHandle) return;
+            const titleBar = document.getElementById('music-titlebar');
+            if (!panelEl || !titleBar) return;
 
             let dragging = false;
             let offsetX = 0;
@@ -1770,8 +1752,9 @@
                 saveMusicPanelUIPreferences();
             };
 
-            dragHandle.addEventListener('pointerdown', (event) => {
+            titleBar.addEventListener('pointerdown', (event) => {
                 if (event.button !== 0) return;
+                if (event.target.closest('button, input, select, option, a, textarea, label')) return;
                 const rect = panelEl.getBoundingClientRect();
                 dragging = true;
                 offsetX = event.clientX - rect.left;
