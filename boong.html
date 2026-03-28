@@ -985,7 +985,7 @@
         <audio id="chant-audio" preload="none"></audio>
     </div>
 
-    <button class="music-mini-toggle" id="music-mini-toggle" type="button" aria-label="Mở khung nghe nhạc" title="Mở khung nghe nhạc">
+    <button class="music-mini-toggle" id="music-mini-toggle" type="button" aria-label="BẬT ÂM AN YÊN" title="BẬT ÂM AN YÊN">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M8 5V19L19 12L8 5Z" />
         </svg>
@@ -1725,7 +1725,7 @@
             if (shortBtn) shortBtn.classList.toggle('active', shortTrackOnly);
             if (skipBtn) {
                 skipBtn.classList.toggle('active', skipMeditationMusic);
-                skipBtn.textContent = skipMeditationMusic ? 'Bật âm lại' : 'Bỏ qua âm';
+                skipBtn.textContent = skipMeditationMusic ? 'Bật âm lại' : 'Ẩn âm an yên';
             }
             if (musicPanelToggleBtn) {
                 musicPanelToggleBtn.textContent = isMusicPanelCollapsed ? 'Mở khung nhạc' : 'Thu gọn khung nhạc';
@@ -2376,19 +2376,10 @@
                 saveMusicPanelUIPreferences();
             });
 
-            musicMiniToggleBtn.addEventListener('click', () => {
-                const panel = document.getElementById('music-panel');
-                if (panel) {
-                    panel.classList.remove('hidden');
-                }
+            musicMiniToggleBtn.addEventListener('click', async () => {
+                await enableMusicWithoutPlay();
                 isMusicPanelCollapsed = false;
                 applyMusicPanelCollapsedState();
-                if (musicMiniToggleBtn) {
-                    musicMiniToggleBtn.classList.remove('show');
-                }
-                if (skipMeditationMusic) {
-                    setMusicStatus('Âm nhạc đang tắt. Bấm "Bật âm lại" để tiếp tục nghe.');
-                }
             });
 
             resumeNoPlayBtn.addEventListener('click', async () => {
