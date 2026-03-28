@@ -512,8 +512,8 @@
         }
 
         .music-panel.collapsed {
-            width: min(480px, calc(100% - 2rem));
-            padding: 0.75rem;
+            width: min(240px, calc(100% - 2rem));
+            padding: 0.55rem;
         }
 
         .music-panel.collapsed .music-row,
@@ -1063,7 +1063,7 @@
         let skipMeditationMusic = false;
         let lastRequestedMode = 'profile';
         let lastResolvedMode = 'focus';
-        let isMusicPanelCollapsed = false;
+        let isMusicPanelCollapsed = true;
         let musicPanelPosition = null;
 
         const CURATED_BUCKETS = {
