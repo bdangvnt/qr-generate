@@ -896,7 +896,7 @@
                 <option value="kinh_doanh">Nghề: Kinh doanh</option>
                 <option value="sang_tao">Nghề: Sáng tạo</option>
             </select>
-            <button class="music-btn" id="music-load">Tải danh sách bài kinh</button>
+            <button class="music-btn" id="music-load">Tải danh sách</button>
             <button class="music-btn" id="music-play-pause">Play</button>
             <button class="music-btn" id="music-next">Next</button>
             <div class="music-volume-wrap">
@@ -926,7 +926,7 @@
     <div class="onboarding-backdrop" id="onboarding-modal">
         <div class="onboarding-card">
             <h2>An Nhiên</h2>
-            <p class="onboarding-subtitle">Nhập nhanh vài thông tin để ưu tiên bài kinh phù hợp ngành nghề và lứa tuổi. Bạn có thể bỏ qua.</p>
+            <p class="onboarding-subtitle">Nhập nhanh vài thông tin để ưu tiên ưu tiên những bản nhạc phù hợp. Bạn có thể bỏ qua.</p>
             <form class="onboarding-form" id="onboarding-form">
                 <div class="full">
                     <label for="onboard-name">Tên (không bắt buộc)</label>
@@ -1686,7 +1686,7 @@
             }
 
             if (!currentPlaylist.length) {
-                setMusicStatus('Chưa có bài. Hãy bấm Tải danh sách bài kinh.');
+                setMusicStatus('Chưa có bài. Hãy bấm Tải danh sách bản nhạc.');
                 return;
             }
 
@@ -1722,7 +1722,7 @@
 
             if (isCatalogLoading) return chantTracks;
             isCatalogLoading = true;
-            setMusicStatus('Đang tải dữ liệu bài kinh...');
+            setMusicStatus('Đang tải dữ liệu bản nhạc...');
 
             try {
                 if (!forceReload) {
