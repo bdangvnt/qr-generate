@@ -863,7 +863,6 @@
 
         <div class="music-row music-filters">
             <button class="music-btn music-toggle active" id="filter-short" type="button">Chi lay bai <= 20 phut</button>
-            <button class="music-btn music-toggle" id="filter-viet" type="button">Uu tien giong Viet</button>
             <button class="music-btn music-toggle" id="filter-skip-music" type="button">Bỏ qua âm</button>
         </div>
 
@@ -971,7 +970,6 @@
         let isCatalogLoading = false;
         let bgAudio = null;
         let shortTrackOnly = true;
-        let preferVietnamese = false;
         let skipMeditationMusic = false;
 
         const CURATED_BUCKETS = {
@@ -1038,7 +1036,6 @@
             if (!prefs || typeof prefs !== 'object') return;
 
             if (typeof prefs.shortTrackOnly === 'boolean') shortTrackOnly = prefs.shortTrackOnly;
-            if (typeof prefs.preferVietnamese === 'boolean') preferVietnamese = prefs.preferVietnamese;
             if (typeof prefs.skipMeditationMusic === 'boolean') skipMeditationMusic = prefs.skipMeditationMusic;
         }
 
@@ -1047,7 +1044,6 @@
                 MUSIC_PREFERENCE_KEY,
                 JSON.stringify({
                     shortTrackOnly,
-                    preferVietnamese,
                     skipMeditationMusic
                 })
             );
@@ -1163,8 +1159,25 @@
             return viPattern.test(blob) || viWords.test(blob);
         }
 
+        function isInstrumentalTrack(track) {
+            const blob = `${track.title || ''} ${track.tags || ''}`.toLowerCase();
+            // Look for explicit instrumental markers
+            const instrumentalWords = /(instrumental|music without|ko loi|khong loi|vo loi|khong co loi|thien nhac|meditation music|background music|ambient|no vocals|no singing|pure music|zen music)/i;
+            // Avoid tracks that explicitly say they have lyrics/voices
+            const voiceWords = /(vocal|song|lyrics|sing|nhat|hat|voice|speech|talk|chanting with voice|dao trang|sutra chanting|mantra chanting)/i;
+            return instrumentalWords.test(blob) && !voiceWords.test(blob);
+        }
+
+        function isAcceptableTrack(track) {
+            // Accept ONLY: (instrumental) OR (Vietnamese)
+            return isInstrumentalTrack(track) || isVietnameseTrack(track);
+        }
+
         function applyTrackFilters(tracks) {
             let output = tracks.slice();
+
+            // MANDATORY: Only accept instrumental OR Vietnamese tracks
+            output = output.filter((track) => isAcceptableTrack(track));
 
             if (shortTrackOnly) {
                 output = output.filter((track) => {
@@ -1173,26 +1186,39 @@
                 });
             }
 
-            if (preferVietnamese) {
-                const viTracks = output.filter((track) => isVietnameseTrack(track));
-                const nonViTracks = output.filter((track) => !isVietnameseTrack(track));
-                output = viTracks.concat(nonViTracks);
-            }
+            // Priority: Vietnamese > Instrumental
+            const viTracks = output.filter((track) => isVietnameseTrack(track));
+            const nonViTracks = output.filter((track) => !isVietnameseTrack(track));
+            output = viTracks.concat(nonViTracks);
 
             return output;
         }
 
         function filterLikelyChantDocs(docs) {
             const excludePattern = /(podcast|episode|radio|interview|news|talk show|politics|sports)/i;
-            const includePattern = /(chant|sutra|mantra|buddh|zen|meditation|namo|om|tham|kinh|phat|mindful)/i;
+            const includePattern = /(chant|sutra|mantra|buddh|zen|meditation|namo|om|tham|kinh|phat|mindful|instrumental|khong loi|vo loi)/i;
 
-            const primary = docs.filter((doc) => {
+            let results = docs.filter((doc) => {
                 const blob = inferTagBlob(doc);
                 return includePattern.test(blob) && !excludePattern.test(blob);
             });
 
-            if (primary.length >= 120) return primary;
-            return docs.filter((doc) => !excludePattern.test(inferTagBlob(doc)));
+            // Additional filtering: Keep only instrumental OR Vietnamese
+            results = results.filter((doc) => {
+                const blob = inferTagBlob(doc);
+                const viPattern = /[\u00c0-\u017f\u1ea0-\u1ef9]/;
+                const viWords = /(kinh|phat|niem|chu|thien|tung|quan am|a di da|nam mo|duoc su|vu lan|bat nha)/i;
+                const isVi = viPattern.test(blob) || viWords.test(blob);
+                
+                const instrumentalWords = /(instrumental|music without|ko loi|khong loi|vo loi|khong co loi|thien nhac|meditation music|background music|ambient|no vocals)/i;
+                const voiceWords = /(vocal song|lyrics|sing|nhat|hat|voice|speech|talk|chanting with voice|dao trang|sutra chanting)/i;
+                const isInstru = instrumentalWords.test(blob) && !voiceWords.test(blob);
+                
+                return isVi || isInstru;
+            });
+
+            if (results.length >= 120) return results;
+            return results.length > 0 ? results : docs.filter((doc) => !excludePattern.test(inferTagBlob(doc)));
         }
 
         function computeTrackScore(track, mode = 'profile') {
@@ -1210,8 +1236,9 @@
             if (mode === 'youth-relax') score += scoreByWords(['calm', 'light', 'gentle', 'soft', 'chill'], 2);
             if (mode === 'youth-uplift') score += scoreByWords(['positive', 'energy', 'joy', 'bright', 'morning'], 2);
 
-            if (preferVietnamese && isVietnameseTrack(track)) {
-                score += 2.5;
+            // Prioritize Vietnamese tracks
+            if (isVietnameseTrack(track)) {
+                score += 3.0;
             }
 
             const durationSeconds = parseDurationSeconds(track);
@@ -1416,11 +1443,9 @@
 
         function updateFilterButtons() {
             const shortBtn = document.getElementById('filter-short');
-            const viBtn = document.getElementById('filter-viet');
             const skipBtn = document.getElementById('filter-skip-music');
             const musicPanelToggleBtn = document.getElementById('music-panel-toggle');
             if (shortBtn) shortBtn.classList.toggle('active', shortTrackOnly);
-            if (viBtn) viBtn.classList.toggle('active', preferVietnamese);
             if (skipBtn) {
                 skipBtn.classList.toggle('active', skipMeditationMusic);
                 skipBtn.textContent = skipMeditationMusic ? 'Bật âm lại' : 'Bỏ qua âm';
@@ -1536,7 +1561,7 @@
                             if (staticTracks.length) {
                                 chantTracks = staticTracks.slice(0, TARGET_TRACK_COUNT);
                                 buildCuratedPlaylists();
-                                setMusicStatus(`Đã nạp catalog tĩnh: ${chantTracks.length} bài.`);
+                                setMusicStatus(`Đã nạp catalog tĩnh: ${chantTracks.length} bài (chỉ curated trực tiếp: không lời hoặc tiếng Việt).`);
                                 return chantTracks;
                             }
                         }
@@ -1561,12 +1586,13 @@
                 setMusicStatus('Không có catalog tĩnh. Đang tải từ nguồn công khai...');
 
                 const params = new URLSearchParams();
-                params.set('q', '(mediatype:audio) AND (title:(chant OR chanting OR sutra OR mantra OR buddhist OR zen OR meditation OR namo OR om))');
+                // Search for instrumental OR Vietnamese meditation/chanting music
+                params.set('q', '(mediatype:audio) AND (title:(chant OR chanting OR sutra OR mantra OR buddhist OR zen OR meditation OR namo OR om OR "khong loi" OR "instrumental" OR "kinh" OR "phat" OR "niem phat" OR "nhac thien" OR "music without" OR "ambient"))');
                 params.append('fl[]', 'identifier');
                 params.append('fl[]', 'title');
                 params.append('fl[]', 'creator');
                 params.append('fl[]', 'subject');
-                params.set('rows', '260');
+                params.set('rows', '400');
                 params.set('page', '1');
                 params.set('output', 'json');
 
@@ -2011,7 +2037,6 @@
             const trackList = document.getElementById('music-track-list');
             const volumeSlider = document.getElementById('music-volume');
             const filterShortBtn = document.getElementById('filter-short');
-            const filterVietBtn = document.getElementById('filter-viet');
             const filterSkipMusicBtn = document.getElementById('filter-skip-music');
             const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
             const resumePlayBtn = document.getElementById('resume-music-play');
@@ -2037,13 +2062,6 @@
 
             filterShortBtn.addEventListener('click', async () => {
                 shortTrackOnly = !shortTrackOnly;
-                saveMusicPreferences();
-                updateFilterButtons();
-                await rebuildPlaylist(modeSelect.value);
-            });
-
-            filterVietBtn.addEventListener('click', async () => {
-                preferVietnamese = !preferVietnamese;
                 saveMusicPreferences();
                 updateFilterButtons();
                 await rebuildPlaylist(modeSelect.value);
