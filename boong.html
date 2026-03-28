@@ -465,6 +465,12 @@
             display: inline-block;
         }
 
+        .music-panel.music-disabled {
+            opacity: 0.65;
+            border-color: rgba(212, 175, 55, 0.15);
+            background: rgba(15, 11, 8, 0.45);
+        }
+
         .music-row {
             display: flex;
             gap: 0.65rem;
@@ -792,7 +798,7 @@
         </div>
     </div>
 
-    <div class="music-panel">
+    <div class="music-panel" id="music-panel">
         <div class="music-top">
             <div class="profile-summary" id="profile-summary">Bạn chưa nhập hồ sơ. Vẫn có thể nghe ngay hoặc bấm Onboarding.</div>
             <div class="music-status" id="music-status">Danh sách nhạc đang sẵn sàng tải...</div>
@@ -1333,7 +1339,7 @@
             if (!bgAudio || !currentPlaylist.length) return;
             if (index < 0 || index >= currentPlaylist.length) return;
             if (skipMeditationMusic) {
-                setMusicStatus('Bạn đang bật bỏ qua âm.');
+                setMusicStatus('Âm nhạc hiện đang tắt. Bạn vẫn dùng chuông/mõ được bình thường.');
                 return;
             }
 
@@ -1385,26 +1391,12 @@
         }
 
         function applyMusicSkipState() {
-            const playPauseBtn = document.getElementById('music-play-pause');
-            const nextBtn = document.getElementById('music-next');
-            const loadBtn = document.getElementById('music-load');
-            const modeSelect = document.getElementById('playlist-mode');
-            const trackList = document.getElementById('music-track-list');
-            const volumeSlider = document.getElementById('music-volume');
-            const filterShortBtn = document.getElementById('filter-short');
-            const filterVietBtn = document.getElementById('filter-viet');
+            const musicPanel = document.getElementById('music-panel') || document.querySelector('.music-panel');
             const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
             const resumePlayBtn = document.getElementById('resume-music-play');
 
             const disabled = skipMeditationMusic;
-            if (playPauseBtn) playPauseBtn.disabled = disabled;
-            if (nextBtn) nextBtn.disabled = disabled;
-            if (loadBtn) loadBtn.disabled = disabled;
-            if (modeSelect) modeSelect.disabled = disabled;
-            if (trackList) trackList.disabled = disabled;
-            if (volumeSlider) volumeSlider.disabled = disabled;
-            if (filterShortBtn) filterShortBtn.disabled = disabled;
-            if (filterVietBtn) filterVietBtn.disabled = disabled;
+            if (musicPanel) musicPanel.classList.toggle('music-disabled', disabled);
             if (resumeNoPlayBtn) resumeNoPlayBtn.classList.toggle('show', disabled);
             if (resumePlayBtn) resumePlayBtn.classList.toggle('show', disabled);
 
@@ -1412,7 +1404,7 @@
                 bgAudio.pause();
                 bgAudio.currentTime = 0;
                 updatePlayPauseLabel();
-                setMusicStatus('Đã bật chế độ bỏ qua âm.');
+                setMusicStatus('Âm nhạc đã bị tắt. Chuông và mõ vẫn hoạt động bình thường.');
             }
         }
 
@@ -1450,7 +1442,7 @@
         async function togglePlayPause() {
             if (!bgAudio) return;
             if (skipMeditationMusic) {
-                setMusicStatus('Bạn đang bật bỏ qua âm.');
+                setMusicStatus('Âm nhạc hiện đang tắt. Bạn vẫn dùng chuông/mõ được bình thường.');
                 return;
             }
 
@@ -1475,7 +1467,7 @@
 
         async function playNextTrack() {
             if (skipMeditationMusic) {
-                setMusicStatus('Bạn đang bật bỏ qua âm.');
+                setMusicStatus('Âm nhạc hiện đang tắt. Bạn vẫn dùng chuông/mõ được bình thường.');
                 return;
             }
             if (!currentPlaylist.length) return;
@@ -1485,7 +1477,7 @@
 
         async function loadChantCatalog(forceReload = false) {
             if (skipMeditationMusic && !forceReload) {
-                setMusicStatus('Đang bỏ qua âm. Bạn có thể bật lại bất kỳ lúc nào.');
+                setMusicStatus('Âm nhạc đang tắt. Chuông và mõ vẫn hoạt động bình thường.');
                 return chantTracks;
             }
 
@@ -1625,7 +1617,7 @@
                 if (list) list.innerHTML = '';
                 const nowPlayingSkip = document.getElementById('music-now-playing');
                 if (nowPlayingSkip) {
-                    nowPlayingSkip.textContent = 'Đã bỏ qua âm. Bạn vẫn dùng chuông/mõ bình thường.';
+                    nowPlayingSkip.textContent = 'Âm nhạc đã tắt. Chuông/mõ vẫn hoạt động bình thường. Bạn có thể bật lại nhạc bất kỳ lúc nào.';
                 }
                 return;
             }
