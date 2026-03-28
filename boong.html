@@ -404,6 +404,257 @@
             background-color: rgba(212, 175, 55, 0.2);
         }
 
+        .profile-trigger {
+            position: absolute;
+            top: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 11;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            background: rgba(15, 11, 8, 0.75);
+            color: var(--gold-light);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+        }
+
+        .profile-trigger:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+        }
+
+        .music-panel {
+            position: absolute;
+            bottom: 5.6rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(720px, calc(100% - 2rem));
+            padding: 1rem;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.28);
+            background: rgba(15, 11, 8, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 10;
+        }
+
+        .music-top {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+
+        .music-status {
+            font-size: 0.78rem;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+        }
+
+        .music-resume-btn {
+            display: none;
+        }
+
+        .music-resume-btn.show {
+            display: inline-block;
+        }
+
+        .music-row {
+            display: flex;
+            gap: 0.65rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 0.6rem;
+        }
+
+        .music-btn,
+        .music-select {
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: 10px;
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--gold-light);
+            padding: 7px 10px;
+            font-size: 0.82rem;
+            letter-spacing: 0.6px;
+        }
+
+        .music-btn {
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.25s ease;
+        }
+
+        .music-btn:disabled,
+        .music-select:disabled,
+        .track-list:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .music-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .music-toggle.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.18);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .music-select {
+            min-width: 185px;
+        }
+
+        .music-filters {
+            margin-top: -0.2rem;
+        }
+
+        .track-list {
+            width: 100%;
+            border: 1px solid rgba(212, 175, 55, 0.22);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.28);
+            color: var(--gold-light);
+            font-size: 0.82rem;
+            padding: 0.4rem;
+        }
+
+        .music-now-playing {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            letter-spacing: 0.6px;
+        }
+
+        .music-volume-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-left: auto;
+        }
+
+        .music-volume-wrap span {
+            font-size: 0.72rem;
+            opacity: 0.85;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .music-volume-wrap input[type=range] {
+            width: 90px;
+        }
+
+        .onboarding-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 3, 2, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 50;
+        }
+
+        .onboarding-backdrop.active {
+            display: flex;
+        }
+
+        .onboarding-card {
+            width: min(560px, 100%);
+            border-radius: 18px;
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            background: linear-gradient(165deg, rgba(36, 25, 18, 0.96), rgba(10, 7, 5, 0.96));
+            padding: 1.2rem;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+        }
+
+        .onboarding-card h2 {
+            font-weight: 500;
+            font-size: 1.4rem;
+            color: var(--gold);
+            margin-bottom: 0.45rem;
+            letter-spacing: 1px;
+        }
+
+        .onboarding-subtitle {
+            opacity: 0.88;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-summary {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-bottom: 0.9rem;
+        }
+
+        .onboarding-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem;
+        }
+
+        .onboarding-form .full {
+            grid-column: 1 / -1;
+        }
+
+        .onboarding-form input,
+        .onboarding-form select {
+            width: 100%;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            background: rgba(212, 175, 55, 0.05);
+            color: var(--gold-light);
+            padding: 10px;
+            font-size: 0.88rem;
+        }
+
+        .onboarding-form label {
+            font-size: 0.75rem;
+            opacity: 0.86;
+            margin-bottom: 0.3rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .onboarding-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .onboarding-actions button {
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 10px;
+            color: var(--gold-light);
+            background: rgba(212, 175, 55, 0.1);
+            padding: 9px 13px;
+            cursor: pointer;
+            letter-spacing: 0.8px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .onboarding-actions button.primary {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.15);
+        }
+
+        .onboarding-actions button:hover {
+            filter: brightness(1.12);
+        }
+
         @media (max-width: 600px) {
             .bell-selector {
                 top: 1rem;
@@ -443,6 +694,24 @@
             .item svg {
                 width: 60px;
                 height: 60px;
+            }
+
+            .profile-trigger {
+                top: auto;
+                bottom: 1.1rem;
+            }
+
+            .music-panel {
+                bottom: 9rem;
+                padding: 0.8rem;
+            }
+
+            .onboarding-form {
+                grid-template-columns: 1fr;
+            }
+
+            .controls {
+                bottom: 5.5rem;
             }
         }
     </style>
@@ -491,6 +760,8 @@
         </div>
     </div>
 
+    <button class="profile-trigger" id="profile-trigger">Onboarding</button>
+
     <div class="header">
         <h1>TĨNH TÂM</h1>
         <p>Gõ để trút bỏ phiền não, tìm về khoảng lặng</p>
@@ -521,12 +792,103 @@
         </div>
     </div>
 
+    <div class="music-panel">
+        <div class="music-top">
+            <div class="profile-summary" id="profile-summary">Bạn chưa nhập hồ sơ. Vẫn có thể nghe ngay hoặc bấm Onboarding.</div>
+            <div class="music-status" id="music-status">Danh sách nhạc đang sẵn sàng tải...</div>
+            <button class="music-btn music-resume-btn" id="resume-music-no-play" type="button">Bật nhạc (chưa phát)</button>
+            <button class="music-btn music-resume-btn" id="resume-music-play" type="button">Bật nhạc và phát</button>
+        </div>
+
+        <div class="music-row">
+            <select class="music-select" id="playlist-mode">
+                <option value="profile">Gợi ý theo hồ sơ</option>
+                <option value="focus">Focus curated (văn phòng)</option>
+                <option value="relax">Relax curated (nhẹ nhàng)</option>
+                <option value="uplift">Uplift curated (tích cực)</option>
+                <option value="youth-focus">Giới trẻ - học/làm tập trung</option>
+                <option value="youth-relax">Giới trẻ - thư giãn tích cực</option>
+                <option value="youth-uplift">Giới trẻ - năng lượng sáng</option>
+            </select>
+            <button class="music-btn" id="music-load">Tải danh sách bài kinh</button>
+            <button class="music-btn" id="music-play-pause">Play</button>
+            <button class="music-btn" id="music-next">Next</button>
+            <div class="music-volume-wrap">
+                <span>Nhạc</span>
+                <input type="range" id="music-volume" min="0" max="1" step="0.01" value="0.6">
+            </div>
+        </div>
+
+        <div class="music-row music-filters">
+            <button class="music-btn music-toggle active" id="filter-short" type="button">Chi lay bai <= 20 phut</button>
+            <button class="music-btn music-toggle" id="filter-viet" type="button">Uu tien giong Viet</button>
+            <button class="music-btn music-toggle" id="filter-skip-music" type="button">Bỏ qua âm</button>
+        </div>
+
+        <select class="track-list" id="music-track-list" size="6"></select>
+        <div class="music-now-playing" id="music-now-playing">Chưa phát bài nào.</div>
+        <audio id="chant-audio" preload="none"></audio>
+    </div>
+
     <div class="controls">
         <svg class="volume-icon" viewBox="0 0 24 24">
             <path
                 d="M3 9V15H7L12 20V4L7 9H3ZM16.5 12C16.5 10.23 15.48 8.71 14 7.97V16.02C15.48 15.29 16.5 13.77 16.5 12ZM14 3.23V5.29C16.89 6.15 19 8.83 19 12C19 15.17 16.89 17.85 14 18.71V20.77C18.01 19.86 21 16.28 21 12C21 7.72 18.01 4.14 14 3.23Z" />
         </svg>
         <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.8">
+    </div>
+
+    <div class="onboarding-backdrop" id="onboarding-modal">
+        <div class="onboarding-card">
+            <h2>An Nhiên</h2>
+            <p class="onboarding-subtitle">Nhập nhanh vài thông tin để ưu tiên bài kinh phù hợp ngành nghề và lứa tuổi. Bạn có thể bỏ qua.</p>
+            <form class="onboarding-form" id="onboarding-form">
+                <div class="full">
+                    <label for="onboard-name">Tên (không bắt buộc)</label>
+                    <input id="onboard-name" type="text" placeholder="Ví dụ: An Nhiên">
+                </div>
+
+                <div>
+                    <label for="onboard-age">Lứa tuổi</label>
+                    <select id="onboard-age">
+                        <option value="young">18-25</option>
+                        <option value="adult" selected>26-40</option>
+                        <option value="mid">41-55</option>
+                        <option value="senior">56+</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="onboard-job">Ngành nghề</label>
+                    <select id="onboard-job">
+                        <option value="office" selected>Văn phòng</option>
+                        <option value="creative">Sáng tạo / Thiết kế</option>
+                        <option value="education">Giáo dục</option>
+                        <option value="healthcare">Y tế / Chăm sóc</option>
+                        <option value="engineering">Kỹ thuật / Công nghệ</option>
+                        <option value="business">Kinh doanh</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
+
+                <div class="full">
+                    <label for="onboard-intent">Mục tiêu nghe chính</label>
+                    <select id="onboard-intent">
+                        <option value="focus" selected>Tập trung tỉnh táo</option>
+                        <option value="relax">Giảm căng thẳng, thư thái</option>
+                        <option value="uplift">Giữ tinh thần tích cực</option>
+                        <option value="youth-focus">Giới trẻ - học/làm hiệu suất</option>
+                        <option value="youth-relax">Giới trẻ - thư giãn tích cực</option>
+                        <option value="youth-uplift">Giới trẻ - tươi sáng năng lượng</option>
+                    </select>
+                </div>
+
+                <div class="onboarding-actions full">
+                    <button type="button" id="onboarding-skip">Bỏ qua</button>
+                    <button type="submit" class="primary">Lưu và gợi ý bài</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -543,12 +905,746 @@
         let autoTimeouts = [];
         let bellType = 'near'; // 'far' or 'near'
         const AUTO_RHYTHM_CYCLE = 23000; // 23 seconds cycle for deep meditation
+        const USER_PROFILE_KEY = 'boong-user-profile-v1';
+        const MUSIC_PREFERENCE_KEY = 'boong-music-preferences-v1';
+        const TRACK_CACHE_KEY = 'boong-chant-catalog-v1';
+        const STATIC_CATALOG_URL = 'assets/chant_catalog.json';
+        const TRACK_CACHE_TTL = 24 * 60 * 60 * 1000;
+        const TARGET_TRACK_COUNT = 120;
+        const PLAYLIST_SIZE = 120;
+        const SHORT_TRACK_SECONDS = 20 * 60;
+
+        let userProfile = null;
+        let chantTracks = [];
+        let curatedPlaylists = {
+            focus: [],
+            relax: [],
+            uplift: [],
+            'youth-focus': [],
+            'youth-relax': [],
+            'youth-uplift': []
+        };
+        let currentPlaylist = [];
+        let currentTrackIndex = -1;
+        let isCatalogLoading = false;
+        let bgAudio = null;
+        let shortTrackOnly = true;
+        let preferVietnamese = false;
+        let skipMeditationMusic = false;
+
+        const CURATED_BUCKETS = {
+            focus: [
+                ['mindful', 'mindfulness', 'focus', 'clarity', 'concentration'],
+                ['zen', 'breath', 'meditation', 'vipassana'],
+                ['sutra', 'mantra', 'chant', 'namo']
+            ],
+            relax: [
+                ['calm', 'peace', 'healing', 'gentle', 'tranquil'],
+                ['metta', 'compassion', 'loving', 'soft'],
+                ['mantra', 'meditation', 'sutra']
+            ],
+            uplift: [
+                ['joy', 'light', 'morning', 'positive', 'energy'],
+                ['hope', 'gratitude', 'heart', 'happy'],
+                ['chant', 'namo', 'mantra']
+            ],
+            'youth-focus': [
+                ['focus', 'study', 'clarity', 'deep work'],
+                ['light', 'zen', 'mindful', 'breath'],
+                ['mantra', 'chant']
+            ],
+            'youth-relax': [
+                ['calm', 'light', 'peace', 'soft'],
+                ['chill', 'gentle', 'healing', 'mindful'],
+                ['meditation', 'mantra']
+            ],
+            'youth-uplift': [
+                ['positive', 'joy', 'energy', 'morning'],
+                ['light', 'bright', 'happy', 'heart'],
+                ['chant', 'mantra', 'namo']
+            ]
+        };
 
         // Rhythm pattern (in ms from cycle start)
         const RHYTHM_PATTERN = {
             chuong: [0],           // 1 bell at start
             mo: [2000, 3000, 4000, 5000, 6000, 7000, 8000] // 7 mallet strikes starting at 2s
         };
+
+        function parseJSON(value) {
+            if (!value) return null;
+            try {
+                return JSON.parse(value);
+            } catch {
+                return null;
+            }
+        }
+
+        function getProfile() {
+            const cached = parseJSON(localStorage.getItem(USER_PROFILE_KEY));
+            return cached && typeof cached === 'object' ? cached : null;
+        }
+
+        function saveProfile(profile) {
+            localStorage.setItem(USER_PROFILE_KEY, JSON.stringify(profile));
+            userProfile = profile;
+            updateProfileSummary();
+        }
+
+        function loadMusicPreferences() {
+            const prefs = parseJSON(localStorage.getItem(MUSIC_PREFERENCE_KEY));
+            if (!prefs || typeof prefs !== 'object') return;
+
+            if (typeof prefs.shortTrackOnly === 'boolean') shortTrackOnly = prefs.shortTrackOnly;
+            if (typeof prefs.preferVietnamese === 'boolean') preferVietnamese = prefs.preferVietnamese;
+            if (typeof prefs.skipMeditationMusic === 'boolean') skipMeditationMusic = prefs.skipMeditationMusic;
+        }
+
+        function saveMusicPreferences() {
+            localStorage.setItem(
+                MUSIC_PREFERENCE_KEY,
+                JSON.stringify({
+                    shortTrackOnly,
+                    preferVietnamese,
+                    skipMeditationMusic
+                })
+            );
+        }
+
+        function updateProfileSummary() {
+            const summary = document.getElementById('profile-summary');
+            if (!summary) return;
+            if (!userProfile || userProfile.skipped) {
+                summary.textContent = 'Bạn chưa nhập hồ sơ. Vẫn có thể nghe ngay hoặc bấm Onboarding.';
+                return;
+            }
+
+            const intentLabel = {
+                focus: 'Tập trung tỉnh táo',
+                relax: 'Thư thái nhẹ nhàng',
+                uplift: 'Tích cực năng lượng',
+                'youth-focus': 'Giới trẻ - tập trung học/làm',
+                'youth-relax': 'Giới trẻ - thư giãn tích cực',
+                'youth-uplift': 'Giới trẻ - năng lượng sáng'
+            };
+
+            summary.textContent = `Hồ sơ: ${userProfile.name || 'Bạn'} | ${userProfile.occupationLabel} | ${userProfile.ageLabel} | Mục tiêu: ${intentLabel[userProfile.intent] || 'Tập trung'}`;
+        }
+
+        function openOnboarding() {
+            const modal = document.getElementById('onboarding-modal');
+            if (!modal) return;
+            modal.classList.add('active');
+
+            const nameInput = document.getElementById('onboard-name');
+            const ageInput = document.getElementById('onboard-age');
+            const jobInput = document.getElementById('onboard-job');
+            const intentInput = document.getElementById('onboard-intent');
+
+            if (userProfile && !userProfile.skipped) {
+                nameInput.value = userProfile.name || '';
+                ageInput.value = userProfile.ageGroup || 'adult';
+                jobInput.value = userProfile.occupation || 'office';
+                intentInput.value = userProfile.intent || 'focus';
+            }
+        }
+
+        function closeOnboarding() {
+            const modal = document.getElementById('onboarding-modal');
+            if (!modal) return;
+            modal.classList.remove('active');
+        }
+
+        function setMusicStatus(message) {
+            const el = document.getElementById('music-status');
+            if (el) el.textContent = message;
+        }
+
+        function encodeArchiveSegment(pathPart) {
+            return String(pathPart || '')
+                .split('/')
+                .map((part) => encodeURIComponent(part))
+                .join('/');
+        }
+
+        async function mapWithConcurrency(items, mapper, concurrency = 8) {
+            const output = [];
+            let currentIndex = 0;
+
+            async function worker() {
+                while (currentIndex < items.length) {
+                    const localIndex = currentIndex;
+                    currentIndex += 1;
+                    output[localIndex] = await mapper(items[localIndex], localIndex);
+                }
+            }
+
+            const workers = [];
+            for (let i = 0; i < concurrency; i++) workers.push(worker());
+            await Promise.all(workers);
+            return output;
+        }
+
+        function inferTagBlob(doc) {
+            const subjectText = Array.isArray(doc.subject)
+                ? doc.subject.join(' ')
+                : doc.subject || '';
+            return `${doc.title || ''} ${doc.creator || ''} ${subjectText}`.toLowerCase();
+        }
+
+        function getTrackBlob(track) {
+            return `${track.title || ''} ${track.creator || ''} ${track.tags || ''}`.toLowerCase();
+        }
+
+        function parseDurationSeconds(track) {
+            const candidates = [track.durationSeconds, track.duration, track.length, track.runtime];
+            for (const value of candidates) {
+                const seconds = Number.parseFloat(value);
+                if (Number.isFinite(seconds) && seconds > 0) {
+                    return Math.round(seconds);
+                }
+            }
+            return null;
+        }
+
+        function formatDuration(seconds) {
+            if (!Number.isFinite(seconds) || seconds <= 0) return '';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function isVietnameseTrack(track) {
+            const blob = `${track.title || ''} ${track.tags || ''}`.toLowerCase();
+            const viPattern = /[\u00c0-\u017f\u1ea0-\u1ef9]/;
+            const viWords = /(kinh|phat|niem|chu|thien|tung|quan am|a di da|nam mo|duoc su|vu lan|bat nha)/i;
+            return viPattern.test(blob) || viWords.test(blob);
+        }
+
+        function applyTrackFilters(tracks) {
+            let output = tracks.slice();
+
+            if (shortTrackOnly) {
+                output = output.filter((track) => {
+                    const durationSeconds = parseDurationSeconds(track);
+                    return Number.isFinite(durationSeconds) && durationSeconds <= SHORT_TRACK_SECONDS;
+                });
+            }
+
+            if (preferVietnamese) {
+                const viTracks = output.filter((track) => isVietnameseTrack(track));
+                const nonViTracks = output.filter((track) => !isVietnameseTrack(track));
+                output = viTracks.concat(nonViTracks);
+            }
+
+            return output;
+        }
+
+        function filterLikelyChantDocs(docs) {
+            const excludePattern = /(podcast|episode|radio|interview|news|talk show|politics|sports)/i;
+            const includePattern = /(chant|sutra|mantra|buddh|zen|meditation|namo|om|tham|kinh|phat|mindful)/i;
+
+            const primary = docs.filter((doc) => {
+                const blob = inferTagBlob(doc);
+                return includePattern.test(blob) && !excludePattern.test(blob);
+            });
+
+            if (primary.length >= 120) return primary;
+            return docs.filter((doc) => !excludePattern.test(inferTagBlob(doc)));
+        }
+
+        function computeTrackScore(track, mode = 'profile') {
+            const text = getTrackBlob(track);
+            const scoreByWords = (words, weight) => words.reduce((acc, word) => (text.includes(word) ? acc + weight : acc), 0);
+
+            let score = 0;
+            score += scoreByWords(['chant', 'sutra', 'mantra', 'namo', 'om', 'buddh', 'zen'], 3);
+            score += scoreByWords(['calm', 'peace', 'mindful', 'meditation', 'healing'], 2);
+
+            if (mode === 'focus') score += scoreByWords(['focus', 'mindful', 'zen', 'breath', 'clarity'], 2);
+            if (mode === 'relax') score += scoreByWords(['calm', 'soft', 'peace', 'healing', 'sleep'], 2);
+            if (mode === 'uplift') score += scoreByWords(['joy', 'light', 'morning', 'positive', 'energy'], 2);
+            if (mode === 'youth-focus') score += scoreByWords(['focus', 'study', 'light', 'clarity', 'deep work'], 2);
+            if (mode === 'youth-relax') score += scoreByWords(['calm', 'light', 'gentle', 'soft', 'chill'], 2);
+            if (mode === 'youth-uplift') score += scoreByWords(['positive', 'energy', 'joy', 'bright', 'morning'], 2);
+
+            if (preferVietnamese && isVietnameseTrack(track)) {
+                score += 2.5;
+            }
+
+            const durationSeconds = parseDurationSeconds(track);
+            if (Number.isFinite(durationSeconds) && durationSeconds <= SHORT_TRACK_SECONDS) {
+                score += 1.5;
+            }
+
+            return score;
+        }
+
+        function scoreWithProfile(track, profile, mode) {
+            let score = computeTrackScore(track, mode);
+            const blob = getTrackBlob(track);
+            const addIfIncludes = (words, value) => {
+                words.forEach((word) => {
+                    if (blob.includes(word)) score += value;
+                });
+            };
+
+            if (!profile || profile.skipped) return score;
+
+            const occupationWords = {
+                office: ['focus', 'mindful', 'calm', 'clarity'],
+                creative: ['zen', 'flow', 'light', 'inspire'],
+                education: ['patience', 'compassion', 'mindful'],
+                healthcare: ['healing', 'compassion', 'care'],
+                engineering: ['focus', 'clarity', 'steady'],
+                business: ['balance', 'clarity', 'positive'],
+                other: ['calm', 'mindful', 'peace']
+            };
+
+            const ageWords = {
+                young: ['light', 'energy', 'uplift'],
+                adult: ['focus', 'balance', 'calm'],
+                mid: ['calm', 'healing', 'peace'],
+                senior: ['gentle', 'peace', 'compassion']
+            };
+
+            addIfIncludes(occupationWords[profile.occupation] || [], 1.8);
+            addIfIncludes(ageWords[profile.ageGroup] || [], 1.5);
+            addIfIncludes([profile.intent || 'focus'], 1.8);
+
+            if (profile.ageGroup === 'young') {
+                addIfIncludes(['light', 'focus', 'energy', 'positive', 'study'], 1.3);
+            }
+
+            if (preferVietnamese && isVietnameseTrack(track)) {
+                score += 2.2;
+            }
+
+            return score;
+        }
+
+        function buildCuratedMode(mode) {
+            const buckets = CURATED_BUCKETS[mode] || [];
+            const filtered = applyTrackFilters(chantTracks);
+            const used = new Set();
+            const output = [];
+
+            buckets.forEach((keywords, bucketIndex) => {
+                const inBucket = filtered
+                    .filter((track) => {
+                        const blob = getTrackBlob(track);
+                        return keywords.some((word) => blob.includes(word));
+                    })
+                    .map((track) => ({
+                        track,
+                        score: computeTrackScore(track, mode) + (10 - bucketIndex)
+                    }))
+                    .sort((a, b) => b.score - a.score)
+                    .map((item) => item.track);
+
+                inBucket.forEach((track) => {
+                    if (used.has(track.id)) return;
+                    used.add(track.id);
+                    output.push(track);
+                });
+            });
+
+            const fill = filtered
+                .filter((track) => !used.has(track.id))
+                .map((track) => ({ track, score: computeTrackScore(track, mode) }))
+                .sort((a, b) => b.score - a.score)
+                .map((item) => item.track);
+
+            return output.concat(fill).slice(0, PLAYLIST_SIZE);
+        }
+
+        function buildCuratedPlaylists() {
+            curatedPlaylists = {
+                focus: buildCuratedMode('focus'),
+                relax: buildCuratedMode('relax'),
+                uplift: buildCuratedMode('uplift'),
+                'youth-focus': buildCuratedMode('youth-focus'),
+                'youth-relax': buildCuratedMode('youth-relax'),
+                'youth-uplift': buildCuratedMode('youth-uplift')
+            };
+        }
+
+        function buildPlaylist(mode) {
+            if (!chantTracks.length) return [];
+
+            const curatedModes = new Set(['focus', 'relax', 'uplift', 'youth-focus', 'youth-relax', 'youth-uplift']);
+            let resolvedMode = mode;
+
+            if (mode === 'profile') {
+                if (userProfile && !userProfile.skipped) {
+                    if (userProfile.ageGroup === 'young') {
+                        if (userProfile.intent === 'relax') {
+                            resolvedMode = 'youth-relax';
+                        } else if (userProfile.intent === 'uplift') {
+                            resolvedMode = 'youth-uplift';
+                        } else {
+                            resolvedMode = 'youth-focus';
+                        }
+                    } else {
+                        resolvedMode = userProfile.intent || 'focus';
+                    }
+                } else {
+                    resolvedMode = 'focus';
+                }
+            }
+
+            if (curatedModes.has(resolvedMode)) {
+                const curated = curatedPlaylists[resolvedMode] || [];
+                return curated.slice(0, PLAYLIST_SIZE);
+            }
+
+            const normalizedMode = resolvedMode;
+            const scored = applyTrackFilters(chantTracks)
+                .map((track) => ({
+                    track,
+                    score: scoreWithProfile(track, userProfile, normalizedMode || 'focus')
+                }))
+                .sort((a, b) => b.score - a.score)
+                .map((item) => item.track);
+
+            return scored.slice(0, PLAYLIST_SIZE);
+        }
+
+        function renderTrackList() {
+            const list = document.getElementById('music-track-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            currentPlaylist.forEach((track, index) => {
+                const option = document.createElement('option');
+                const creator = track.creator ? ` - ${track.creator}` : '';
+                const duration = formatDuration(parseDurationSeconds(track));
+                option.value = String(index);
+                option.textContent = `${index + 1}. ${track.title}${creator}${duration ? ` (${duration})` : ''}`;
+                list.appendChild(option);
+            });
+
+            if (currentPlaylist.length) {
+                list.selectedIndex = 0;
+            }
+        }
+
+        async function playTrackAt(index, shouldPlay = true) {
+            if (!bgAudio || !currentPlaylist.length) return;
+            if (index < 0 || index >= currentPlaylist.length) return;
+            if (skipMeditationMusic) {
+                setMusicStatus('Bạn đang bật bỏ qua âm.');
+                return;
+            }
+
+            currentTrackIndex = index;
+            const track = currentPlaylist[index];
+            const list = document.getElementById('music-track-list');
+            if (list) list.selectedIndex = index;
+
+            if (bgAudio.src !== track.url) {
+                bgAudio.src = track.url;
+            }
+
+            const nowPlaying = document.getElementById('music-now-playing');
+            if (nowPlaying) {
+                const duration = formatDuration(parseDurationSeconds(track));
+                nowPlaying.textContent = `Đang chọn: ${track.title}${track.creator ? ` - ${track.creator}` : ''}${duration ? ` (${duration})` : ''}`;
+            }
+
+            if (!shouldPlay) {
+                updatePlayPauseLabel();
+                return;
+            }
+
+            try {
+                await bgAudio.play();
+                updatePlayPauseLabel();
+            } catch {
+                setMusicStatus('Trình duyệt chặn tự phát. Bấm Play để bắt đầu.');
+                updatePlayPauseLabel();
+            }
+        }
+
+        function updatePlayPauseLabel() {
+            const btn = document.getElementById('music-play-pause');
+            if (!btn || !bgAudio) return;
+            btn.textContent = bgAudio.paused ? 'Play' : 'Pause';
+        }
+
+        function updateFilterButtons() {
+            const shortBtn = document.getElementById('filter-short');
+            const viBtn = document.getElementById('filter-viet');
+            const skipBtn = document.getElementById('filter-skip-music');
+            if (shortBtn) shortBtn.classList.toggle('active', shortTrackOnly);
+            if (viBtn) viBtn.classList.toggle('active', preferVietnamese);
+            if (skipBtn) {
+                skipBtn.classList.toggle('active', skipMeditationMusic);
+                skipBtn.textContent = skipMeditationMusic ? 'Bật âm lại' : 'Bỏ qua âm';
+            }
+        }
+
+        function applyMusicSkipState() {
+            const playPauseBtn = document.getElementById('music-play-pause');
+            const nextBtn = document.getElementById('music-next');
+            const loadBtn = document.getElementById('music-load');
+            const modeSelect = document.getElementById('playlist-mode');
+            const trackList = document.getElementById('music-track-list');
+            const volumeSlider = document.getElementById('music-volume');
+            const filterShortBtn = document.getElementById('filter-short');
+            const filterVietBtn = document.getElementById('filter-viet');
+            const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
+            const resumePlayBtn = document.getElementById('resume-music-play');
+
+            const disabled = skipMeditationMusic;
+            if (playPauseBtn) playPauseBtn.disabled = disabled;
+            if (nextBtn) nextBtn.disabled = disabled;
+            if (loadBtn) loadBtn.disabled = disabled;
+            if (modeSelect) modeSelect.disabled = disabled;
+            if (trackList) trackList.disabled = disabled;
+            if (volumeSlider) volumeSlider.disabled = disabled;
+            if (filterShortBtn) filterShortBtn.disabled = disabled;
+            if (filterVietBtn) filterVietBtn.disabled = disabled;
+            if (resumeNoPlayBtn) resumeNoPlayBtn.classList.toggle('show', disabled);
+            if (resumePlayBtn) resumePlayBtn.classList.toggle('show', disabled);
+
+            if (disabled && bgAudio) {
+                bgAudio.pause();
+                bgAudio.currentTime = 0;
+                updatePlayPauseLabel();
+                setMusicStatus('Đã bật chế độ bỏ qua âm.');
+            }
+        }
+
+        async function enableMusicWithoutPlay() {
+            skipMeditationMusic = false;
+            saveMusicPreferences();
+            updateFilterButtons();
+            applyMusicSkipState();
+
+            const modeSelect = document.getElementById('playlist-mode');
+            const selectedMode = modeSelect ? modeSelect.value : 'profile';
+
+            await loadChantCatalog(false);
+            await rebuildPlaylist(selectedMode);
+            setMusicStatus('Đã bật nhạc. Bạn có thể bấm Play để phát.');
+        }
+
+        async function enableMusicAndPlay() {
+            skipMeditationMusic = false;
+            saveMusicPreferences();
+            updateFilterButtons();
+            applyMusicSkipState();
+
+            const modeSelect = document.getElementById('playlist-mode');
+            const selectedMode = modeSelect ? modeSelect.value : 'profile';
+
+            await loadChantCatalog(false);
+            await rebuildPlaylist(selectedMode);
+
+            if (currentPlaylist.length) {
+                await playTrackAt(0, true);
+            }
+        }
+
+        async function togglePlayPause() {
+            if (!bgAudio) return;
+            if (skipMeditationMusic) {
+                setMusicStatus('Bạn đang bật bỏ qua âm.');
+                return;
+            }
+
+            if (!currentPlaylist.length) {
+                setMusicStatus('Chưa có bài. Hãy bấm Tải danh sách bài kinh.');
+                return;
+            }
+
+            if (currentTrackIndex < 0) {
+                await playTrackAt(0, true);
+                return;
+            }
+
+            if (bgAudio.paused) {
+                await bgAudio.play();
+            } else {
+                bgAudio.pause();
+            }
+
+            updatePlayPauseLabel();
+        }
+
+        async function playNextTrack() {
+            if (skipMeditationMusic) {
+                setMusicStatus('Bạn đang bật bỏ qua âm.');
+                return;
+            }
+            if (!currentPlaylist.length) return;
+            const next = (currentTrackIndex + 1 + currentPlaylist.length) % currentPlaylist.length;
+            await playTrackAt(next, true);
+        }
+
+        async function loadChantCatalog(forceReload = false) {
+            if (skipMeditationMusic && !forceReload) {
+                setMusicStatus('Đang bỏ qua âm. Bạn có thể bật lại bất kỳ lúc nào.');
+                return chantTracks;
+            }
+
+            if (isCatalogLoading) return chantTracks;
+            isCatalogLoading = true;
+            setMusicStatus('Đang tải dữ liệu bài kinh...');
+
+            try {
+                if (!forceReload) {
+                    try {
+                        const staticRes = await fetch(STATIC_CATALOG_URL, { cache: 'no-cache' });
+                        if (staticRes.ok) {
+                            const staticCatalog = await staticRes.json();
+                            const staticTracks = Array.isArray(staticCatalog?.tracks) ? staticCatalog.tracks : [];
+                            if (staticTracks.length) {
+                                chantTracks = staticTracks.slice(0, TARGET_TRACK_COUNT);
+                                buildCuratedPlaylists();
+                                setMusicStatus(`Đã nạp catalog tĩnh: ${chantTracks.length} bài.`);
+                                return chantTracks;
+                            }
+                        }
+                    } catch {
+                        // Fallback to cache/remote below if static catalog is unavailable.
+                    }
+                }
+
+                if (!forceReload) {
+                    const cached = parseJSON(localStorage.getItem(TRACK_CACHE_KEY));
+                    if (cached && Array.isArray(cached.tracks) && cached.tracks.length) {
+                        const age = Date.now() - (cached.timestamp || 0);
+                        if (age < TRACK_CACHE_TTL) {
+                            chantTracks = cached.tracks;
+                            buildCuratedPlaylists();
+                            setMusicStatus(`Dùng cache online: ${chantTracks.length} bài.`);
+                            return chantTracks;
+                        }
+                    }
+                }
+
+                setMusicStatus('Không có catalog tĩnh. Đang tải từ nguồn công khai...');
+
+                const params = new URLSearchParams();
+                params.set('q', '(mediatype:audio) AND (title:(chant OR chanting OR sutra OR mantra OR buddhist OR zen OR meditation OR namo OR om))');
+                params.append('fl[]', 'identifier');
+                params.append('fl[]', 'title');
+                params.append('fl[]', 'creator');
+                params.append('fl[]', 'subject');
+                params.set('rows', '260');
+                params.set('page', '1');
+                params.set('output', 'json');
+
+                const searchUrl = `https://archive.org/advancedsearch.php?${params.toString()}`;
+                const searchRes = await fetch(searchUrl);
+                if (!searchRes.ok) throw new Error('Cannot search tracks');
+
+                const searchData = await searchRes.json();
+                const docsRaw = searchData?.response?.docs || [];
+                const docs = filterLikelyChantDocs(docsRaw).slice(0, 200);
+
+                const mapped = await mapWithConcurrency(
+                    docs,
+                    async (doc) => {
+                        try {
+                            const metaRes = await fetch(`https://archive.org/metadata/${encodeArchiveSegment(doc.identifier)}`);
+                            if (!metaRes.ok) return null;
+                            const meta = await metaRes.json();
+                            const files = Array.isArray(meta.files) ? meta.files : [];
+                            const playable = files.find((file) => {
+                                if (file.private) return false;
+                                const format = String(file.format || '').toLowerCase();
+                                const name = String(file.name || '').toLowerCase();
+                                return (
+                                    format.includes('mp3') ||
+                                    format.includes('ogg') ||
+                                    format.includes('m4a') ||
+                                    name.endsWith('.mp3') ||
+                                    name.endsWith('.ogg') ||
+                                    name.endsWith('.m4a')
+                                );
+                            });
+
+                            if (!playable || !playable.name) return null;
+
+                            return {
+                                id: `${doc.identifier}:${playable.name}`,
+                                title: doc.title || doc.identifier,
+                                creator: doc.creator || '',
+                                tags: inferTagBlob(doc),
+                                durationSeconds: parseDurationSeconds(playable),
+                                url: `https://archive.org/download/${encodeArchiveSegment(doc.identifier)}/${encodeArchiveSegment(playable.name)}`
+                            };
+                        } catch {
+                            return null;
+                        }
+                    },
+                    9
+                );
+
+                const uniqueByUrl = [];
+                const seen = new Set();
+                mapped.forEach((item) => {
+                    if (!item || seen.has(item.url)) return;
+                    seen.add(item.url);
+                    uniqueByUrl.push(item);
+                });
+
+                chantTracks = uniqueByUrl.slice(0, TARGET_TRACK_COUNT);
+                buildCuratedPlaylists();
+
+                if (!chantTracks.length) {
+                    throw new Error('No playable tracks found');
+                }
+
+                localStorage.setItem(
+                    TRACK_CACHE_KEY,
+                    JSON.stringify({
+                        timestamp: Date.now(),
+                        tracks: chantTracks
+                    })
+                );
+
+                setMusicStatus(`Đã tải ${chantTracks.length} bài có thể nghe trực tiếp.`);
+                return chantTracks;
+            } catch {
+                setMusicStatus('Không tải được từ mạng. Nếu trước đó có cache, hãy thử tải lại sau.');
+                return chantTracks;
+            } finally {
+                isCatalogLoading = false;
+            }
+        }
+
+        async function rebuildPlaylist(mode) {
+            if (skipMeditationMusic) {
+                currentPlaylist = [];
+                currentTrackIndex = -1;
+                const list = document.getElementById('music-track-list');
+                if (list) list.innerHTML = '';
+                const nowPlayingSkip = document.getElementById('music-now-playing');
+                if (nowPlayingSkip) {
+                    nowPlayingSkip.textContent = 'Đã bỏ qua âm. Bạn vẫn dùng chuông/mõ bình thường.';
+                }
+                return;
+            }
+
+            buildCuratedPlaylists();
+            currentPlaylist = buildPlaylist(mode);
+            renderTrackList();
+            currentTrackIndex = currentPlaylist.length ? 0 : -1;
+            const nowPlaying = document.getElementById('music-now-playing');
+            if (nowPlaying) {
+                const filterLabels = [];
+                if (shortTrackOnly) filterLabels.push('<=20p');
+                if (preferVietnamese) filterLabels.push('uu tien Viet');
+                const suffix = filterLabels.length ? ` | Loc: ${filterLabels.join(', ')}` : '';
+                nowPlaying.textContent = currentPlaylist.length
+                    ? `Sẵn sàng ${currentPlaylist.length} bài. Bấm Play để nghe.${suffix}`
+                    : 'Chưa có bài nào trong danh sách.';
+            }
+        }
 
         function initAudio() {
             if (!audioCtx) {
@@ -643,13 +1739,10 @@
         }
 
         function playAutoRhythm() {
-            const startTime = audioCtx.currentTime;
-
             // Schedule chuông strikes
             RHYTHM_PATTERN.chuong.forEach(time => {
                 const timeoutId = setTimeout(() => {
                     if (autoMode) {
-                        const btn = document.getElementById('btn-chuong');
                         triggerRipple('btn-chuong');
                         // Play chuông sound directly
                         playChuongSound(audioCtx.currentTime);
@@ -662,7 +1755,6 @@
             RHYTHM_PATTERN.mo.forEach(time => {
                 const timeoutId = setTimeout(() => {
                     if (autoMode) {
-                        const btn = document.getElementById('btn-mo');
                         triggerRipple('btn-mo');
                         // Play mõ sound directly
                         if (moSampleBuffer) {
@@ -787,7 +1879,9 @@
         }
 
         // Setup event listeners
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadMusicPreferences();
+
             // Bell selector
             const bellFarBtn = document.getElementById('bell-far');
             const bellNearBtn = document.getElementById('bell-near');
@@ -820,6 +1914,149 @@
                     stopAutoMode();
                 }
             });
+
+            userProfile = getProfile();
+            updateProfileSummary();
+
+            const profileTrigger = document.getElementById('profile-trigger');
+            const onboardingForm = document.getElementById('onboarding-form');
+            const onboardingSkip = document.getElementById('onboarding-skip');
+
+            profileTrigger.addEventListener('click', () => {
+                openOnboarding();
+            });
+
+            onboardingForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const ageEl = document.getElementById('onboard-age');
+                const jobEl = document.getElementById('onboard-job');
+                const intentEl = document.getElementById('onboard-intent');
+
+                const ageLabel = ageEl.options[ageEl.selectedIndex].textContent;
+                const occupationLabel = jobEl.options[jobEl.selectedIndex].textContent;
+
+                saveProfile({
+                    name: document.getElementById('onboard-name').value.trim(),
+                    ageGroup: ageEl.value,
+                    ageLabel,
+                    occupation: jobEl.value,
+                    occupationLabel,
+                    intent: (ageEl.value === 'young' && !String(intentEl.value).startsWith('youth-'))
+                        ? `youth-${intentEl.value}`
+                        : intentEl.value,
+                    onboardingCompleted: true,
+                    skipped: false,
+                    updatedAt: Date.now()
+                });
+
+                closeOnboarding();
+                const mode = document.getElementById('playlist-mode').value;
+                await rebuildPlaylist(mode);
+                setMusicStatus('Đã lưu hồ sơ. Danh sách đã được gợi ý lại theo thông tin của bạn.');
+            });
+
+            onboardingSkip.addEventListener('click', () => {
+                saveProfile({
+                    skipped: true,
+                    onboardingCompleted: true,
+                    updatedAt: Date.now()
+                });
+                closeOnboarding();
+                setMusicStatus('Bạn đã bỏ qua onboarding. Vẫn có thể nghe và tự chọn bài.');
+            });
+
+            if (!userProfile || !userProfile.onboardingCompleted) {
+                openOnboarding();
+            }
+
+            bgAudio = document.getElementById('chant-audio');
+            const playPauseBtn = document.getElementById('music-play-pause');
+            const nextBtn = document.getElementById('music-next');
+            const loadBtn = document.getElementById('music-load');
+            const modeSelect = document.getElementById('playlist-mode');
+            const trackList = document.getElementById('music-track-list');
+            const volumeSlider = document.getElementById('music-volume');
+            const filterShortBtn = document.getElementById('filter-short');
+            const filterVietBtn = document.getElementById('filter-viet');
+            const filterSkipMusicBtn = document.getElementById('filter-skip-music');
+            const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
+            const resumePlayBtn = document.getElementById('resume-music-play');
+
+            volumeSlider.addEventListener('input', () => {
+                bgAudio.volume = Number(volumeSlider.value);
+            });
+            bgAudio.volume = Number(volumeSlider.value);
+
+            playPauseBtn.addEventListener('click', async () => {
+                await togglePlayPause();
+            });
+
+            nextBtn.addEventListener('click', async () => {
+                await playNextTrack();
+            });
+
+            loadBtn.addEventListener('click', async () => {
+                await loadChantCatalog(true);
+                await rebuildPlaylist(modeSelect.value);
+            });
+
+            filterShortBtn.addEventListener('click', async () => {
+                shortTrackOnly = !shortTrackOnly;
+                saveMusicPreferences();
+                updateFilterButtons();
+                await rebuildPlaylist(modeSelect.value);
+            });
+
+            filterVietBtn.addEventListener('click', async () => {
+                preferVietnamese = !preferVietnamese;
+                saveMusicPreferences();
+                updateFilterButtons();
+                await rebuildPlaylist(modeSelect.value);
+            });
+
+            filterSkipMusicBtn.addEventListener('click', async () => {
+                skipMeditationMusic = !skipMeditationMusic;
+                saveMusicPreferences();
+                updateFilterButtons();
+                applyMusicSkipState();
+                if (!skipMeditationMusic) {
+                    await loadChantCatalog(false);
+                }
+                await rebuildPlaylist(modeSelect.value);
+            });
+
+            resumeNoPlayBtn.addEventListener('click', async () => {
+                await enableMusicWithoutPlay();
+            });
+
+            resumePlayBtn.addEventListener('click', async () => {
+                await enableMusicAndPlay();
+            });
+
+            modeSelect.addEventListener('change', async () => {
+                await rebuildPlaylist(modeSelect.value);
+            });
+
+            trackList.addEventListener('change', async () => {
+                const index = Number(trackList.value);
+                await playTrackAt(index, true);
+            });
+
+            bgAudio.addEventListener('play', () => updatePlayPauseLabel());
+            bgAudio.addEventListener('pause', () => updatePlayPauseLabel());
+            bgAudio.addEventListener('ended', async () => {
+                await playNextTrack();
+            });
+            bgAudio.addEventListener('error', () => {
+                setMusicStatus('Bài đang phát bị lỗi nguồn. Nhấn Next để chuyển bài khác.');
+            });
+
+            updateFilterButtons();
+            applyMusicSkipState();
+            await loadChantCatalog(false);
+            await rebuildPlaylist(modeSelect.value);
+            updatePlayPauseLabel();
         });
     </script>
 </body>
