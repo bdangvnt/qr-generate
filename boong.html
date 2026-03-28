@@ -514,6 +514,15 @@
             letter-spacing: 0.5px;
         }
 
+        .music-mode-hint {
+            flex-basis: 100%;
+            font-size: 0.72rem;
+            opacity: 0.78;
+            letter-spacing: 0.4px;
+            color: rgba(243, 229, 171, 0.92);
+            margin-top: -0.2rem;
+        }
+
         .music-resume-btn {
             display: none;
         }
@@ -826,7 +835,7 @@
     <div class="toggle-container">
         <span class="toggle-label">TỰ ĐỘNG</span>
         <div class="toggle-switch" id="auto-toggle">
-            <span class="auto-mode-indicator">TỰ</span>
+            <span class="auto-mode-indicator"></span>
         </div>
     </div>
 
@@ -867,6 +876,7 @@
         <div class="music-top">
             <div class="profile-summary" id="profile-summary">Bạn chưa nhập hồ sơ. Vẫn có thể nghe ngay hoặc bấm Onboarding.</div>
             <div class="music-status" id="music-status">Danh sách nhạc đang sẵn sàng tải...</div>
+            <div class="music-mode-hint" id="music-mode-hint">Gợi ý theo hồ sơ đang dùng mode: Focus curated (văn phòng).</div>
             <button class="music-btn music-resume-btn" id="resume-music-no-play" type="button">Bật nhạc (chưa phát)</button>
             <button class="music-btn music-resume-btn" id="resume-music-play" type="button">Bật nhạc và phát</button>
         </div>
@@ -880,6 +890,11 @@
                 <option value="youth-focus">Giới trẻ - học/làm tập trung</option>
                 <option value="youth-relax">Giới trẻ - thư giãn tích cực</option>
                 <option value="youth-uplift">Giới trẻ - năng lượng sáng</option>
+                <option value="lap_trinh_vien">Nghề: Lập trình viên</option>
+                <option value="ke_toan">Nghề: Kế toán</option>
+                <option value="phap_che">Nghề: Pháp chế</option>
+                <option value="kinh_doanh">Nghề: Kinh doanh</option>
+                <option value="sang_tao">Nghề: Sáng tạo</option>
             </select>
             <button class="music-btn" id="music-load">Tải danh sách bài kinh</button>
             <button class="music-btn" id="music-play-pause">Play</button>
@@ -977,11 +992,11 @@
         const AUTO_RHYTHM_CYCLE = 23000; // 23 seconds cycle for deep meditation
         const USER_PROFILE_KEY = 'boong-user-profile-v1';
         const MUSIC_PREFERENCE_KEY = 'boong-music-preferences-v1';
-        const TRACK_CACHE_KEY = 'boong-chant-catalog-v1';
-        const STATIC_CATALOG_URL = 'assets/chant_catalog.json';
+        const TRACK_CACHE_KEY = 'boong-chant-catalog-v2';
+        const STATIC_CATALOG_URL = 'assets/meditation_job_playlists_150.json';
         const TRACK_CACHE_TTL = 24 * 60 * 60 * 1000;
-        const TARGET_TRACK_COUNT = 120;
-        const PLAYLIST_SIZE = 120;
+        const TARGET_TRACK_COUNT = 150;
+        const PLAYLIST_SIZE = 150;
         const SHORT_TRACK_SECONDS = 20 * 60;
 
         let userProfile = null;
@@ -1000,6 +1015,8 @@
         let bgAudio = null;
         let shortTrackOnly = true;
         let skipMeditationMusic = false;
+        let lastRequestedMode = 'profile';
+        let lastResolvedMode = 'focus';
 
         const CURATED_BUCKETS = {
             focus: [
@@ -1174,6 +1191,52 @@
             return null;
         }
 
+        function normalizeCatalogTrack(track, index = 0, category = null) {
+            if (!track || !track.url) return null;
+
+            return {
+                id: track.id || `catalog-${index}-${track.url}`,
+                title: track.title || `Track ${index + 1}`,
+                creator: track.creator || '',
+                tags: track.tags || `${track.title || ''} ${track.creator || ''}`,
+                durationSeconds: parseDurationSeconds(track),
+                url: track.url,
+                category: category || track.category || null
+            };
+        }
+
+        function extractTracksFromCatalog(catalog) {
+            const tracks = [];
+
+            if (Array.isArray(catalog?.tracks)) {
+                catalog.tracks.forEach((track, index) => {
+                    const normalized = normalizeCatalogTrack(track, index);
+                    if (normalized) tracks.push(normalized);
+                });
+            }
+
+            if (catalog?.categories && typeof catalog.categories === 'object') {
+                Object.entries(catalog.categories).forEach(([categoryKey, group]) => {
+                    const groupTracks = Array.isArray(group?.tracks) ? group.tracks : [];
+                    groupTracks.forEach((track, index) => {
+                        const normalized = normalizeCatalogTrack(track, index, categoryKey);
+                        if (normalized) tracks.push(normalized);
+                    });
+                });
+            }
+
+            const uniqueTracks = [];
+            const seen = new Set();
+            tracks.forEach((track) => {
+                const key = `${track.url}::${track.title}`;
+                if (seen.has(key)) return;
+                seen.add(key);
+                uniqueTracks.push(track);
+            });
+
+            return uniqueTracks;
+        }
+
         function formatDuration(seconds) {
             if (!Number.isFinite(seconds) || seconds <= 0) return '';
             const mins = Math.floor(seconds / 60);
@@ -1314,10 +1377,6 @@
                 addIfIncludes(['light', 'focus', 'energy', 'positive', 'study'], 1.3);
             }
 
-            if (preferVietnamese && isVietnameseTrack(track)) {
-                score += 2.2;
-            }
-
             return score;
         }
 
@@ -1363,22 +1422,105 @@
                 uplift: buildCuratedMode('uplift'),
                 'youth-focus': buildCuratedMode('youth-focus'),
                 'youth-relax': buildCuratedMode('youth-relax'),
-                'youth-uplift': buildCuratedMode('youth-uplift')
+                'youth-uplift': buildCuratedMode('youth-uplift'),
+                lap_trinh_vien: applyTrackFilters(chantTracks.filter((track) => track.category === 'lap_trinh_vien')).slice(0, PLAYLIST_SIZE),
+                ke_toan: applyTrackFilters(chantTracks.filter((track) => track.category === 'ke_toan')).slice(0, PLAYLIST_SIZE),
+                phap_che: applyTrackFilters(chantTracks.filter((track) => track.category === 'phap_che')).slice(0, PLAYLIST_SIZE),
+                kinh_doanh: applyTrackFilters(chantTracks.filter((track) => track.category === 'kinh_doanh')).slice(0, PLAYLIST_SIZE),
+                sang_tao: applyTrackFilters(chantTracks.filter((track) => track.category === 'sang_tao')).slice(0, PLAYLIST_SIZE)
             };
+        }
+
+        function normalizeIntent(intent) {
+            const raw = String(intent || '').toLowerCase();
+            if (raw.endsWith('relax')) return 'relax';
+            if (raw.endsWith('uplift')) return 'uplift';
+            return 'focus';
+        }
+
+        function resolveOccupationMode(occupation, intent) {
+            const normalizedIntent = normalizeIntent(intent);
+
+            if (occupation === 'engineering') {
+                return 'lap_trinh_vien';
+            }
+
+            if (occupation === 'creative') {
+                return 'sang_tao';
+            }
+
+            if (occupation === 'business') {
+                return normalizedIntent === 'relax' ? 'ke_toan' : 'kinh_doanh';
+            }
+
+            if (occupation === 'education' || occupation === 'healthcare') {
+                return normalizedIntent === 'uplift' ? 'kinh_doanh' : 'phap_che';
+            }
+
+            if (occupation === 'office') {
+                if (normalizedIntent === 'relax') return 'phap_che';
+                if (normalizedIntent === 'uplift') return 'kinh_doanh';
+                return 'lap_trinh_vien';
+            }
+
+            if (occupation === 'other') {
+                if (normalizedIntent === 'relax') return 'phap_che';
+                if (normalizedIntent === 'uplift') return 'kinh_doanh';
+                return 'ke_toan';
+            }
+
+            return null;
+        }
+
+        function getModeLabel(mode) {
+            const labels = {
+                profile: 'Gợi ý theo hồ sơ',
+                focus: 'Focus curated (văn phòng)',
+                relax: 'Relax curated (nhẹ nhàng)',
+                uplift: 'Uplift curated (tích cực)',
+                'youth-focus': 'Giới trẻ - học/làm tập trung',
+                'youth-relax': 'Giới trẻ - thư giãn tích cực',
+                'youth-uplift': 'Giới trẻ - năng lượng sáng',
+                lap_trinh_vien: 'Nghề: Lập trình viên',
+                ke_toan: 'Nghề: Kế toán',
+                phap_che: 'Nghề: Pháp chế',
+                kinh_doanh: 'Nghề: Kinh doanh',
+                sang_tao: 'Nghề: Sáng tạo'
+            };
+
+            return labels[mode] || mode;
+        }
+
+        function updateModeHint(requestedMode, resolvedMode) {
+            const hintEl = document.getElementById('music-mode-hint');
+            if (!hintEl) return;
+
+            lastRequestedMode = requestedMode || lastRequestedMode;
+            lastResolvedMode = resolvedMode || lastResolvedMode;
+
+            if (lastRequestedMode === 'profile') {
+                hintEl.textContent = `Gợi ý theo hồ sơ đang dùng mode: ${getModeLabel(lastResolvedMode)}.`;
+                return;
+            }
+
+            hintEl.textContent = `Mode hiện tại: ${getModeLabel(lastResolvedMode)}.`;
         }
 
         function buildPlaylist(mode) {
             if (!chantTracks.length) return [];
 
-            const curatedModes = new Set(['focus', 'relax', 'uplift', 'youth-focus', 'youth-relax', 'youth-uplift']);
+            const curatedModes = new Set(['focus', 'relax', 'uplift', 'youth-focus', 'youth-relax', 'youth-uplift', 'lap_trinh_vien', 'ke_toan', 'phap_che', 'kinh_doanh', 'sang_tao']);
             let resolvedMode = mode;
 
             if (mode === 'profile') {
                 if (userProfile && !userProfile.skipped) {
-                    if (userProfile.ageGroup === 'young') {
-                        if (userProfile.intent === 'relax') {
+                    const occupationMode = resolveOccupationMode(userProfile.occupation, userProfile.intent);
+                    if (occupationMode && curatedModes.has(occupationMode)) {
+                        resolvedMode = occupationMode;
+                    } else if (userProfile.ageGroup === 'young') {
+                        if (userProfile.intent === 'relax' || userProfile.intent === 'youth-relax') {
                             resolvedMode = 'youth-relax';
-                        } else if (userProfile.intent === 'uplift') {
+                        } else if (userProfile.intent === 'uplift' || userProfile.intent === 'youth-uplift') {
                             resolvedMode = 'youth-uplift';
                         } else {
                             resolvedMode = 'youth-focus';
@@ -1390,6 +1532,8 @@
                     resolvedMode = 'focus';
                 }
             }
+
+            updateModeHint(mode, resolvedMode);
 
             if (curatedModes.has(resolvedMode)) {
                 const curated = curatedPlaylists[resolvedMode] || [];
@@ -1582,110 +1726,27 @@
 
             try {
                 if (!forceReload) {
-                    try {
-                        const staticRes = await fetch(STATIC_CATALOG_URL, { cache: 'no-cache' });
-                        if (staticRes.ok) {
-                            const staticCatalog = await staticRes.json();
-                            const staticTracks = Array.isArray(staticCatalog?.tracks) ? staticCatalog.tracks : [];
-                            if (staticTracks.length) {
-                                chantTracks = staticTracks.slice(0, TARGET_TRACK_COUNT);
-                                buildCuratedPlaylists();
-                                setMusicStatus(`Đã nạp catalog tĩnh: ${chantTracks.length} bài (chỉ curated trực tiếp: không lời hoặc tiếng Việt).`);
-                                return chantTracks;
-                            }
-                        }
-                    } catch {
-                        // Fallback to cache/remote below if static catalog is unavailable.
-                    }
-                }
-
-                if (!forceReload) {
                     const cached = parseJSON(localStorage.getItem(TRACK_CACHE_KEY));
                     if (cached && Array.isArray(cached.tracks) && cached.tracks.length) {
                         const age = Date.now() - (cached.timestamp || 0);
                         if (age < TRACK_CACHE_TTL) {
                             chantTracks = cached.tracks;
                             buildCuratedPlaylists();
-                            setMusicStatus(`Dùng cache online: ${chantTracks.length} bài.`);
+                            setMusicStatus(`Đã nạp playlist mới từ cache: ${chantTracks.length} bài.`);
                             return chantTracks;
                         }
                     }
                 }
 
-                setMusicStatus('Không có catalog tĩnh. Đang tải từ nguồn công khai...');
+                const staticRes = await fetch(STATIC_CATALOG_URL, { cache: 'no-cache' });
+                if (!staticRes.ok) throw new Error('Cannot load new playlist file');
 
-                const params = new URLSearchParams();
-                // Search for instrumental OR Vietnamese meditation/chanting music
-                params.set('q', '(mediatype:audio) AND (title:(chant OR chanting OR sutra OR mantra OR buddhist OR zen OR meditation OR namo OR om OR "khong loi" OR "instrumental" OR "kinh" OR "phat" OR "niem phat" OR "nhac thien" OR "music without" OR "ambient"))');
-                params.append('fl[]', 'identifier');
-                params.append('fl[]', 'title');
-                params.append('fl[]', 'creator');
-                params.append('fl[]', 'subject');
-                params.set('rows', '400');
-                params.set('page', '1');
-                params.set('output', 'json');
+                const staticCatalog = await staticRes.json();
+                const staticTracks = extractTracksFromCatalog(staticCatalog);
+                if (!staticTracks.length) throw new Error('Empty playlist');
 
-                const searchUrl = `https://archive.org/advancedsearch.php?${params.toString()}`;
-                const searchRes = await fetch(searchUrl);
-                if (!searchRes.ok) throw new Error('Cannot search tracks');
-
-                const searchData = await searchRes.json();
-                const docsRaw = searchData?.response?.docs || [];
-                const docs = filterLikelyChantDocs(docsRaw).slice(0, 200);
-
-                const mapped = await mapWithConcurrency(
-                    docs,
-                    async (doc) => {
-                        try {
-                            const metaRes = await fetch(`https://archive.org/metadata/${encodeArchiveSegment(doc.identifier)}`);
-                            if (!metaRes.ok) return null;
-                            const meta = await metaRes.json();
-                            const files = Array.isArray(meta.files) ? meta.files : [];
-                            const playable = files.find((file) => {
-                                if (file.private) return false;
-                                const format = String(file.format || '').toLowerCase();
-                                const name = String(file.name || '').toLowerCase();
-                                return (
-                                    format.includes('mp3') ||
-                                    format.includes('ogg') ||
-                                    format.includes('m4a') ||
-                                    name.endsWith('.mp3') ||
-                                    name.endsWith('.ogg') ||
-                                    name.endsWith('.m4a')
-                                );
-                            });
-
-                            if (!playable || !playable.name) return null;
-
-                            return {
-                                id: `${doc.identifier}:${playable.name}`,
-                                title: doc.title || doc.identifier,
-                                creator: doc.creator || '',
-                                tags: inferTagBlob(doc),
-                                durationSeconds: parseDurationSeconds(playable),
-                                url: `https://archive.org/download/${encodeArchiveSegment(doc.identifier)}/${encodeArchiveSegment(playable.name)}`
-                            };
-                        } catch {
-                            return null;
-                        }
-                    },
-                    9
-                );
-
-                const uniqueByUrl = [];
-                const seen = new Set();
-                mapped.forEach((item) => {
-                    if (!item || seen.has(item.url)) return;
-                    seen.add(item.url);
-                    uniqueByUrl.push(item);
-                });
-
-                chantTracks = uniqueByUrl.slice(0, TARGET_TRACK_COUNT);
+                chantTracks = staticTracks.slice(0, TARGET_TRACK_COUNT);
                 buildCuratedPlaylists();
-
-                if (!chantTracks.length) {
-                    throw new Error('No playable tracks found');
-                }
 
                 localStorage.setItem(
                     TRACK_CACHE_KEY,
@@ -1695,10 +1756,10 @@
                     })
                 );
 
-                setMusicStatus(`Đã tải ${chantTracks.length} bài có thể nghe trực tiếp.`);
+                setMusicStatus(`Đã nạp playlist mới: ${chantTracks.length} bài.`);
                 return chantTracks;
             } catch {
-                setMusicStatus('Không tải được từ mạng. Nếu trước đó có cache, hãy thử tải lại sau.');
+                setMusicStatus('Không nạp được playlist mới. Kiểm tra file assets/meditation_job_playlists_150.json.');
                 return chantTracks;
             } finally {
                 isCatalogLoading = false;
@@ -1709,6 +1770,7 @@
             if (skipMeditationMusic) {
                 currentPlaylist = [];
                 currentTrackIndex = -1;
+                updateModeHint(mode || lastRequestedMode, lastResolvedMode);
                 const list = document.getElementById('music-track-list');
                 if (list) list.innerHTML = '';
                 const nowPlayingSkip = document.getElementById('music-now-playing');
@@ -1726,7 +1788,6 @@
             if (nowPlaying) {
                 const filterLabels = [];
                 if (shortTrackOnly) filterLabels.push('<=20p');
-                if (preferVietnamese) filterLabels.push('uu tien Viet');
                 const suffix = filterLabels.length ? ` | Loc: ${filterLabels.join(', ')}` : '';
                 nowPlaying.textContent = currentPlaylist.length
                     ? `Sẵn sàng ${currentPlaylist.length} bài. Bấm Play để nghe.${suffix}`
