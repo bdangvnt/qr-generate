@@ -2027,9 +2027,13 @@
             await loadChantCatalog(false);
             await rebuildPlaylist(selectedMode);
             
-            // Reset currentTrackIndex to -1 so next PLAY will start from first track
-            if (currentPlaylist.length && currentTrackIndex < 0) {
-                currentTrackIndex = -1;
+            // Ensure first track is selected after rebuilding
+            if (currentPlaylist.length > 0) {
+                currentTrackIndex = 0;
+                const trackList = document.getElementById('music-track-list');
+                if (trackList) {
+                    trackList.selectedIndex = 0;
+                }
             }
             
             setMusicStatus('Đã bật nhạc. Bạn có thể bấm Play để phát.');
@@ -2167,7 +2171,12 @@
             buildCuratedPlaylists();
             currentPlaylist = buildPlaylist(mode);
             renderTrackList();
-            currentTrackIndex = currentPlaylist.length ? 0 : -1;
+            // Always select first track when playlist is rebuilt
+            currentTrackIndex = currentPlaylist.length > 0 ? 0 : -1;
+            const trackListSelect = document.getElementById('music-track-list');
+            if (trackListSelect && currentPlaylist.length > 0) {
+                trackListSelect.selectedIndex = 0;
+            }
             const nowPlaying = document.getElementById('music-now-playing');
             if (nowPlaying) {
                 const filterLabels = [];
