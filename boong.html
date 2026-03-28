@@ -1309,6 +1309,12 @@
                 ageInput.value = userProfile.ageGroup || 'adult';
                 jobInput.value = userProfile.occupation || 'office';
                 intentInput.value = userProfile.intent || 'focus';
+            } else {
+                // Default values khi không có profile
+                nameInput.value = '';
+                ageInput.value = 'adult';
+                jobInput.value = 'office';
+                intentInput.value = 'focus';
             }
         }
 
