@@ -688,6 +688,75 @@
             width: 90px;
         }
 
+        .music-progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.6rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .music-progress-wrap span {
+            min-width: 2.5rem;
+            text-align: center;
+        }
+
+        .music-progress-bar {
+            appearance: none;
+            -webkit-appearance: none;
+            flex: 1;
+            height: 4px;
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+
+        .music-progress-bar::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+            box-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
+        }
+
+        .music-progress-bar::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 2px;
+            border: none;
+            outline: none;
+        }
+
+        .music-progress-bar::-moz-range-thumb {
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
+        }
+
+        .music-progress-bar::-moz-range-track {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 2px;
+            border: none;
+            height: 4px;
+        }
+
+        .music-progress-bar::-moz-range-progress {
+            background: rgba(212, 175, 55, 0.5);
+            border-radius: 2px;
+            height: 4px;
+        }
+
         .onboarding-backdrop {
             position: fixed;
             inset: 0;
@@ -978,6 +1047,12 @@
         <div class="music-row music-filters">
             <button class="music-btn music-toggle active" id="filter-short" type="button">Chi lay bai <= 20 phut</button>
             <button class="music-btn music-toggle" id="filter-skip-music" type="button">Ẩn âm an yên</button>
+        </div>
+
+        <div class="music-progress-wrap">
+            <span class="music-time-current" id="music-time-current">0:00</span>
+            <input type="range" class="music-progress-bar" id="music-progress-bar" min="0" max="100" value="0">
+            <span class="music-time-duration" id="music-time-duration">0:00</span>
         </div>
 
         <select class="track-list" id="music-track-list" size="6"></select>
@@ -1690,6 +1765,7 @@
 
             if (bgAudio.src !== track.url) {
                 bgAudio.src = track.url;
+                bgAudio.load();
             }
 
             const nowPlaying = document.getElementById('music-now-playing');
@@ -1700,22 +1776,85 @@
 
             if (!shouldPlay) {
                 updatePlayPauseLabel();
+                updateMusicProgress();
                 return;
             }
 
             try {
-                await bgAudio.play();
-                updatePlayPauseLabel();
-            } catch {
+                await bgAudio.play().catch(err => {
+                    console.warn('Playback failed:', err);
+                    setMusicStatus('Trình duyệt chặn tự phát. Bấm Play để bắt đầu.');
+                });
+            } catch (err) {
+                console.warn('Play error:', err);
                 setMusicStatus('Trình duyệt chặn tự phát. Bấm Play để bắt đầu.');
-                updatePlayPauseLabel();
             }
+            updatePlayPauseLabel();
         }
 
         function updatePlayPauseLabel() {
             const btn = document.getElementById('music-play-pause');
             if (!btn || !bgAudio) return;
             btn.textContent = bgAudio.paused ? 'Play' : 'Pause';
+        }
+
+        function updateMusicProgress() {
+            if (!bgAudio) return;
+            const progressBar = document.getElementById('music-progress-bar');
+            const timeCurrentEl = document.getElementById('music-time-current');
+            const timeDurationEl = document.getElementById('music-time-duration');
+            
+            if (!progressBar) return;
+            
+            const percent = bgAudio.duration ? (bgAudio.currentTime / bgAudio.duration) * 100 : 0;
+            progressBar.value = percent;
+            
+            if (timeCurrentEl) timeCurrentEl.textContent = formatDuration(bgAudio.currentTime);
+            if (timeDurationEl) timeDurationEl.textContent = formatDuration(bgAudio.duration);
+        }
+
+        function initMusicProgressListener() {
+            if (!bgAudio) return;
+            
+            const progressBar = document.getElementById('music-progress-bar');
+            if (!progressBar) return;
+            
+            let isSeeking = false;
+            
+            progressBar.addEventListener('mousedown', () => {
+                isSeeking = true;
+                if (bgAudio) bgAudio.pause();
+            });
+            
+            progressBar.addEventListener('touchstart', () => {
+                isSeeking = true;
+                if (bgAudio) bgAudio.pause();
+            });
+            
+            progressBar.addEventListener('input', () => {
+                if (!isSeeking || !bgAudio || !Number.isFinite(bgAudio.duration)) return;
+                const percent = Number(progressBar.value);
+                bgAudio.currentTime = (percent / 100) * bgAudio.duration;
+                updateMusicProgress();
+            });
+            
+            const endSeeking = async () => {
+                isSeeking = false;
+                if (bgAudio && !bgAudio.paused) {
+                    try {
+                        await bgAudio.play();
+                    } catch {
+                        // Playback failed
+                    }
+                }
+            };
+            
+            progressBar.addEventListener('mouseup', endSeeking);
+            progressBar.addEventListener('touchend', endSeeking);
+            
+            // Update progress on time update
+            bgAudio.removeEventListener('timeupdate', updateMusicProgress);
+            bgAudio.addEventListener('timeupdate', updateMusicProgress);
         }
 
         function updateFilterButtons() {
@@ -1895,12 +2034,22 @@
                 return;
             }
 
-            if (bgAudio.paused) {
-                await bgAudio.play();
-            } else {
-                bgAudio.pause();
+            try {
+                if (bgAudio.paused) {
+                    const playPromise = bgAudio.play();
+                    if (playPromise !== undefined) {
+                        await playPromise.catch(err => {
+                            console.warn('Play failed:', err);
+                            setMusicStatus('Trình duyệt chặn tự phát. Vui lòng kiểm tra kết nối mạng.');
+                        });
+                    }
+                } else {
+                    bgAudio.pause();
+                }
+            } catch (err) {
+                console.warn('Toggle play/pause error:', err);
+                setMusicStatus('Lỗi phát nhạc. Vui lòng thử lại.');
             }
-
             updatePlayPauseLabel();
         }
 
@@ -2407,7 +2556,11 @@
             bgAudio.addEventListener('error', () => {
                 setMusicStatus('Bài đang phát bị lỗi nguồn. Nhấn Next để chuyển bài khác.');
             });
+            bgAudio.addEventListener('loadedmetadata', () => {
+                updateMusicProgress();
+            });
 
+            initMusicProgressListener();
             updateFilterButtons();
             applyMusicSkipState();
             applyMusicPanelCollapsedState();
