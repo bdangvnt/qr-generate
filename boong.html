@@ -507,6 +507,42 @@
             display: none;
         }
 
+        .music-mini-toggle {
+            position: fixed;
+            right: 1rem;
+            bottom: 1.2rem;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            background: rgba(15, 11, 8, 0.88);
+            color: var(--gold);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 14;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.2);
+            transition: all 0.25s ease;
+        }
+
+        .music-mini-toggle.show {
+            display: inline-flex;
+        }
+
+        .music-mini-toggle:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 22px rgba(212, 175, 55, 0.35);
+            transform: translateY(-1px) scale(1.03);
+        }
+
+        .music-mini-toggle svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+            transform: translateX(1px);
+        }
+
         .music-panel.collapsed {
             width: min(240px, calc(100% - 2rem));
             padding: 0.55rem;
@@ -812,6 +848,13 @@
                 padding: 0.8rem;
             }
 
+            .music-mini-toggle {
+                width: 52px;
+                height: 52px;
+                right: 0.85rem;
+                bottom: 1rem;
+            }
+
             .onboarding-form {
                 grid-template-columns: 1fr;
             }
@@ -934,13 +977,19 @@
 
         <div class="music-row music-filters">
             <button class="music-btn music-toggle active" id="filter-short" type="button">Chi lay bai <= 20 phut</button>
-            <button class="music-btn music-toggle" id="filter-skip-music" type="button">Bỏ qua âm</button>
+            <button class="music-btn music-toggle" id="filter-skip-music" type="button">Ẩn âm an yên</button>
         </div>
 
         <select class="track-list" id="music-track-list" size="6"></select>
         <div class="music-now-playing" id="music-now-playing">Chưa phát bài nào.</div>
         <audio id="chant-audio" preload="none"></audio>
     </div>
+
+    <button class="music-mini-toggle" id="music-mini-toggle" type="button" aria-label="Mở khung nghe nhạc" title="Mở khung nghe nhạc">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8 5V19L19 12L8 5Z" />
+        </svg>
+    </button>
 
     <div class="controls">
         <svg class="volume-icon" viewBox="0 0 24 24">
@@ -1781,9 +1830,12 @@
             const musicPanel = document.getElementById('music-panel') || document.querySelector('.music-panel');
             const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
             const resumePlayBtn = document.getElementById('resume-music-play');
+            const miniToggleBtn = document.getElementById('music-mini-toggle');
 
             const disabled = skipMeditationMusic;
             if (musicPanel) musicPanel.classList.toggle('music-disabled', disabled);
+            if (musicPanel) musicPanel.classList.toggle('hidden', disabled);
+            if (miniToggleBtn) miniToggleBtn.classList.toggle('show', disabled);
             if (resumeNoPlayBtn) resumeNoPlayBtn.classList.toggle('show', disabled);
             if (resumePlayBtn) resumePlayBtn.classList.toggle('show', disabled);
 
@@ -2280,6 +2332,7 @@
             const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
             const resumePlayBtn = document.getElementById('resume-music-play');
             const musicPanelToggleBtn = document.getElementById('music-panel-toggle');
+            const musicMiniToggleBtn = document.getElementById('music-mini-toggle');
 
             volumeSlider.addEventListener('input', () => {
                 bgAudio.volume = Number(volumeSlider.value);
@@ -2321,6 +2374,21 @@
                 isMusicPanelCollapsed = !isMusicPanelCollapsed;
                 applyMusicPanelCollapsedState();
                 saveMusicPanelUIPreferences();
+            });
+
+            musicMiniToggleBtn.addEventListener('click', () => {
+                const panel = document.getElementById('music-panel');
+                if (panel) {
+                    panel.classList.remove('hidden');
+                }
+                isMusicPanelCollapsed = false;
+                applyMusicPanelCollapsedState();
+                if (musicMiniToggleBtn) {
+                    musicMiniToggleBtn.classList.remove('show');
+                }
+                if (skipMeditationMusic) {
+                    setMusicStatus('Âm nhạc đang tắt. Bấm "Bật âm lại" để tiếp tục nghe.');
+                }
             });
 
             resumeNoPlayBtn.addEventListener('click', async () => {
