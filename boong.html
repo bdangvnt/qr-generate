@@ -211,8 +211,11 @@
             -webkit-appearance: none;
             width: 150px;
             background: transparent;
+            border: none;
+            outline: none;
         }
 
+        /* Webkit browsers (Chrome, Safari) */
         input[type=range]::-webkit-slider-thumb {
             appearance: none;
             -webkit-appearance: none;
@@ -231,6 +234,32 @@
             cursor: pointer;
             background: rgba(212, 175, 55, 0.2);
             border-radius: 2px;
+            border: none;
+            outline: none;
+        }
+
+        /* Firefox */
+        input[type=range]::-moz-range-thumb {
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--gold);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+
+        input[type=range]::-moz-range-track {
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 2px;
+            border: none;
+            height: 4px;
+        }
+
+        input[type=range]::-moz-range-progress {
+            background: rgba(212, 175, 55, 0.5);
+            border-radius: 2px;
+            height: 4px;
         }
 
         .floating-text {
