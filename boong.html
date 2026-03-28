@@ -482,7 +482,7 @@
         }
 
         .music-panel {
-            position: absolute;
+            position: fixed;
             bottom: 5.6rem;
             left: 50%;
             transform: translateX(-50%);
@@ -495,8 +495,36 @@
             z-index: 10;
         }
 
+        .music-panel.is-floating {
+            top: 0;
+            left: 0;
+            bottom: auto;
+            transform: none;
+        }
+
+        .music-panel.dragging {
+            cursor: grabbing;
+            user-select: none;
+        }
+
         .music-panel.hidden {
             display: none;
+        }
+
+        .music-panel.collapsed {
+            width: min(480px, calc(100% - 2rem));
+            padding: 0.75rem;
+        }
+
+        .music-panel.collapsed .music-row,
+        .music-panel.collapsed .track-list,
+        .music-panel.collapsed .music-now-playing,
+        .music-panel.collapsed .music-mode-hint {
+            display: none;
+        }
+
+        .music-panel.collapsed .music-top {
+            margin-bottom: 0;
         }
 
         .music-top {
@@ -512,6 +540,22 @@
             font-size: 0.78rem;
             opacity: 0.8;
             letter-spacing: 0.5px;
+        }
+
+        .music-drag-handle {
+            border: 1px dashed rgba(212, 175, 55, 0.45);
+            border-radius: 999px;
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--gold-light);
+            padding: 4px 10px;
+            font-size: 0.68rem;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            cursor: grab;
+        }
+
+        .music-drag-handle:active {
+            cursor: grabbing;
         }
 
         .music-mode-hint {
@@ -840,7 +884,7 @@
     </div>
 
     <button class="profile-trigger" id="profile-trigger">Onboarding</button>
-    <button class="music-panel-toggle" id="music-panel-toggle" type="button">Ẩn nhạc nền</button>
+    <button class="music-panel-toggle" id="music-panel-toggle" type="button">Thu gọn khung nhạc</button>
 
     <div class="header">
         <h1>TĨNH TÂM</h1>
@@ -874,6 +918,7 @@
 
     <div class="music-panel" id="music-panel">
         <div class="music-top">
+            <button class="music-drag-handle" id="music-drag-handle" type="button">Kéo khung</button>
             <div class="profile-summary" id="profile-summary">Bạn chưa nhập hồ sơ. Vẫn có thể nghe ngay hoặc bấm Onboarding.</div>
             <div class="music-status" id="music-status">Danh sách nhạc đang sẵn sàng tải...</div>
             <div class="music-mode-hint" id="music-mode-hint">Gợi ý theo hồ sơ đang dùng mode: Focus curated (văn phòng).</div>
@@ -992,6 +1037,7 @@
         const AUTO_RHYTHM_CYCLE = 23000; // 23 seconds cycle for deep meditation
         const USER_PROFILE_KEY = 'boong-user-profile-v1';
         const MUSIC_PREFERENCE_KEY = 'boong-music-preferences-v1';
+        const MUSIC_PANEL_UI_KEY = 'boong-music-panel-ui-v1';
         const TRACK_CACHE_KEY = 'boong-chant-catalog-v2';
         const STATIC_CATALOG_URL = 'assets/meditation_job_playlists_150.json';
         const TRACK_CACHE_TTL = 24 * 60 * 60 * 1000;
@@ -1017,6 +1063,8 @@
         let skipMeditationMusic = false;
         let lastRequestedMode = 'profile';
         let lastResolvedMode = 'focus';
+        let isMusicPanelCollapsed = false;
+        let musicPanelPosition = null;
 
         const CURATED_BUCKETS = {
             focus: [
@@ -1093,6 +1141,31 @@
                     skipMeditationMusic
                 })
             );
+        }
+
+        function loadMusicPanelUIPreferences() {
+            const ui = parseJSON(localStorage.getItem(MUSIC_PANEL_UI_KEY));
+            if (!ui || typeof ui !== 'object') return;
+
+            if (typeof ui.collapsed === 'boolean') {
+                isMusicPanelCollapsed = ui.collapsed;
+            }
+
+            if (
+                Number.isFinite(ui.left) &&
+                Number.isFinite(ui.top)
+            ) {
+                musicPanelPosition = { left: ui.left, top: ui.top };
+            }
+        }
+
+        function saveMusicPanelUIPreferences() {
+            const payload = {
+                collapsed: isMusicPanelCollapsed,
+                left: Number.isFinite(musicPanelPosition?.left) ? musicPanelPosition.left : null,
+                top: Number.isFinite(musicPanelPosition?.top) ? musicPanelPosition.top : null
+            };
+            localStorage.setItem(MUSIC_PANEL_UI_KEY, JSON.stringify(payload));
         }
 
         function updateProfileSummary() {
@@ -1624,8 +1697,101 @@
                 skipBtn.textContent = skipMeditationMusic ? 'Bật âm lại' : 'Bỏ qua âm';
             }
             if (musicPanelToggleBtn) {
-                musicPanelToggleBtn.textContent = skipMeditationMusic ? 'Hiện nhạc nền' : 'Ẩn nhạc nền';
+                musicPanelToggleBtn.textContent = isMusicPanelCollapsed ? 'Mở khung nhạc' : 'Thu gọn khung nhạc';
             }
+        }
+
+        function clampMusicPanelPosition(left, top, panelEl) {
+            const margin = 8;
+            const width = panelEl.offsetWidth || 320;
+            const height = panelEl.offsetHeight || 120;
+            const maxLeft = Math.max(margin, window.innerWidth - width - margin);
+            const maxTop = Math.max(margin, window.innerHeight - height - margin);
+
+            return {
+                left: Math.min(Math.max(left, margin), maxLeft),
+                top: Math.min(Math.max(top, margin), maxTop)
+            };
+        }
+
+        function applyMusicPanelPosition() {
+            const panelEl = document.getElementById('music-panel');
+            if (!panelEl) return;
+
+            if (!musicPanelPosition) {
+                panelEl.classList.remove('is-floating');
+                panelEl.style.left = '';
+                panelEl.style.top = '';
+                panelEl.style.bottom = '';
+                return;
+            }
+
+            const clamped = clampMusicPanelPosition(musicPanelPosition.left, musicPanelPosition.top, panelEl);
+            musicPanelPosition = clamped;
+            panelEl.classList.add('is-floating');
+            panelEl.style.left = `${clamped.left}px`;
+            panelEl.style.top = `${clamped.top}px`;
+            panelEl.style.bottom = 'auto';
+        }
+
+        function applyMusicPanelCollapsedState() {
+            const panelEl = document.getElementById('music-panel');
+            if (!panelEl) return;
+            panelEl.classList.toggle('collapsed', isMusicPanelCollapsed);
+            applyMusicPanelPosition();
+            updateFilterButtons();
+        }
+
+        function initMusicPanelDrag() {
+            const panelEl = document.getElementById('music-panel');
+            const dragHandle = document.getElementById('music-drag-handle');
+            if (!panelEl || !dragHandle) return;
+
+            let dragging = false;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            const onPointerMove = (event) => {
+                if (!dragging) return;
+                const nextLeft = event.clientX - offsetX;
+                const nextTop = event.clientY - offsetY;
+                const clamped = clampMusicPanelPosition(nextLeft, nextTop, panelEl);
+                musicPanelPosition = clamped;
+                panelEl.classList.add('is-floating');
+                panelEl.style.left = `${clamped.left}px`;
+                panelEl.style.top = `${clamped.top}px`;
+                panelEl.style.bottom = 'auto';
+            };
+
+            const stopDrag = () => {
+                if (!dragging) return;
+                dragging = false;
+                panelEl.classList.remove('dragging');
+                saveMusicPanelUIPreferences();
+            };
+
+            dragHandle.addEventListener('pointerdown', (event) => {
+                if (event.button !== 0) return;
+                const rect = panelEl.getBoundingClientRect();
+                dragging = true;
+                offsetX = event.clientX - rect.left;
+                offsetY = event.clientY - rect.top;
+                panelEl.classList.add('dragging');
+                panelEl.classList.add('is-floating');
+                panelEl.style.left = `${rect.left}px`;
+                panelEl.style.top = `${rect.top}px`;
+                panelEl.style.bottom = 'auto';
+                event.preventDefault();
+            });
+
+            window.addEventListener('pointermove', onPointerMove);
+            window.addEventListener('pointerup', stopDrag);
+            window.addEventListener('pointercancel', stopDrag);
+            window.addEventListener('resize', () => {
+                if (!musicPanelPosition) return;
+                applyMusicPanelPosition();
+                saveMusicPanelUIPreferences();
+            });
         }
 
         function applyMusicSkipState() {
@@ -1635,7 +1801,6 @@
 
             const disabled = skipMeditationMusic;
             if (musicPanel) musicPanel.classList.toggle('music-disabled', disabled);
-            if (musicPanel) musicPanel.classList.toggle('hidden', disabled);
             if (resumeNoPlayBtn) resumeNoPlayBtn.classList.toggle('show', disabled);
             if (resumePlayBtn) resumePlayBtn.classList.toggle('show', disabled);
 
@@ -2030,6 +2195,7 @@
         // Setup event listeners
         document.addEventListener('DOMContentLoaded', async () => {
             loadMusicPreferences();
+            loadMusicPanelUIPreferences();
 
             // Bell selector
             const bellFarBtn = document.getElementById('bell-far');
@@ -2169,14 +2335,9 @@
             });
 
             musicPanelToggleBtn.addEventListener('click', async () => {
-                skipMeditationMusic = !skipMeditationMusic;
-                saveMusicPreferences();
-                updateFilterButtons();
-                applyMusicSkipState();
-                if (!skipMeditationMusic) {
-                    await loadChantCatalog(false);
-                }
-                await rebuildPlaylist(modeSelect.value);
+                isMusicPanelCollapsed = !isMusicPanelCollapsed;
+                applyMusicPanelCollapsedState();
+                saveMusicPanelUIPreferences();
             });
 
             resumeNoPlayBtn.addEventListener('click', async () => {
@@ -2207,6 +2368,8 @@
 
             updateFilterButtons();
             applyMusicSkipState();
+            applyMusicPanelCollapsedState();
+            initMusicPanelDrag();
             await loadChantCatalog(false);
             await rebuildPlaylist(modeSelect.value);
             updatePlayPauseLabel();
