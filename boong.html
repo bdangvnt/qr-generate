@@ -428,6 +428,30 @@
             box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
         }
 
+        .music-panel-toggle {
+            position: absolute;
+            top: 5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 11;
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            background: rgba(15, 11, 8, 0.75);
+            color: var(--gold-light);
+            border-radius: 999px;
+            font-size: 0.74rem;
+            letter-spacing: 0.9px;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-transform: uppercase;
+        }
+
+        .music-panel-toggle:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.2);
+        }
+
         .music-panel {
             position: absolute;
             bottom: 5.6rem;
@@ -440,6 +464,10 @@
             background: rgba(15, 11, 8, 0.7);
             backdrop-filter: blur(8px);
             z-index: 10;
+        }
+
+        .music-panel.hidden {
+            display: none;
         }
 
         .music-top {
@@ -707,6 +735,13 @@
                 bottom: 1.1rem;
             }
 
+            .music-panel-toggle {
+                top: auto;
+                bottom: 3.2rem;
+                font-size: 0.68rem;
+                padding: 5px 12px;
+            }
+
             .music-panel {
                 bottom: 9rem;
                 padding: 0.8rem;
@@ -767,6 +802,7 @@
     </div>
 
     <button class="profile-trigger" id="profile-trigger">Onboarding</button>
+    <button class="music-panel-toggle" id="music-panel-toggle" type="button">Ẩn nhạc nền</button>
 
     <div class="header">
         <h1>TĨNH TÂM</h1>
@@ -1382,11 +1418,15 @@
             const shortBtn = document.getElementById('filter-short');
             const viBtn = document.getElementById('filter-viet');
             const skipBtn = document.getElementById('filter-skip-music');
+            const musicPanelToggleBtn = document.getElementById('music-panel-toggle');
             if (shortBtn) shortBtn.classList.toggle('active', shortTrackOnly);
             if (viBtn) viBtn.classList.toggle('active', preferVietnamese);
             if (skipBtn) {
                 skipBtn.classList.toggle('active', skipMeditationMusic);
                 skipBtn.textContent = skipMeditationMusic ? 'Bật âm lại' : 'Bỏ qua âm';
+            }
+            if (musicPanelToggleBtn) {
+                musicPanelToggleBtn.textContent = skipMeditationMusic ? 'Hiện nhạc nền' : 'Ẩn nhạc nền';
             }
         }
 
@@ -1397,6 +1437,7 @@
 
             const disabled = skipMeditationMusic;
             if (musicPanel) musicPanel.classList.toggle('music-disabled', disabled);
+            if (musicPanel) musicPanel.classList.toggle('hidden', disabled);
             if (resumeNoPlayBtn) resumeNoPlayBtn.classList.toggle('show', disabled);
             if (resumePlayBtn) resumePlayBtn.classList.toggle('show', disabled);
 
@@ -1974,6 +2015,7 @@
             const filterSkipMusicBtn = document.getElementById('filter-skip-music');
             const resumeNoPlayBtn = document.getElementById('resume-music-no-play');
             const resumePlayBtn = document.getElementById('resume-music-play');
+            const musicPanelToggleBtn = document.getElementById('music-panel-toggle');
 
             volumeSlider.addEventListener('input', () => {
                 bgAudio.volume = Number(volumeSlider.value);
@@ -2008,6 +2050,17 @@
             });
 
             filterSkipMusicBtn.addEventListener('click', async () => {
+                skipMeditationMusic = !skipMeditationMusic;
+                saveMusicPreferences();
+                updateFilterButtons();
+                applyMusicSkipState();
+                if (!skipMeditationMusic) {
+                    await loadChantCatalog(false);
+                }
+                await rebuildPlaylist(modeSelect.value);
+            });
+
+            musicPanelToggleBtn.addEventListener('click', async () => {
                 skipMeditationMusic = !skipMeditationMusic;
                 saveMusicPreferences();
                 updateFilterButtons();
