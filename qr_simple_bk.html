@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tạo mã QR từ đường link</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #qr canvas {
+      display: block;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+    #downloadLink {
+      display: none;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    #downloadLink:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tạo mã QR từ link</h1>
+
+  <input type="text" id="urlInput" placeholder="Nhập link tại đây (https://...)">
+  <button onclick="generateQR()">Tạo mã QR</button>
+
+  <div id="qr"></div>
+  <a id="downloadLink" download="qr_code.png">📥 Tải mã QR (PNG)</a>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script>
+    function generateQR() {
+      const url = document.getElementById("urlInput").value.trim();
+      if (!url) {
+        alert("Vui lòng nhập một đường link.");
+        return;
+      }
+
+      const qr = qrcode(0, 'H');
+      qr.addData(url);
+      qr.make();
+
+      const moduleCount = qr.getModuleCount();
+      const finalSize = 378; // ~10cm
+      const cellSize = Math.floor(finalSize / moduleCount);
+      const canvasSize = cellSize * moduleCount;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = canvas.height = canvasSize;
+      const ctx = canvas.getContext("2d");
+
+      for (let row = 0; row < moduleCount; row++) {
+        for (let col = 0; col < moduleCount; col++) {
+          ctx.fillStyle = qr.isDark(row, col) ? "#000000" : "#ffffff";
+          ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+
+      const qrContainer = document.getElementById("qr");
+      qrContainer.innerHTML = "";
+      qrContainer.appendChild(canvas);
+
+      const downloadLink = document.getElementById("downloadLink");
+      downloadLink.href = canvas.toDataURL("image/png");
+      downloadLink.style.display = "inline-block";
+    }
+  </script>
+</body>
+</html>
