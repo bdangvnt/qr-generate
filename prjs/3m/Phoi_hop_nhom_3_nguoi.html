@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Mô hình phối hợp nhóm 3 người</title>
+<style>
+:root{--navy:#14243A;--navy2:#1F3B57;--bg:#F4F7FB;--card:#fff;--line:#E1E8F0;--ink:#1E2A38;--mut:#66788A;--blue:#2E5E8C;--pur:#5B3E8E;--green:#2E7D46;--amber:#B8860B}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;padding:26px 28px 22px}
+header h1{margin:0 0 5px;font-size:23px}header p{margin:0;opacity:.9;font-size:14px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+main{padding:22px 0 70px}
+h2.sec{font-size:19px;color:var(--navy2);border-left:5px solid var(--blue);padding-left:12px;margin:26px 0 14px}
+.insight{background:#FFF6E0;border:1px solid #F0DDA8;border-radius:12px;padding:15px 18px;margin:18px 0;font-size:14px}
+.insight b{color:#8A6D0B}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:860px){.roles{grid-template-columns:1fr}}
+.role{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 1px 4px rgba(20,40,70,.06)}
+.role .top{padding:14px 16px;color:#fff}
+.role .top .nm{font-size:17px;font-weight:800}.role .top .tg{font-size:12px;opacity:.9}
+.role .bd{padding:12px 16px}
+.role ul{margin:0 0 8px;padding-left:18px}.role li{font-size:12.8px;margin:4px 0}
+.role .fo{font-size:12px;color:var(--mut);font-style:italic;border-top:1px dashed var(--line);padding-top:8px}
+.flow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.lane{display:grid;grid-template-columns:130px 1fr;gap:10px;align-items:center;margin:8px 0}
+.lane .lb{font-size:12.5px;font-weight:700;text-align:right;color:var(--navy2)}
+.lane .bars{display:flex;gap:6px}
+.seg{flex:1;padding:8px 6px;border-radius:7px;text-align:center;font-size:11.5px;font-weight:600;color:#fff}
+.pts{margin:12px 0 0;padding-left:0;list-style:none}
+.pts li{font-size:13.5px;margin:7px 0;padding-left:22px;position:relative}
+.pts li:before{content:"▸";position:absolute;left:4px;color:var(--blue);font-weight:800}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--card);border-radius:10px;overflow:hidden}
+th{background:var(--pur);color:#fff;padding:10px;text-align:left}
+th.c{text-align:center}
+td{padding:8px 10px;border-bottom:1px solid var(--line)}
+td.raci{text-align:center;width:120px}
+.rb{display:inline-block;min-width:46px;padding:3px 9px;border-radius:6px;color:#fff;font-weight:800;font-size:12.5px}
+td.rtask{font-weight:600}
+tr:nth-child(even) td{background:#F8F5FC}
+.legend{font-size:12px;color:var(--mut);margin-top:8px}
+.cad{display:flex;flex-direction:column;gap:0}
+.crow{display:grid;grid-template-columns:150px 220px 1fr;gap:12px;padding:11px 0;border-top:1px solid var(--line)}
+.crow:first-child{border-top:0}
+.crow .w{font-weight:800;color:var(--blue)}.crow .a{font-weight:700}
+@media(max-width:760px){.crow{grid-template-columns:1fr}}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.box h3{margin:0 0 10px;font-size:15px;color:var(--navy2)}
+.box td:first-child{font-weight:700;color:var(--navy2);white-space:nowrap;vertical-align:top}
+.risk td:first-child{color:#8A6D0B}
+.setup li{font-size:13.5px;margin:6px 0}
+.badge{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:5px;padding:2px 7px}
+.fnote{font-size:13px;color:var(--mut);font-style:italic;margin-bottom:10px}
+.filterbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.fb{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.fb:hover{border-color:#9DB8D4}
+.fb.active{background:var(--c,#2E5E8C);color:#fff;border-color:transparent}
+.cnt{font-size:12px;color:var(--mut);margin-left:6px}
+#flow th{background:#2E5E8C}
+#flow td{font-size:12.5px;vertical-align:top}
+td.stt{text-align:center;font-weight:800;color:#2E5E8C}
+.who{display:inline-block;text-align:center;font-weight:700;color:#fff;border-radius:5px;padding:2px 8px;font-size:11.5px;white-space:nowrap}
+.sp{display:inline-block;font-size:10.5px;font-weight:700;color:#fff;border-radius:10px;padding:1px 8px;white-space:nowrap}
+.wait{color:#B23B3B;font-size:11.5px}.wait.none{color:#9AA7B4}
+.hand{color:#2E7D46;font-size:11.5px}
+.phase{color:var(--mut);font-size:11.5px;font-weight:600;white-space:nowrap}
+/* ======== RESPONSIVE (mobile · tablet · PC) ======== */
+@media(max-width:1000px){
+  .wrap{padding:0 14px}
+  .roles{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  header{padding:20px 16px 16px}
+  header h1{font-size:19px;line-height:1.3}
+  header p{font-size:12.5px}
+  h2.sec{font-size:17px;margin:22px 0 12px}
+  .insight{font-size:13px;padding:12px 14px}
+  .roles{grid-template-columns:1fr}
+  /* swimlane: stack nhãn trên, thanh dưới */
+  .lane{grid-template-columns:1fr;gap:5px;margin:14px 0}
+  .lane .lb{text-align:left;font-size:13px;color:var(--navy2)}
+  .seg{font-size:11px;padding:9px 5px}
+  /* nút lọc to, dễ bấm */
+  .filterbar{gap:7px}
+  .fb{flex:1 1 45%;text-align:center;padding:10px 8px;font-size:13.5px}
+  .cnt{flex:1 1 100%;text-align:center;margin:2px 0 0}
+  .crow{grid-template-columns:1fr;gap:2px;padding:12px 0}
+  .crow .w{font-size:14px}
+}
+/* Bảng -> thẻ (card) trên điện thoại: đọc dễ, không phải kéo ngang */
+@media(max-width:640px){
+  #flow thead, #raci thead{display:none}
+  #flow, #raci{display:block}
+  #flow tbody, #raci tbody{display:block}
+  #flow tr, #raci tr{display:block;border:1px solid var(--line);border-radius:12px;margin:0 0 12px;padding:10px 13px;background:#fff;box-shadow:0 1px 4px rgba(20,40,70,.06)}
+  #flow tr td, #raci tr td{background:transparent!important}
+  #flow td, #raci td{display:flex;gap:12px;align-items:flex-start;border:0;border-bottom:1px dashed #EAF0F6;padding:7px 0;font-size:14px;width:auto}
+  #flow tr td:last-child, #raci tr td:last-child{border-bottom:0}
+  #flow td::before, #raci td::before{content:attr(data-label);font-weight:700;color:var(--mut);flex:0 0 38%;max-width:38%}
+  /* số thứ tự thành tiêu đề thẻ */
+  #flow td.stt{border-bottom:2px solid var(--line);padding-bottom:8px;margin-bottom:2px}
+  #flow td.stt::before{content:"Việc số"}
+  #flow td.stt{font-size:16px;color:var(--navy2)}
+  /* ô việc: nhãn trên, nội dung dưới cho dễ đọc */
+  #flow td.taskcell{flex-direction:column;gap:3px}
+  #flow td.taskcell::before{flex-basis:auto;max-width:none;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  #flow td.taskcell{font-size:14.5px;font-weight:600;color:var(--ink)}
+  /* RACI: tên việc thành tiêu đề thẻ */
+  #raci td.rtask{border-bottom:2px solid var(--line);padding-bottom:8px;font-size:15px;font-weight:700;color:var(--navy2)}
+  #raci td.rtask::before{display:none}
+  #raci td.raci{justify-content:space-between}
+  .who,.sp{font-size:12.5px}
+}
+</style></head><body>
+<header><div class="wrap"><h1>Mô hình phối hợp nhóm 3 người — triển khai 3 sản phẩm</h1>
+<p>Nhóm 3 thành viên cùng phối hợp · công cụ Google Sheets · cập nhật 25/07/2026</p></div></header>
+<main class="wrap">
+<div class="insight"><b>⚠️ Nguyên tắc cốt lõi.</b> <span id="insight"></span></div>
+
+<h2 class="sec">1 · Vai trò 3 người</h2>
+<div class="roles" id="roles"></div>
+
+<h2 class="sec">2 · Cách phối hợp để chạy 3 sản phẩm song song</h2>
+<div class="flow">
+  <div class="lane"><div class="lb">TV2 – Nội dung/NC</div><div class="bars">
+    <div class="seg" style="background:#5B3E8E">GT: nội dung câu hỏi</div><div class="seg" style="background:#7B5FBE">Tarot: NC + nội dung</div><div class="seg" style="background:#9B84D6">Hội khóa: phỏng vấn</div></div></div>
+  <div class="lane"><div class="lb">TV3 – Tăng trưởng/VH</div><div class="bars">
+    <div class="seg" style="background:#2E7D46">GT: ASO/marketing</div><div class="seg" style="background:#4E9D66">Tarot: validation</div><div class="seg" style="background:#6EBD86">Hội khóa: pháp lý</div></div></div>
+  <div class="lane"><div class="lb">TV1 – Thiết kế + Build (cuốn chiếu)</div><div class="bars">
+    <div class="seg" style="background:#1F3B57;flex:2">① THIẾT KẾ + BUILD Học luật GT</div><div class="seg" style="background:#3A5B7A">② Tarot</div><div class="seg" style="background:#5A7B9A">③ Hội khóa</div></div></div>
+  <div style="font-size:12px;color:var(--mut);margin-top:6px;font-style:italic">TV2 và TV3 đẩy song song phần chuẩn bị cả 3 sản phẩm; TV1 thiết kế + code cuốn chiếu theo ưu tiên — không ai ngồi không, không loãng.</div>
+  <ul class="pts" id="pts"></ul>
+</div>
+
+<h2 class="sec">3 · Luồng phối hợp công việc — ai làm gì, chờ ai, giao ai</h2>
+<div class="fnote" id="fnote"></div>
+<div class="filterbar">
+  <button class="fb active" data-w="all">Tất cả</button>
+  <button class="fb" data-w="TV1" style="--c:#1F3B57">Việc của Thành viên 1</button>
+  <button class="fb" data-w="TV2" style="--c:#5B3E8E">Việc của Thành viên 2</button>
+  <button class="fb" data-w="TV3" style="--c:#2E7D46">Việc của Thành viên 3</button>
+  <span class="cnt" id="cnt"></span>
+</div>
+<div style="overflow-x:auto"><table id="flow"></table></div>
+
+<h2 class="sec">4 · Ma trận RACI — trách nhiệm tổng quát</h2>
+<div style="overflow-x:auto"><table id="raci"></table></div>
+<div class="legend" id="legend"></div>
+
+<h2 class="sec">5 · Nhịp phối hợp cố định</h2>
+<div class="box"><div class="cad" id="cad"></div></div>
+
+<h2 class="sec">6 · Định nghĩa "Hoàn thành" &amp; Rủi ro</h2>
+<div class="two">
+  <div class="box"><h3>✅ Định nghĩa "Hoàn thành"</h3><table id="dod"></table></div>
+  <div class="box risk"><h3>⚠️ Rủi ro & cách phòng</h3><table id="risks"></table></div>
+</div>
+
+<h2 class="sec">7 · Thiết lập Google Sheets</h2>
+<div class="box"><ul class="setup" id="setup"></ul></div>
+</main>
+<script>
+const T={"meta":{"title":"Mô hình phối hợp nhóm 3 người — triển khai 3 sản phẩm song song","subtitle":"Nhóm 3 thành viên cùng phối hợp · công cụ Google Sheets · cập nhật 25/07/2026","date":"2026-07-25"},"insight":"Cách phối hợp then chốt: phần thiết kế + code do TV1 đảm nhiệm nên được làm lần lượt (cuốn chiếu) theo ưu tiên GT → Tarot → Hội khóa, thay vì làm 3 app cùng lúc cho gọn và chắc. Song song đó, TV2 và TV3 chuẩn bị trước cho cả 3 sản phẩm (nghiên cứu, phỏng vấn, nội dung, validation, marketing, pháp lý). Nhờ vậy luôn có sẵn 'hàng đợi' nghiên cứu + nội dung để khâu thiết kế–build tiếp nối liền mạch — cả nhóm lúc nào cũng có việc tiến triển và không ai phải chờ ai.","roles":[{"id":"TV1","name":"Thành viên 1","tag":"Sản phẩm · Thiết kế · Kỹ thuật","color":"1F3B57","owns":["Định hình & cập nhật roadmap sản phẩm (cùng nhóm)","Điều phối chung: lập & giữ nhịp bảng công việc, tổng hợp tiến độ","TOÀN BỘ thiết kế: UX/UI, wireframe, prototype (Figma), design system, icon","TOÀN BỘ phát triển: kiến trúc, code, tích hợp, release","Gắn analytics/attribution","Đề xuất định giá & mô hình doanh thu (nhóm cùng chốt)","Chốt phương án thiết kế & kỹ thuật (vì trực tiếp thực hiện)"],"focus":"Vừa làm sản phẩm–thiết kế–kỹ thuật, vừa chủ động giữ nhịp phối hợp chung để các phần ăn khớp nhau."},{"id":"TV2","name":"Thành viên 2","tag":"Nội dung & Nghiên cứu","color":"5B3E8E","owns":["Nghiên cứu thị trường & đối thủ","Phỏng vấn khách hàng (customer discovery)","Biên soạn nội dung sản phẩm (bộ câu hỏi/luật, ý nghĩa 78 lá tarot, copy)","Kiểm chứng độ chính xác nội dung (khớp luật mới, đúng nghĩa)","Kiểm thử (QA) nội dung & chức năng"],"focus":"Cung cấp 'nguyên liệu tri thức + nội dung' đã kiểm chứng, đi trước một bước cho cả 3 sản phẩm để khâu tiếp theo có sẵn đầu vào."},{"id":"TV3","name":"Thành viên 3","tag":"Tăng trưởng & Vận hành","color":"2E7D46","owns":["Xác thực nhu cầu: landing page, smoke test, chạy ads thử","ASO keyword & metadata, marketing & user acquisition","Pháp lý & tuân thủ (PDPL/privacy/store policy)","Phân tích chỉ số, báo cáo, chuẩn bị gate review","Cộng đồng, hỗ trợ người dùng, vận hành affiliate/store"],"focus":"Giữ 'phễu đầu vào' (validation) và 'phễu đầu ra' (marketing, chỉ số, doanh thu) chạy đều cho cả 3 sản phẩm."}],"raci":{"legend":"R = Người làm chính (Responsible) · A = Người đảm bảo hạng mục hoàn thành (Accountable) · C = Được hỏi ý kiến (Consulted) · I = Được thông báo (Informed)","cols":["TV1 SP·TK·KT","TV2 Nội dung·NC","TV3 Tăng trưởng·VH"],"rows":[["Tầm nhìn & roadmap sản phẩm","A/R","C","C"],["Điều phối lịch & tổng hợp tiến độ","A/R","I","I"],["Nghiên cứu thị trường & đối thủ","A","R","C"],["Phỏng vấn khách hàng (discovery)","A","R","C"],["Định vị & USP","A/R","C","C"],["Mô hình kinh doanh & định giá","A/R","C","C"],["Xác thực nhu cầu (landing/smoke test)","A","C","R"],["Phạm vi MVP & backlog","A/R","C","C"],["Thiết kế: UX/UI, wireframe, prototype, design system","A/R","I","I"],["Nội dung sản phẩm (câu hỏi/tarot/copy)","A","R","C"],["Phát triển / build / release","A/R","I","I"],["Gắn analytics & instrumentation","A/R","I","C"],["Kiểm thử / QA (nội dung & chức năng)","A","R","R"],["Pháp lý & tuân thủ (PDPL/store)","A","C","R"],["ASO keyword & metadata","A","C","R"],["Nộp store & phát hành","A/R","I","C"],["Marketing & user acquisition","A","C","R"],["Cộng đồng & hỗ trợ người dùng","I","C","R"],["Vận hành doanh thu (affiliate/sub)","A","I","R"],["Báo cáo chỉ số & gate review","A","C","R"]]},"parallel_strategy":{"title":"Cách phối hợp để chạy 3 sản phẩm song song một cách gọn gàng","points":["Chuẩn bị chạy song song: TV2 lo nghiên cứu + nội dung, TV3 lo validation + marketing + pháp lý — cho cả 3 sản phẩm cùng lúc.","Thiết kế + build đi cuốn chiếu theo ưu tiên GT → Tarot → Hội khóa: tập trung một sản phẩm, làm tới đâu chắc tới đó.","Nguyên tắc 'hàng đợi sẵn sàng': phần chuẩn bị (nội dung, nghiên cứu, validation) luôn đi trước một bước để khâu tiếp theo không phải chờ.","Nhờ chuẩn bị song song, khi một sản phẩm đang thiết kế/build thì hai sản phẩm kia vẫn tiến — cả nhóm luôn có việc chạy.","Cổng (gate) là điểm đồng bộ: mỗi sản phẩm chỉ qua giai đoạn khi cả nhóm cùng chốt Go tại buổi review.","Tập trung một sản phẩm ở khâu thiết kế/build mỗi lúc để không dàn mỏng; mỗi người giữ tối đa ~2 việc 'đang làm' cho rõ ràng."]},"cadence":[["Hằng ngày","Check-in async (5 phút)","Mỗi người ghi vào chat/Sheets: hôm qua làm gì · hôm nay làm gì · đang vướng gì. Không họp trực tiếp nếu không cần."],["Thứ 2 đầu tuần","Họp kế hoạch tuần (30–45 phút)","Cả nhóm cùng rà việc tuần; TV1 tổng hợp & điều phối theo ưu tiên sản phẩm, chốt mục tiêu tuần cho từng sản phẩm; cập nhật bảng công việc."],["Thứ 6 cuối tuần","Review + demo (30 phút)","Rà tiến độ, demo phần đã xong, gỡ blocker, cập nhật trạng thái; chuẩn bị cho tuần sau."],["Khi tới cổng","Gate review (Go/Pivot/Kill)","Khi 1 sản phẩm chạm cổng, cả 3 họp quyết định dựa trên bằng chứng; ghi quyết định vào sheet Cổng."],["2 tuần/lần","Retro ngắn (20 phút)","Cái gì chạy tốt / chưa tốt / cần đổi. Điều chỉnh cách phối hợp."]],"dod":[["Nghiên cứu / research","Có nguồn, số liệu, kết luận & đề xuất rõ; lưu vào thư mục sản phẩm; TV1 đã đọc."],["Nội dung","Đã kiểm chứng đúng/đủ (vd bộ câu hỏi khớp luật mới, ý nghĩa lá bài đúng), đúng chính tả, đúng format TV1 cần import."],["Thiết kế / prototype (TV1 tự làm)","Prototype bấm được, tự rà usability, export asset sẵn sàng để build."],["Tính năng (dev)","Code chạy, không lỗi chặn, đã gắn analytics, qua QA của TV2/TV3, đạt store guideline."],["Marketing / ASO","Keyword + metadata sẵn sàng; đo được hiệu quả (link tracking/analytics)."]],"sheets_setup":["Tạo 1 Google Sheets chung tên 'R&D — Điều phối', share quyền edit cho cả 3.","Import file Excel này lên Google Sheets (File → Import → Upload) — giữ nguyên các tab.","Mỗi sáng cập nhật trạng thái task của mình; TV1 rà cột 'Đang vướng'.","Đồng bộ với thư mục R&D trên máy: file/tài liệu để trong products/<sp>/, sheet chỉ quản lý task & trạng thái.","Dùng bộ lọc (Filter) theo Người phụ trách hoặc Sản phẩm để mỗi người thấy việc của mình."],"risks":[["Một khâu ôm quá nhiều việc cùng lúc → chậm chung","Chia rõ theo mảng: TV2/TV3 chủ động cầm nghiên cứu/nội dung/marketing/pháp lý; khâu thiết kế–build tập trung 1 sản phẩm/lần. Dùng bảng công việc để mọi người tự nhận việc, giảm họp."],["Chạy 3 app cùng lúc → loãng, chậm tất cả","Chỉ chạy song song ở khâu chuẩn bị; khâu thiết kế+build tập trung 1 sản phẩm mỗi lúc."],["Chuẩn bị quá xa phần chưa tới lượt → tồn kho","Ưu tiên chuẩn bị đúng thứ tự GT → Tarot → Hội khóa; đi trước một bước là đủ."],["Thiếu đồng bộ, mỗi người một hướng","Nhịp tuần cố định + một nguồn sự thật duy nhất (Google Sheets) + cổng review chung."],["Bỏ quên pháp lý (nhất là Hội khóa)","TV3 giữ checklist tuân thủ PDPL/COPPA ngay từ giai đoạn thiết kế, không để tới lúc launch."]],"flow_note":"Danh sách việc end-to-end tới khi ra mắt & tăng trưởng. Mỗi việc ghi rõ NGƯỜI LÀM + CẦN CHỜ (đầu vào từ ai) + GIAO CHO (đầu ra cho ai) để cả 3 nhìn nhau mà làm. Cột STT (#n) dùng để tham chiếu. GT làm trước; TA & AL được TV2/TV3 chuẩn bị song song.","flow":[["Setup","Chung","Lập Google Sheets 'R&D — Điều phối' + import bảng + share 3 người","TV1","—","→ Cả nhóm bắt đầu dùng","Chưa bắt đầu"],["Setup","Chung","Chốt kênh chat + nhịp họp (check-in ngày · kế hoạch T2 · review T6)","TV1","—","→ Cả nhóm theo nhịp","Chưa bắt đầu"],["Setup","Chung","Lập checklist tuân thủ pháp lý dùng chung (PDPL/COPPA/GDPR/store)","TV3","—","→ Áp cho cả 3 SP","Chưa bắt đầu"],["P1","GT","Cập nhật & kiểm chứng bộ 600 câu + 60 điểm liệt theo luật mới (đúng format import)","TV2","—","→ TV1 build data (#13)","Đang làm"],["P1","GT","Soạn giải thích đáp án đúng/sai từng câu","TV2","—","→ TV1 màn giải thích (#13)","Chưa bắt đầu"],["P1","GT","Số hóa dữ liệu biển báo + mức phạt để tra cứu","TV2","—","→ TV1 tính năng tra cứu (#14)","Chưa bắt đầu"],["P2","GT","Phỏng vấn 8–10 người vừa thi GPLX (điểm đau mô phỏng 120)","TV2","—","→ TV1 định hình tính năng (#10)","Chưa bắt đầu"],["P7","GT","Thu thập/chuẩn bị 120 clip mô phỏng + mốc thời điểm chấm","TV3","—","→ TV1 module mô phỏng (#16)","Chưa bắt đầu"],["P1","GT","Rà chính sách store cho app giáo dục/lái xe","TV3","—","→ TV1 khi nộp store (#24)","Chưa bắt đầu"],["P5","GT","Chốt phạm vi MVP + North Star + backlog RICE","TV1","Chờ TV2: phỏng vấn (#7)","→ Cả nhóm (khóa phạm vi)","Đang làm"],["P6","GT","Thiết kế wireframe + prototype luồng học/thi thử/mô phỏng","TV1","Chờ TV2: nội dung mẫu (#4)","→ TV2 rà nội dung (#19)","Chưa bắt đầu"],["P6","GT","Design system + onboarding chọn hạng bằng + màn paywall","TV1","—","→ Build (#13)","Chưa bắt đầu"],["P7","GT","Dựng khung app (Flutter) + import 600 câu + 60 điểm liệt","TV1","Chờ TV2: file câu hỏi đúng format (#4)","→ TV2/TV3 QA (#19,#20)","Chưa bắt đầu"],["P7","GT","Màn học theo chủ đề + tra biển báo/mức phạt","TV1","Chờ TV2: dữ liệu biển báo/phạt (#6)","→ QA","Chưa bắt đầu"],["P7","GT","Module thi thử + chấm điểm tự động","TV1","—","→ QA","Chưa bắt đầu"],["P7","GT","Module mô phỏng 120 (video + chấm theo thời điểm)","TV1","Chờ TV3: 120 clip + mốc (#8)","→ QA","Chưa bắt đầu"],["P7","GT","Tích hợp analytics (Amplitude) + rewarded ads (AdMob)","TV1","—","→ TV3 theo dõi phễu (#25)","Chưa bắt đầu"],["P7","GT","Tích hợp RevenueCat (subscription)","TV1","—","→ Monetization (#26)","Chưa bắt đầu"],["P7","GT","QA nội dung: rà đúng câu/đáp án/giải thích trên bản build","TV2","Chờ TV1: bản build (#13)","→ TV1 sửa lỗi (#21)","Chưa bắt đầu"],["P7","GT","QA chức năng: test luồng trên nhiều máy, log lỗi","TV3","Chờ TV1: bản build (#13)","→ TV1 sửa lỗi (#21)","Chưa bắt đầu"],["P7","GT","Sửa lỗi từ QA + hoàn thiện bản phát hành","TV1","Chờ TV2/TV3: danh sách lỗi (#19,#20)","→ Nộp store (#24)","Chưa bắt đầu"],["P8","GT","Chuẩn bị ASO: keyword + tiêu đề + mô tả","TV3","Chờ TV1: tên & tính năng chốt","→ TV1 screenshot/icon (#23)","Chưa bắt đầu"],["P8","GT","Thiết kế screenshot store + icon","TV1","Chờ TV3: keyword (#22)","→ Nộp store (#24)","Chưa bắt đầu"],["P8","GT","Tạo Play Console + build release + nộp store","TV1","Chờ #21 + #23","→ TV3 soft launch (#25)","Chưa bắt đầu"],["P8","GT","Soft launch + dựng dashboard phễu AARRR + theo dõi","TV3","Chờ TV1: app lên store (#24)","→ Gate review","Chưa bắt đầu"],["P9","GT","Bật paywall + A/B giá gói tuần/tháng","TV1","Chờ #25 (có traffic)","→ TV3 theo dõi (#28)","Chưa bắt đầu"],["P9","GT","Nghiên cứu & liên hệ đối tác affiliate bảo hiểm TNDS + phụ kiện","TV3","—","→ TV1 tích hợp (#29)","Chưa bắt đầu"],["P9","GT","Theo dõi convert/ARPU/churn + báo cáo tuần","TV3","Chờ #26","→ Gate review","Chưa bắt đầu"],["P9","GT","Tích hợp link affiliate màn 'đậu'","TV1","Chờ TV3: đối tác (#27)","→ Doanh thu affiliate","Chưa bắt đầu"],["P10","GT","Chạy Sean Ellis test + phân tích retention","TV3","Chờ #25 (đủ user)","→ Gate PMF (#31)","Chưa bắt đầu"],["P10","GT","Cải thiện sản phẩm theo dữ liệu PMF","TV1","Chờ TV3: kết quả PMF (#30)","→ Quyết định scale","Chưa bắt đầu"],["P11","GT","Marketing/UA + tối ưu ASO liên tục","TV3","Chờ Gate PMF (#30)","→ Tăng trưởng","Chưa bắt đầu"],["P11","GT","Biên soạn nội dung tiếng Anh (bộ câu hỏi US)","TV2","—","→ TV1 bản US (#34)","Chưa bắt đầu"],["P11","GT","Làm bản tiếng Anh cho thị trường US (eCPM cao)","TV1","Chờ TV2: nội dung EN (#33)","→ Mở thị trường mới","Chưa bắt đầu"],["P1","TA","Teardown sâu app tarot tiếng Việt & quốc tế","TV2","—","→ TV1 định hướng (#39)","Đang làm"],["P2","TA","Phỏng vấn 10 người dùng tarot (Mom Test)","TV2","—","→ TV1 USP (#39)","Chưa bắt đầu"],["P6","TA","Biên soạn ý nghĩa 78 lá tarot (tiếng Việt, xuôi/ngược)","TV2","—","→ TV1 build TA","Chưa bắt đầu"],["P4","TA","Landing smoke test 'AI reader tiếng Việt' + đo opt-in","TV3","Chờ TV1: mô tả USP","→ Gate cầu TA","Chưa bắt đầu"],["P3","TA","Chốt USP + business model + định giá Tarot","TV1","Chờ TV2: phỏng vấn (#36) + TV3: landing (#38)","→ Thiết kế TA","Chưa bắt đầu"],["P1","AL","Rà pháp lý PDPL/COPPA/GDPR chi tiết cho dữ liệu trẻ em","TV3","—","→ TV1 ràng buộc thiết kế (#42)","Chưa bắt đầu"],["P2","AL","Phỏng vấn phụ huynh về cách lưu ảnh con hiện nay","TV2","—","→ TV1 USP (#42)","Chưa bắt đầu"],["P3","AL","Định hình USP 'Time Capsule' + mô hình an toàn pháp lý","TV1","Chờ TV3 (#40) + TV2 (#41)","→ Thiết kế AL","Chưa bắt đầu"]]};
+document.getElementById('insight').textContent=T.insight;
+// roles
+document.getElementById('roles').innerHTML=T.roles.map(r=>
+ '<div class="role"><div class="top" style="background:#'+r.color+'"><div class="nm">'+r.name+'</div><div class="tg">'+r.tag+'</div></div>'+
+ '<div class="bd"><ul>'+r.owns.map(o=>'<li>'+o+'</li>').join('')+'</ul><div class="fo">'+r.focus+'</div></div></div>').join('');
+// pts
+document.getElementById('pts').innerHTML=T.parallel_strategy.points.map(p=>'<li>'+p+'</li>').join('');
+// flow
+document.getElementById('fnote').textContent=T.flow_note;
+const whoC={"TV1":"#1F3B57","TV2":"#5B3E8E","TV3":"#2E7D46"};
+const spC={"GT":"#2E5E8C","TA":"#5B3E8E","AL":"#2E7D46","Chung":"#5A6B7B"};
+const spN={"GT":"Học luật GT","TA":"Tarot","AL":"Hội khóa","Chung":"Chung"};
+const flow=T.flow.map((r,i)=>({stt:i+1,ph:r[0],sp:r[1],task:r[2],who:r[3],wait:r[4],hand:r[5]}));
+let curW='all';
+function renderFlow(){
+  const rows=flow.filter(f=>curW==='all'||f.who===curW);
+  document.getElementById('cnt').textContent=rows.length+' việc';
+  const showWho=curW==='all';
+  let h='<thead><tr><th class="stt">#</th><th>G.đoạn</th><th>SP</th><th>Việc cần làm</th>'+(showWho?'<th>Người</th>':'')+'<th>Cần chờ (đầu vào)</th><th>Giao cho (đầu ra)</th></tr></thead><tbody>';
+  h+=rows.map(f=>'<tr><td class="stt" data-label="#">'+f.stt+'</td>'+
+    '<td data-label="Giai đoạn"><span class="phase">'+f.ph+'</span></td>'+
+    '<td data-label="Sản phẩm"><span class="sp" style="background:'+spC[f.sp]+'">'+spN[f.sp]+'</span></td>'+
+    '<td class="taskcell" data-label="Việc cần làm">'+f.task+'</td>'+
+    (showWho?'<td data-label="Người làm"><span class="who" style="background:'+whoC[f.who]+'">'+f.who+'</span></td>':'')+
+    '<td data-label="⏳ Cần chờ"><span class="wait'+(f.wait==='—'?' none':'')+'">'+f.wait+'</span></td>'+
+    '<td data-label="➡ Giao cho"><span class="hand">'+f.hand+'</span></td></tr>').join('');
+  document.getElementById('flow').innerHTML=h+'</tbody>';
+}
+document.querySelectorAll('.fb').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.fb').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');curW=b.dataset.w;renderFlow();
+});
+renderFlow();
+// raci
+const cm={"A/R":"#1F3B57","R":"#2E7D46","A":"#5B3E8E","C":"#B8860B","I":"#9AA7B4"};
+let h='<thead><tr><th>Hạng mục công việc</th>'+T.raci.cols.map(c=>'<th class="c">'+c+'</th>').join('')+'</tr></thead><tbody>';
+h+=T.raci.rows.map(r=>'<tr><td class="rtask">'+r[0]+'</td>'+r.slice(1).map((v,i)=>'<td class="raci" data-label="'+T.raci.cols[i]+'"><span class="rb" style="background:'+cm[v]+'">'+v+'</span></td>').join('')+'</tr>').join('')+'</tbody>';
+document.getElementById('raci').innerHTML=h;
+document.getElementById('legend').textContent=T.raci.legend;
+// cadence
+document.getElementById('cad').innerHTML=T.cadence.map(c=>'<div class="crow"><div class="w">'+c[0]+'</div><div class="a">'+c[1]+'</div><div>'+c[2]+'</div></div>').join('');
+// dod
+document.getElementById('dod').innerHTML=T.dod.map(d=>'<tr><td>'+d[0]+'</td><td>'+d[1]+'</td></tr>').join('');
+document.getElementById('risks').innerHTML=T.risks.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
+document.getElementById('setup').innerHTML=T.sheets_setup.map(s=>'<li>'+s+'</li>').join('');
+</script></body></html>
