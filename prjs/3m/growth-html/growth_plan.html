@@ -1,0 +1,904 @@
+<meta charset="utf-8">
+<title>Kế hoạch tăng trưởng — Ôn thi GPLX</title>
+<style>
+  :root {
+    --brand: #0A6E78;
+    --brand-deep: #06555E;
+    --brand-bright: #0E7F8B;
+    --gold: #9A6B00;
+    --critical: #B3261E;
+    --success: #1B7A3D;
+    --warning: #9A5B00;
+    --ink: #12161A;
+    --muted: #3B4248;
+    --faint: #5F6871;
+    --line: #DDE4E6;
+    --bg: #fff;
+    --bg-soft: #F3F6F7;
+    --sunken: #E8EDEF;
+    --r-sm: 12px;
+    --r-md: 16px;
+    --r-lg: 20px;
+    --r-pill: 999px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --brand: #6FCBD2;
+      --ink: #E6EAEB;
+      --muted: #B6BFC1;
+      --faint: #8A939C;
+      --line: #2B3336;
+      --bg: #181E20;
+      --bg-soft: #0E1315;
+      --sunken: #222A2C;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg-soft);
+    color: var(--ink);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .wrap {
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  header.doc {
+    background: linear-gradient(135deg, var(--brand-deep), var(--brand) 55%, var(--brand-bright));
+    color: #fff;
+    border-radius: 0 0 28px 28px;
+    padding: 40px 20px 34px;
+    margin-bottom: 26px;
+  }
+
+  header.doc .wrap {
+    padding-bottom: 0;
+  }
+
+  header.doc h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.6rem, 3.6vw, 2.2rem);
+    letter-spacing: -.4px;
+  }
+
+  header.doc .meta {
+    margin: 0;
+    color: rgba(255, 255, 255, .84);
+    font-size: .92rem;
+  }
+
+  header.doc .scope {
+    margin: 14px 0 0;
+    color: rgba(255, 255, 255, .9);
+    max-width: 76ch;
+  }
+
+  .kpis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .kpi {
+    background: rgba(255, 255, 255, .15);
+    border-radius: var(--r-md);
+    padding: 11px 15px;
+    min-width: 148px;
+  }
+
+  .kpi b {
+    display: block;
+    font-size: 1.35rem;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kpi span {
+    font-size: .78rem;
+    color: rgba(255, 255, 255, .82);
+  }
+
+  section {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    padding: 22px 26px;
+    margin: 0 0 18px;
+  }
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 1.22rem;
+    letter-spacing: -.15px;
+  }
+
+  h2 .num {
+    color: var(--brand);
+    font-variant-numeric: tabular-nums;
+    margin-right: 10px;
+    font-weight: 800;
+  }
+
+  .lead {
+    color: var(--muted);
+    margin: 0 0 18px;
+    font-size: .93rem;
+  }
+
+  h3 {
+    margin: 24px 0 8px;
+    font-size: 1rem;
+  }
+
+  p {
+    margin: 0 0 12px;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: .92rem;
+  }
+
+  .scroll {
+    overflow-x: auto;
+    margin: 12px 0 4px;
+  }
+
+  th,
+  td {
+    border: 1px solid var(--line);
+    padding: 9px 11px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: var(--sunken);
+    font-weight: 700;
+  }
+
+  td.num,
+  th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: .73rem;
+    font-weight: 800;
+    letter-spacing: .3px;
+    padding: 3px 9px;
+    border-radius: var(--r-pill);
+    white-space: nowrap;
+  }
+
+  .t-done {
+    background: color-mix(in srgb, var(--success) 14%, transparent);
+    color: var(--success);
+  }
+
+  .t-part {
+    background: color-mix(in srgb, var(--warning) 16%, transparent);
+    color: var(--warning);
+  }
+
+  .t-none {
+    background: color-mix(in srgb, var(--critical) 12%, transparent);
+    color: var(--critical);
+  }
+
+  .box {
+    border-left: 4px solid var(--brand);
+    background: var(--bg-soft);
+    padding: 13px 17px;
+    border-radius: var(--r-sm);
+    margin: 16px 0;
+    font-size: .94rem;
+  }
+
+  .box.constraint {
+    border-left-color: var(--critical);
+  }
+
+  .box.caution {
+    border-left-color: var(--warning);
+  }
+
+  .box h4 {
+    margin: 0 0 6px;
+    font-size: .93rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--faint);
+  }
+
+  .box p:last-child {
+    margin-bottom: 0;
+  }
+
+  dl.defs {
+    margin: 12px 0;
+  }
+
+  dl.defs dt {
+    font-weight: 700;
+    margin-top: 12px;
+  }
+
+  dl.defs dd {
+    margin: 2px 0 0;
+    color: var(--muted);
+  }
+
+  ol.rank {
+    padding-left: 0;
+    list-style: none;
+    counter-reset: r;
+    margin: 8px 0 0;
+  }
+
+  ol.rank li {
+    counter-increment: r;
+    position: relative;
+    padding: 0 0 16px 42px;
+  }
+
+  ol.rank li::before {
+    content: counter(r);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--r-sm);
+    background: var(--brand);
+    color: #fff;
+    font-weight: 800;
+    font-size: .84rem;
+    display: grid;
+    place-items: center;
+  }
+
+  ol.rank .owner {
+    display: inline-block;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-right: 8px;
+  }
+
+  code {
+    background: var(--sunken);
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: .88em;
+  }
+
+  a {
+    color: var(--brand);
+  }
+
+  footer {
+    color: var(--faint);
+    font-size: .85rem;
+    padding-top: 6px;
+  }
+
+  ul.toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  ul.toc a {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--sunken);
+    border-radius: var(--r-pill);
+    text-decoration: none;
+    font-size: .86rem;
+  }
+</style>
+
+<header class="doc">
+  <div class="wrap">
+    <h1>Kế hoạch tăng trưởng — Ôn thi GPLX</h1>
+    <p class="meta">Cập nhật 01/08/2026 · Chủ sở hữu: Growth · Phạm vi: 12 tháng đầu sau phát hành</p>
+    <p class="scope">Bản tổng hợp dùng chung cho cả nhóm. Hợp nhất định vị sản phẩm,
+      tối ưu hiển thị cửa hàng, khung đo lường và mô hình doanh thu. Mỗi mục dẫn
+      chiếu tài liệu gốc để thi hành.</p>
+    <div class="kpis">
+      <div class="kpi"><b>1.640 ₫</b><span>ARPU/lượt cài — giá trị mô hình</span></div>
+      <div class="kpi"><b>2.200</b><span>lượt cài tại điểm hoà vốn</span></div>
+      <div class="kpi"><b>99.000 ₫</b><span>giá Pro đề xuất</span></div>
+      <div class="kpi"><b>02</b><span>hạng mục nội dung tồn đọng</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section>
+    <h2>Mục lục</h2>
+    <ul class="toc">
+      <li><a href="#dinhvi">01 Định vị</a></li>
+      <li><a href="#hientrang">02 Hiện trạng</a></li>
+      <li><a href="#raocan">03 Rào cản phát hành</a></li>
+      <li><a href="#aso">04 Tối ưu cửa hàng</a></li>
+      <li><a href="#abtest">05 Thử nghiệm A/B</a></li>
+      <li><a href="#dolluong">06 Khung đo lường</a></li>
+      <li><a href="#doanhthu">07 Doanh thu</a></li>
+      <li><a href="#tieuchi">08 Tiêu chí dừng</a></li>
+      <li><a href="#uutien">09 Thứ tự ưu tiên</a></li>
+    </ul>
+  </section>
+
+  <section id="dinhvi">
+    <h2><span class="num">01</span>Định vị sản phẩm</h2>
+    <p class="lead">Nguồn: <code>growth/aso.md</code> §1 · <code>docs/plan-usp.md</code></p>
+
+    <div class="box">
+      <h4>Tuyên bố giá trị</h4>
+      <p><strong>Nhập ngày thi — ứng dụng phân bổ khối lượng ôn tập theo từng ngày.</strong></p>
+    </div>
+
+    <p>Toàn bộ trường văn bản trên cửa hàng, ảnh chụp đầu tiên và biểu tượng ứng
+      dụng phải phục vụ tuyên bố này. Thứ tự ưu tiên khi giới hạn ký tự buộc phải
+      cắt bớt:</p>
+
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Ưu tiên</th>
+          <th>Nội dung</th>
+          <th>Phân loại</th>
+          <th>Trạng thái kiểm chứng</th>
+        </tr>
+        <tr>
+          <td class="num">1</td>
+          <td>Lộ trình ôn tập theo ngày thi</td>
+          <td>Yếu tố khác biệt chính</td>
+          <td>Đã triển khai, chưa có dữ liệu thị trường</td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>Bộ đề đúng theo hạng giấy phép</td>
+          <td>Yếu tố khác biệt phụ</td>
+          <td><strong>Chưa kiểm chứng</strong> với đối thủ</td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Hoạt động ngoại tuyến · miễn phí · mô phỏng đề thi</td>
+          <td>Điều kiện tối thiểu của nhóm ngành</td>
+          <td>Đã có, không tạo khác biệt</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="box caution">
+      <h4>Cơ sở của thứ tự ưu tiên</h4>
+      <p>Theo PRD, phiên bản 1.0 <strong>không có yếu tố khác biệt nào</strong> so
+        với sản phẩm dẫn đầu thị trường (OTOMOTO: trên 1 triệu lượt tải, 4,8★).
+        Lộ trình theo ngày thi là yếu tố khác biệt duy nhất hiện có, đồng thời là
+        căn cứ duy nhất để người dùng lựa chọn sản phẩm này thay vì sản phẩm cạnh
+        tranh. Mất ưu tiên 1 trong bất kỳ trường văn bản nào tương đương mất toàn
+        bộ luận điểm bán hàng.</p>
+    </div>
+  </section>
+
+  <section id="hientrang">
+    <h2><span class="num">02</span>Hiện trạng triển khai</h2>
+    <p class="lead">Chỉ liệt kê hạng mục ảnh hưởng tới tăng trưởng. Trạng thái kỹ thuật đầy đủ: <code>README.md</code>
+      của sản phẩm.</p>
+
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Hạng mục</th>
+          <th>Trạng thái</th>
+          <th>Tác động tới tăng trưởng</th>
+        </tr>
+        <tr>
+          <td>Biểu tượng ứng dụng</td>
+          <td><span class="tag t-done">hoàn thành</span></td>
+          <td>Đủ điều kiện khởi động thử nghiệm A/B đợt 1. Ba phương án sẵn sàng</td>
+        </tr>
+        <tr>
+          <td>Video giới thiệu sản phẩm</td>
+          <td><span class="tag t-done">hoàn thành</span></td>
+          <td>Tài liệu hỗ trợ đàm phán đối tác liên kết và huy động vốn</td>
+        </tr>
+        <tr>
+          <td>Hệ thống thiết kế</td>
+          <td><span class="tag t-done">hoàn thành</span></td>
+          <td>Token dùng chung ứng dụng và web, có kiểm tra tự động chống sai lệch</td>
+        </tr>
+        <tr>
+          <td>Đánh dấu câu điểm liệt</td>
+          <td><span class="tag t-part">53/60</span></td>
+          <td>Quy tắc chấm điểm đã kích hoạt. <strong>Chưa được nêu con số "60"</strong> trên cửa hàng</td>
+        </tr>
+        <tr>
+          <td>Phân loại chuyên đề</td>
+          <td><span class="tag t-none">chưa có</span></td>
+          <td>Khoá 1 luận điểm bán hàng · 1 khung ảnh cửa hàng · nhánh SEO theo chuyên đề</td>
+        </tr>
+        <tr>
+          <td>Giải thích đáp án</td>
+          <td><span class="tag t-none">chưa có</span></td>
+          <td>Khoá 1 luận điểm bán hàng. Đối thủ đã có hạng mục này</td>
+        </tr>
+        <tr>
+          <td>Triển khai web</td>
+          <td><span class="tag t-part">chưa vận hành</span></td>
+          <td>Điều kiện bắt buộc để nộp cửa hàng — xem §03</td>
+        </tr>
+        <tr>
+          <td>Kênh liên kết (affiliate)</td>
+          <td><span class="tag t-part">chờ đối tác</span></td>
+          <td>Mã nguồn và lược đồ dữ liệu hoàn tất. Thời gian từ ký kết tới hiển thị ≈ 0</td>
+        </tr>
+        <tr>
+          <td>Quảng cáo và thanh toán trong ứng dụng</td>
+          <td><span class="tag t-part">mã nguồn xong, cờ đang tắt</span></td>
+          <td>Toàn bộ đường mua, khôi phục và cấp quyền đã hoàn tất, kể cả trường hợp thanh toán
+            chậm hoàn tất sau khi người dùng đóng ứng dụng. Hai cờ build đang tắt <strong>theo đúng
+            lộ trình §07</strong>: bản 1.0 không quảng cáo, không thanh toán, nhằm bảo vệ điểm đánh
+            giá trong ba tháng đầu. Việc còn lại nằm trên console: tạo sản phẩm
+            <code>gplx600_pro_remove_ads</code> và đăng ký chương trình doanh nghiệp nhỏ của Apple</td>
+        </tr>
+        <tr>
+          <td>Cảnh báo phạt nguội</td>
+          <td><span class="tag t-part">Hà Nội</span></td>
+          <td>Hạng mục giữ chân sau kỳ thi — lý do duy nhất để người dùng mở ứng dụng khi đã có
+            giấy phép. Phạm vi dữ liệu hiện tại: Hà Nội. <strong>Cấm nêu "toàn quốc"</strong> trên
+            mọi văn bản đối ngoại</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="raocan">
+    <h2><span class="num">03</span>Rào cản phát hành và phạm vi ảnh hưởng</h2>
+    <p class="lead">Nguồn: <code>docs/con-lai-gi.md</code> §1. Ba trong năm hạng mục không thuộc phạm vi kỹ thuật.</p>
+
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Hạng mục</th>
+          <th>Bộ phận chịu trách nhiệm</th>
+          <th>Hệ quả nếu chưa hoàn thành</th>
+        </tr>
+        <tr>
+          <td>Phân loại chuyên đề cho 794 câu hỏi</td>
+          <td>Nội dung</td>
+          <td>Không được nêu "học theo 6 chuyên đề" trên cửa hàng · thiếu 1 khung ảnh · web không có trang chuyên đề,
+            mất một nhánh từ khoá dài</td>
+        </tr>
+        <tr>
+          <td>Biên soạn giải thích đáp án cho 794 câu hỏi</td>
+          <td>Nội dung</td>
+          <td>Không được nêu "mỗi câu đều có giải thích" · nửa dưới màn ôn tập trống, làm giảm chất lượng ảnh chụp cửa
+            hàng</td>
+        </tr>
+        <tr>
+          <td>Xác nhận danh sách câu điểm liệt với Phụ lục Công văn 2262/CSGT-P5</td>
+          <td>Nội dung</td>
+          <td>Không được nêu con số "60" (kho hiện có 53) · chưa đánh dấu được cho bộ đề mô tô, do đó không áp dụng cho
+            hạng A1/A</td>
+        </tr>
+        <tr>
+          <td>Triển khai web và cấu hình địa chỉ liên hệ</td>
+          <td>Kỹ thuật</td>
+          <td>Google Play <strong>từ chối hồ sơ</strong> khi đường dẫn chính sách bảo mật không truy cập được</td>
+        </tr>
+        <tr>
+          <td>Bộ ảnh chụp cửa hàng</td>
+          <td>Thiết kế</td>
+          <td>3/6 khung phụ thuộc hai hạng mục nội dung ở trên; 3 khung còn lại thực hiện được ngay</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="aso">
+    <h2><span class="num">04</span>Tối ưu hiển thị cửa hàng ứng dụng</h2>
+    <p class="lead">Nguồn: <code>growth/aso.md</code>. Bảng từ khoá đầy đủ và ánh xạ vào từng trường nằm ở tài liệu gốc.
+    </p>
+
+    <h3>Phân nhóm từ khoá theo ý định tìm kiếm</h3>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Nhóm</th>
+          <th>Ví dụ</th>
+          <th>Trường áp dụng</th>
+        </tr>
+        <tr>
+          <td>Nhu cầu chung</td>
+          <td>ôn thi gplx · 600 câu · thi thử bằng lái</td>
+          <td>Tiêu đề Google Play và App Store</td>
+        </tr>
+        <tr>
+          <td>Theo hạng giấy phép</td>
+          <td>thi bằng lái xe máy A1 · bằng lái ô tô hạng B</td>
+          <td>Mô tả ngắn · trường keywords iOS</td>
+        </tr>
+        <tr>
+          <td>Theo ý định cụ thể</td>
+          <td>lộ trình ôn thi · sắp thi bằng lái</td>
+          <td>Mô tả dài — nơi trình bày yếu tố khác biệt</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="box constraint">
+      <h4>Ràng buộc bắt buộc đối với văn bản đối ngoại</h4>
+      <p>Hồ sơ cửa hàng và trang giới thiệu <strong>chỉ được mô tả chức năng đã
+          triển khai</strong>. Mô tả chức năng chưa có dẫn tới đánh giá 1 sao, và
+        đánh giá tiêu cực khó khắc phục hơn nhiều so với việc chỉnh sửa hồ sơ.</p>
+      <p><strong>Hiện đang cấm nêu:</strong> "học theo 6 chuyên đề" · "mỗi câu đều
+        có giải thích" · "mẹo ghi nhớ theo chuyên đề" · "trọn bộ 600 câu" ·
+        con số <strong>"60 câu điểm liệt"</strong>.</p>
+      <p><strong>Được phép nêu:</strong> ứng dụng chấm điểm theo quy tắc điểm liệt
+        — đã triển khai và đang hoạt động; số lượng câu hỏi theo đúng hạng giấy
+        phép người dùng lựa chọn.</p>
+      <p>Không đưa tên sản phẩm cạnh tranh vào bất kỳ trường nào: Apple và Google
+        đều gỡ bỏ, đồng thời phát sinh rủi ro nhãn hiệu.</p>
+      <p><strong>Cảnh báo phạt nguội — ba cách diễn đạt bị cấm:</strong>
+        "tra phạt nguội toàn quốc" (dữ liệu chỉ có Hà Nội) ·
+        "biết ngay khi bị phạt nguội" (nguồn công bố theo tháng hoặc nửa tháng, và
+        cơ quan chức năng có 10 ngày lập hồ sơ theo Thông tư 73/2024/TT-BCA) ·
+        mọi diễn đạt hàm ý thay thế tra cứu chính thức tại csgt.vn.
+        <strong>Cách nêu đúng:</strong> "cảnh báo phạt nguội — hiện có dữ liệu Hà
+        Nội, cập nhật theo kỳ công bố của Cảnh sát giao thông".</p>
+    </div>
+  </section>
+
+  <section id="abtest">
+    <h2><span class="num">05</span>Kế hoạch thử nghiệm A/B</h2>
+    <p class="lead">Nguồn: <code>growth/aso-thu-nghiem.md</code>. Công cụ: Google Play Store Listing Experiments · App
+      Store Product Page Optimization.</p>
+
+    <div class="scroll">
+      <table>
+        <tr>
+          <th class="num">Đợt</th>
+          <th>Biến số</th>
+          <th>Căn cứ xếp thứ tự</th>
+          <th>Điều kiện khởi động</th>
+        </tr>
+        <tr>
+          <td class="num">1</td>
+          <td>Biểu tượng ứng dụng (3 phương án)</td>
+          <td>Tác động lớn nhất tới tỷ lệ nhấp vào hồ sơ, đồng thời ảnh hưởng tới màn hình thiết bị người dùng sau khi
+            cài</td>
+          <td><span class="tag t-done">đủ điều kiện</span></td>
+        </tr>
+        <tr>
+          <td class="num">2</td>
+          <td>Ảnh chụp màn hình đầu tiên</td>
+          <td>Đo trực tiếp khả năng chuyển đổi của yếu tố khác biệt "lộ trình", tại điểm người dùng ra quyết định</td>
+          <td><span class="tag t-part">chờ bộ ảnh</span></td>
+        </tr>
+        <tr>
+          <td class="num">3</td>
+          <td>Mô tả ngắn</td>
+          <td>Google Play lập chỉ mục trường này ⇒ thay đổi tác động đồng thời tới tỷ lệ chuyển đổi và thứ hạng từ khoá
+          </td>
+          <td><span class="tag t-part">chờ đợt 1</span></td>
+        </tr>
+        <tr>
+          <td class="num">4</td>
+          <td>Ảnh đồ hoạ nổi bật</td>
+          <td>Tác động thấp hơn, chi phí thực hiện thấp</td>
+          <td><span class="tag t-part">chờ bộ ảnh</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="box caution">
+      <h4>Điều kiện hiệu lực của kết quả thử nghiệm</h4>
+      <p><strong>Một biến số cho mỗi đợt.</strong> Thay đổi đồng thời hai yếu tố
+        làm mất khả năng quy kết nguyên nhân.</p>
+      <p><strong>Thời gian tối thiểu 7 ngày.</strong> Hành vi người dùng cuối tuần
+        khác biệt so với ngày thường, và nhóm người dùng mục tiêu có chu kỳ riêng
+        theo lịch sát hạch.</p>
+      <p><strong>Độ tin cậy tối thiểu 90%.</strong> Khoảng tin cậy của hai phương
+        án chồng lấn nghĩa là chưa đủ căn cứ kết luận, không được đọc theo giá trị
+        trung bình.</p>
+      <p><strong>Lưu lượng tối thiểu 1.000 lượt xem hồ sơ / phương án / tuần.</strong>
+        Dưới ngưỡng này thử nghiệm không hội tụ.</p>
+    </div>
+  </section>
+
+  <section id="dolluong">
+    <h2><span class="num">06</span>Khung đo lường</h2>
+    <p class="lead">Nguồn: <code>growth/do-luong.md</code>. Trạng thái mã nguồn: khung đo lường và cổng đồng ý đã có
+      kiểm thử; <strong>SDK chưa tích hợp</strong> — bản phát hành đang dùng <code>NoOpAnalyticsService</code>.</p>
+
+    <h3>Chỉ số trọng tâm</h3>
+    <p>Số <strong>đề thi thử hoàn thành trên một người dùng hoạt động mỗi tuần</strong>.
+      Chỉ số này gắn đồng thời với giá trị người dùng nhận được (xác định mức độ
+      sẵn sàng dự thi) và với doanh thu (mỗi lượt nộp bài là một điểm hiển thị
+      quảng cáo xen kẽ hợp lệ).</p>
+
+    <h3>Bốn giai đoạn kiểm chứng</h3>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Giai đoạn</th>
+          <th>Môi trường</th>
+          <th>Mục tiêu</th>
+        </tr>
+        <tr>
+          <td>P0</td>
+          <td>Máy phát triển</td>
+          <td>Xác minh sự kiện phát đúng và đủ, trước khi sử dụng bất kỳ số liệu nào</td>
+        </tr>
+        <tr>
+          <td>P1</td>
+          <td>Internal testing, tối đa 20 người</td>
+          <td>Xác minh phễu chuyển đổi hoàn chỉnh từ mở ứng dụng tới nộp bài</td>
+        </tr>
+        <tr>
+          <td>P2</td>
+          <td>Closed testing, 2–4 tuần</td>
+          <td>Thay thế 5 giả định có độ tin cậy thấp trong kế hoạch kinh doanh bằng số liệu thực đo</td>
+        </tr>
+        <tr>
+          <td>P3</td>
+          <td>Sau phát hành</td>
+          <td>Giám sát ngưỡng và kích hoạt tiêu chí dừng tại §08</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="box constraint">
+      <h4>Quy tắc diễn giải số liệu</h4>
+      <p><strong>Cổng đồng ý mặc định tắt</strong> theo Nghị định bảo vệ dữ liệu cá
+        nhân 2025. Hệ quả: mẫu quan sát được luôn nhỏ hơn tổng thể <em>và có thiên
+          lệch lựa chọn</em> — người bật thống kê không đại diện cho người tắt.</p>
+      <p>① Không báo cáo "X% người dùng thực hiện Y" dưới dạng giá trị tuyệt đối.</p>
+      <p>② Chỉ diễn giải xu hướng theo thời gian và so sánh giữa các nhóm
+        <strong>trong cùng tập đã đồng ý</strong>.
+      </p>
+      <p>③ Mẫu số của mọi tỷ lệ là <code>app_open</code> trong cùng tập đã đồng ý,
+        <strong>không phải</strong> lượt cài đặt từ Play Console. Trộn hai nguồn
+        dữ liệu là lỗi diễn giải phổ biến nhất.
+      </p>
+    </div>
+  </section>
+
+  <section id="doanhthu">
+    <h2><span class="num">07</span>Mô hình doanh thu và đơn vị đo lường</h2>
+    <p class="lead">Nguồn: <code>docs/plan-kinh-doanh.md</code>. Các giá trị dưới đây là <strong>kết quả mô hình từ giả
+        định</strong>, không phải dự báo.</p>
+
+    <h3>Lộ trình kích hoạt các dòng doanh thu</h3>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Dòng doanh thu</th>
+          <th>Phiên bản</th>
+          <th>Điều kiện và ràng buộc</th>
+        </tr>
+        <tr>
+          <td>Quảng cáo banner và xen kẽ</td>
+          <td>1.0.x</td>
+          <td>Sau 2–4 tuần vận hành. Chỉ <strong>ba vị trí</strong>: ôn tập câu hỏi, thư viện biển báo, và màn
+            kết quả sau khi nộp đề. Hai vùng cấm đặt: <strong>trong phiên làm bài</strong>, và
+            <strong>bốn màn gốc có thanh tab</strong> — đó là bộ mặt của ứng dụng, và dải quảng cáo ở đáy nằm
+            sát thanh điều hướng nên dễ chạm nhầm</td>
+        </tr>
+        <tr>
+          <td>Quảng cáo có thưởng</td>
+          <td>1.1</td>
+          <td>eCPM cao nhất trong ba định dạng; người dùng chủ động lựa chọn nên ít phát sinh phản hồi tiêu cực</td>
+        </tr>
+        <tr>
+          <td>Gói Pro, thanh toán một lần</td>
+          <td>1.1</td>
+          <td>99.000 ₫ — thấp hơn mức 125.000 ₫ của đối thủ dẫn đầu, đủ để trở thành căn cứ lựa chọn</td>
+        </tr>
+        <tr>
+          <td>Gói Pro 30 ngày</td>
+          <td>1.1 — thử nghiệm</td>
+          <td>39.000 ₫. Khớp đúng cửa sổ sử dụng thật (1–4 tuần), bắt nhóm không trả 99.000 ₫ cho nhu cầu hai tuần</td>
+        </tr>
+        <tr>
+          <td>Kênh liên kết</td>
+          <td>1.3+</td>
+          <td>Dòng duy nhất <strong>không phụ thuộc eCPM</strong>. Chỉ hiển thị khi người dùng đạt kết quả thi thử</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>đơn vị đo lường</h3>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Chỉ số</th>
+          <th class="num">Giá trị</th>
+          <th>Ghi chú</th>
+        </tr>
+        <tr>
+          <td>ARPU trên toàn vòng đời người dùng</td>
+          <td class="num">≈ 1.640 ₫</td>
+          <td>Kịch bản cơ sở</td>
+        </tr>
+        <tr>
+          <td>Vòng đời người dùng</td>
+          <td class="num">1–4 tuần</td>
+          <td>Đặc thù nhóm người dùng chuẩn bị sát hạch</td>
+        </tr>
+        <tr>
+          <td>Điểm hoà vốn tiền mặt</td>
+          <td class="num">≈ 2.200 lượt cài</td>
+          <td>Ở mức chi phí hạ tầng tối thiểu</td>
+        </tr>
+        <tr>
+          <td>Trần chi phí thu hút khách hàng</td>
+          <td class="num">≈ 1.300 ₫/lượt cài</td>
+          <td>80% ARPU</td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>Ngưỡng hoàn vốn đầu tư ban đầu</h3>
+    <p>Điểm hoà vốn tiền mặt phía trên chỉ tính chi phí hạ tầng. Bảng dưới đây trả lời một câu khác:
+      <strong>cần bao nhiêu lượt cài để thu hồi khoản đã đầu tư</strong> (thiết bị, tài khoản nhà phát triển,
+      hạ tầng, công sức, dịch vụ). Suy trực tiếp từ ARPU ≈ 1.640 ₫/lượt cài.</p>
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Vốn đã bỏ</th>
+          <th class="num">Lượt cài cần có để hoà</th>
+        </tr>
+        <tr><td>30 triệu ₫</td><td class="num">≈ 18.000</td></tr>
+        <tr><td>50 triệu ₫</td><td class="num">≈ 30.000</td></tr>
+        <tr><td>100 triệu ₫</td><td class="num">≈ 61.000</td></tr>
+        <tr><td>200 triệu ₫</td><td class="num">≈ 122.000</td></tr>
+      </table>
+    </div>
+    <p>Đây là con số cần đọc trước mọi cuộc bàn về giá: nâng gói Pro từ 99.000 ₫ lên 125.000 ₫ dịch cột phải
+      khoảng 10–15%, trong khi đi từ kịch bản thận trọng lên kịch bản cơ sở dịch nó gấp bốn.
+      <strong>Giá không phải đòn bẩy hoàn vốn — số lượt cài mới là.</strong></p>
+
+    <div class="box">
+      <h4>Hai quyết định đã chốt, kèm căn cứ</h4>
+      <p><strong>Phiên bản 1.0 không kích hoạt quảng cáo.</strong> Điểm đánh giá là
+        tài sản có giá trị cao nhất trong ba tháng đầu, và "mật độ quảng cáo cao"
+        là phản hồi tiêu cực phổ biến nhất mà các sản phẩm cạnh tranh đang nhận.
+        Chấp nhận mất 2–4 tuần doanh thu để bảo vệ điểm đánh giá.</p>
+      <p><strong>Không mua lượt cài đặt trả phí.</strong> Chi phí quảng cáo cài đặt
+        tại thị trường Việt Nam thường vượt trần 1.300 ₫/lượt cài, do đó mọi
+        khoản chi cho kênh này đều lỗ. Kênh khả thi: tối ưu cửa hàng, SEO và
+        truyền miệng.</p>
+    </div>
+  </section>
+
+  <section id="tieuchi">
+    <h2><span class="num">08</span>Tiêu chí dừng và chuyển hướng</h2>
+    <p class="lead">Nguồn: <code>docs/plan-kinh-doanh.md</code> §10. Thứ tự ưu tiên sản phẩm: GT → Tarot → Hội khoá.</p>
+
+    <div class="scroll">
+      <table>
+        <tr>
+          <th>Thời điểm đánh giá</th>
+          <th>Điều kiện kích hoạt</th>
+          <th>Hành động</th>
+        </tr>
+        <tr>
+          <td>Tuần thứ 4 sau phát hành</td>
+          <td>Dưới 500 lượt cài <strong>và</strong> điểm đánh giá dưới 4,0</td>
+          <td>Nguyên nhân thuộc về sản phẩm hoặc hồ sơ cửa hàng, không phải quy mô. Khắc phục trước khi tăng đầu tư</td>
+        </tr>
+        <tr>
+          <td>Tháng thứ 3</td>
+          <td>Dưới 2.000 lượt cài luỹ kế</td>
+          <td>Tối ưu cửa hàng không hiệu quả. Chuyển nguồn lực sang SEO web thay vì phát triển tính năng</td>
+        </tr>
+        <tr>
+          <td>Tháng thứ 6</td>
+          <td>Dưới 5.000 lượt cài luỹ kế <strong>và</strong> ARPU dưới 800 ₫</td>
+          <td><strong>Chuyển sản phẩm sang chế độ duy trì</strong> (chỉ khắc phục lỗi và cập nhật quy định), phân bổ
+            nguồn lực sang Tarot</td>
+        </tr>
+        <tr>
+          <td>Tháng thứ 6</td>
+          <td>Từ 15.000 lượt cài <strong>và</strong> điểm đánh giá từ 4,6</td>
+          <td>Có tín hiệu thị trường ⇒ tiếp tục đầu tư: mô phỏng 120 tình huống</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="box">
+      <h4>Nguyên tắc ra quyết định</h4>
+      <p>Chi phí đã bỏ ra không phải căn cứ để tiếp tục. Các thành phần đã xây dựng
+        — kiến trúc tách nội dung khỏi engine, hệ thống thiết kế, quy trình tích
+        hợp liên tục, bộ tài liệu — <strong>tái sử dụng được toàn bộ</strong> cho
+        sản phẩm kế tiếp. Chuyển hướng không làm mất phần giá trị này.</p>
+    </div>
+  </section>
+
+  <section id="uutien">
+    <h2><span class="num">09</span>Thứ tự ưu tiên theo mức đòn bẩy</h2>
+    <p class="lead">Xếp theo tỷ lệ tác động trên khối lượng công việc. Nguồn: <code>docs/plan-kinh-doanh.md</code> §9.
+    </p>
+
+    <ol class="rank">
+      <li>
+        <span class="owner">Nội dung</span>
+        <strong>Phân loại chuyên đề và biên soạn giải thích đáp án.</strong>
+        Mở khoá 2 luận điểm bán hàng và 3 khung ảnh cửa hàng. Mức đòn bẩy cao nhất
+        trong danh sách, và không thuộc phạm vi kỹ thuật.
+      </li>
+      <li>
+        <span class="owner">Nội dung</span>
+        <strong>Xác nhận danh sách câu điểm liệt với Phụ lục Công văn 2262/CSGT-P5.</strong>
+        Dữ liệu hiện tại được đối chiếu tự động giữa hai nguồn độc lập; cần xác
+        nhận của người có trách nhiệm trước khi nộp hồ sơ cửa hàng.
+      </li>
+      <li>
+        <span class="owner">Kỹ thuật</span>
+        <strong>Triển khai web và cấu hình địa chỉ liên hệ.</strong>
+        Gỡ điều kiện chặn nộp hồ sơ, đồng thời khởi động kênh SEO — kênh duy nhất
+        có hiệu quả tăng dần theo thời gian mà không phát sinh chi phí biến đổi.
+      </li>
+      <li>
+        <span class="owner">Thiết kế</span>
+        <strong>Thực hiện 3 khung ảnh cửa hàng không phụ thuộc nội dung.</strong>
+        Ba khung còn lại chờ hoàn thành hạng mục 1.
+      </li>
+      <li>
+        <span class="owner">Growth</span>
+        <strong>Khởi động thử nghiệm A/B biểu tượng ứng dụng</strong> khi lưu lượng
+        hồ sơ đạt 1.000 lượt xem / phương án / tuần.
+      </li>
+      <li>
+        <span class="owner">Kinh doanh</span>
+        <strong>Đàm phán đối tác kênh liên kết.</strong> Video giới thiệu sẵn sàng
+        cho mục đích này; lược đồ dữ liệu đã hoàn tất nên thời gian từ ký kết tới
+        hiển thị trên ứng dụng gần bằng 0.
+        <p>Ngưỡng đánh giá một đối tác: <em>hoa hồng mỗi hồ sơ × tỉ lệ chuyển đổi</em>
+          phải vượt <strong>1.640 ₫/lượt cài</strong>. Trung tâm dạy lái vượt ngưỡng
+          này rất xa — học phí một khoá là hàng chục triệu, nên hoa hồng cỡ trăm nghìn
+          với tỉ lệ chuyển đổi 1% đã lớn hơn toàn bộ doanh thu quảng cáo cộng gói Pro.
+          Bảo hiểm trách nhiệm dân sự xe máy thì ngược lại: phí cả năm quá thấp để
+          hoa hồng đạt ngưỡng. Công thức này quyết định <strong>gõ cửa ai trước</strong>.</p>
+      </li>
+    </ol>
+  </section>
+
+  <footer>
+    <p><strong>Tài liệu gốc:</strong> <code>growth/aso.md</code> ·
+      <code>growth/aso-thu-nghiem.md</code> · <code>growth/do-luong.md</code> ·
+      <code>docs/plan-kinh-doanh.md</code> · <code>docs/plan-usp.md</code> ·
+      <code>docs/con-lai-gi.md</code>
+    </p>
+    <p>Bản HTML này là tài liệu tổng hợp, không phải nguồn chân lý. Chỉnh sửa nội
+      dung tại tài liệu gốc, sau đó cập nhật lại theo bảng ánh xạ trong
+      <code>growth-html/README.md</code>.
+    </p>
+  </footer>
+
+</div>
