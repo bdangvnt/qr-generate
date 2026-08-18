@@ -1,16 +1,33 @@
-body {
-  cursor: default;
-  padding: 0;
-  border: 0;
-  margin: 0;
+/*
+ * Template cho bản build web — dùng cho CẢ điện thoại lẫn máy tính, một bản duy nhất.
+ *
+ * Đây là bản `style.css` mặc định của platform `web-mobile` (Cocos 3.8.8), giữ nguyên
+ * gần hết. Cocos chép mọi file trong `build-templates/<platform>/` đè lên kết quả build,
+ * **thay thế trọn file cùng tên** — nên phải chép đủ nội dung gốc, không được chỉ ghi
+ * phần muốn đổi.
+ *
+ * Vì sao chọn `web-mobile` chứ không phải `web-desktop`:
+ *
+ * `web-mobile` đã fullscreen sẵn — `#GameDiv/#GameCanvas` đặt 100%, `cc_exact_fit_screen`
+ * đã bật, không có tiêu đề hay dòng "Created with Cocos Creator" nào để gỡ. `web-desktop`
+ * thì vẽ game trong một khung 1280×960 có viền, bo góc, đổ bóng, đặt giữa trang nền trắng;
+ * muốn nó fullscreen phải viết đè cả `index.html` — mà `index.html` sinh ra chứa danh sách
+ * script và import map riêng của từng lần build, ghim cứng vào template là một quả bom hẹn
+ * giờ. Ở đây chỉ cần đè `style.css`, không đụng gì tới phần script.
+ *
+ * Chỉ có MỘT thay đổi so với bản gốc: `background-color` của `body`.
+ */
 
-  text-align: center;
-  background-color: white;
-  font-family: Helvetica, Verdana, Arial, sans-serif;
+html {
+  -ms-touch-action: none;
 }
 
 body, canvas, div {
+  display: block;
   outline: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+  user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
@@ -22,23 +39,45 @@ body, canvas, div {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
-  -webkit-appearance: none;
-  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+body {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  margin: 0;
+
+  cursor: default;
+  color: #888;
+
+  /*
+   * ĐÂY LÀ THAY ĐỔI DUY NHẤT: #333 -> #0E0B14 ("nền sâu" trong bảng màu ở
+   * docs/01-art-pipeline.md).
+   *
+   * Thiết kế là 750×1624 dọc với Fit Height, nên màn hình nào có tỉ lệ khác đều lộ ra
+   * một dải nền hai bên hoặc trên dưới. Xám #333 mặc định cắt hẳn khỏi tông tím-đen của
+   * game và làm lộ ra rằng canvas không phủ kín; màu nền sâu thì dải đó chìm vào bố cục.
+   */
+  background-color: #0E0B14;
+
+  text-align: center;
+  font-family: Helvetica, Verdana, Arial, sans-serif;
+
+  display: flex;
+  flex-direction: column;
 }
 
 canvas {
   background-color: rgba(0, 0, 0, 0);
 }
 
-#GameDiv {
-    margin: 0 auto;
-    position:relative;
-    border:5px solid black;
-    border-radius: 10px;
-    box-shadow: 0 5px 50px #333
-}
-
-#Cocos3dGameContainer, #GameCanvas {
+#GameDiv, #Cocos3dGameContainer, #GameCanvas {
   width: 100%;
   height: 100%;
 }
