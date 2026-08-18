@@ -338,6 +338,12 @@
                 min-height: 0;
                 aspect-ratio: 1 / 1;
             }
+            /* Anh dia chi phai neo theo ti le khung, khong dung px co dinh:
+               desktop la 56px / 640px = 8.75% chieu cao khung. Dung px tren
+               mobile lam dai dia chi tut xuong duoi to giay trong 1_back.png. */
+            .address-img {
+                bottom: 8.75%;
+            }
             .form-section {
                 width: 100%;
                 padding: 12px 0;
@@ -406,7 +412,7 @@
             <div class="invite-frame-wrapper">
                 <div class="invite-frame">
                     <div class="avatar-box" id="avatarPreview"></div>
-                    <img src="1_back.png" class="frame-overlay"
+                    <img src="1_back.png?v=2" class="frame-overlay"
                         alt="Khung overlay">
                     <div class="invite-names" id="inviteNames">
                         <span class="invite-fullname">Tên của bạn</span>
