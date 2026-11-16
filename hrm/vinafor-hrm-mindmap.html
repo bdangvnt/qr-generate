@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đối chiếu VINAFOR HRM</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: header + số liệu → mindmap Phụ lục 01 (tô màu theo hiện trạng) + bảng chi tiết bên phải → bảng điểm lệch → ghi chú */
+:root{
+  --bg:#f5f7f4; --surface:#ffffff; --ink:#18231c; --muted:#5b6a60; --line:#d5ddd6; --soft:#e9eee9;
+  --accent:#1f6b45; --accent-ink:#ffffff;
+  --g1:#2f7d55; --g2:#2f5f9a; --g3:#8a5a12; --g4:#7a3f8f; --g5:#3d4a52; --g6:#7b8580;
+  --s-ok:#2e7d4f; --s-ok-bg:#e3f2e7; --s-part:#9a6408; --s-part-bg:#fbf0d9;
+  --s-miss:#b3261e; --s-miss-bg:#fbe6e4; --s-dev:#6d3fa8; --s-dev-bg:#efe7fa; --s-out:#5f6b66; --s-out-bg:#eceeed;
+  --font-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111713; --surface:#18201b; --ink:#e4ece6; --muted:#9aaba0; --line:#2c3a31; --soft:#1f2a23;
+  --accent:#5fbf8a; --accent-ink:#0d1a12;
+  --g1:#62c08e; --g2:#77a6e0; --g3:#d9a24b; --g4:#c48bd8; --g5:#9fb0ba; --g6:#8a948f;
+  --s-ok:#6fd096; --s-ok-bg:#1c3326; --s-part:#e8b55a; --s-part-bg:#33290f;
+  --s-miss:#f2897f; --s-miss-bg:#3a1c1a; --s-dev:#c3a0f0; --s-dev-bg:#2c2140; --s-out:#a9b4af; --s-out-bg:#262d29;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111713; --surface:#18201b; --ink:#e4ece6; --muted:#9aaba0; --line:#2c3a31; --soft:#1f2a23;
+  --accent:#5fbf8a; --accent-ink:#0d1a12;
+  --g1:#62c08e; --g2:#77a6e0; --g3:#d9a24b; --g4:#c48bd8; --g5:#9fb0ba; --g6:#8a948f;
+  --s-ok:#6fd096; --s-ok-bg:#1c3326; --s-part:#e8b55a; --s-part-bg:#33290f;
+  --s-miss:#f2897f; --s-miss-bg:#3a1c1a; --s-dev:#c3a0f0; --s-dev-bg:#2c2140; --s-out:#a9b4af; --s-out-bg:#262d29;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px;display:grid;gap:28px}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.25}
+h1{font-size:clamp(22px,3vw,30px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:18px;font-weight:600}
+.eyebrow{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{color:var(--muted);max-width:78ch;margin:6px 0 0}
+code,.mono{font-family:var(--font-mono);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{background:var(--surface);padding:12px 14px;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer;border-radius:0}
+.stat b{display:block;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.stat .bar{height:4px;border-radius:2px;margin-top:8px;background:var(--soft);overflow:hidden}
+.stat .bar i{display:block;height:100%}
+.stat[aria-pressed="true"]{box-shadow:inset 0 -3px 0 var(--accent)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:7px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+button:focus-visible,.node:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+@media (max-width:1000px){.mapgrid{grid-template-columns:minmax(0,1fr)}}
+.mapbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:auto;max-height:80vh;min-width:0}
+.map{position:relative}
+.map svg{position:absolute;inset:0;overflow:visible}
+.map svg path{fill:none;stroke-width:1.6}
+.node{position:absolute;height:30px;display:flex;align-items:center;gap:6px;padding:0 10px;border-radius:7px;white-space:nowrap;overflow:hidden;cursor:pointer;font-size:13px;user-select:none;border:1px solid transparent}
+.node .t{overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.node .n{font-size:11px;font-variant-numeric:tabular-nums;padding:1px 6px;border-radius:10px;background:var(--soft);color:var(--muted);flex:none}
+.node .caret{font-size:10px;width:10px;flex:none;color:var(--muted)}
+.lv0{background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:14px;height:44px;border-radius:10px;cursor:default}
+.lv1{color:var(--surface);font-weight:600;cursor:default}
+.lv2{background:var(--surface);border-color:var(--line);font-weight:500}
+.lv2.sel{box-shadow:0 0 0 2px var(--c)}
+.lv2 .code{font-family:var(--font-mono);font-size:11px;color:var(--muted);flex:none;min-width:26px}
+.lv3{font-size:12.5px;cursor:default;padding-left:8px}
+.mini{display:flex;height:6px;width:46px;border-radius:3px;overflow:hidden;flex:none;background:var(--soft)}
+.mini i{display:block;height:100%}
+.st-ok{background:var(--s-ok-bg);color:var(--s-ok)}
+.st-part{background:var(--s-part-bg);color:var(--s-part)}
+.st-miss{background:var(--s-miss-bg);color:var(--s-miss)}
+.st-dev{background:var(--s-dev-bg);color:var(--s-dev)}
+.st-out{background:var(--s-out-bg);color:var(--s-out)}
+.lv3 .sd{width:8px;height:8px;border-radius:50%;flex:none;background:currentColor}
+.lv3 .t{color:var(--ink)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;position:sticky;top:12px;min-width:0;max-height:80vh;overflow:auto}
+.panel h3{font-size:17px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+.sub{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.items{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.items li{display:grid;grid-template-columns:26px minmax(0,1fr);gap:4px 8px;font-size:13px}
+.items .no{font-family:var(--font-mono);font-size:11.5px;color:var(--muted);padding-top:2px}
+.items .pill{display:inline-block;font-size:11px;font-weight:600;padding:0 7px;border-radius:999px;margin-left:4px;vertical-align:1px}
+.items .note{grid-column:2;font-size:12.5px;color:var(--muted)}
+.devbox{background:var(--s-dev-bg);color:var(--ink);border-left:3px solid var(--s-dev);border-radius:6px;padding:8px 10px;font-size:13px}
+.devbox b{color:var(--s-dev)}
+.tablebox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:820px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;background:var(--soft)}
+td:first-child{font-weight:600;white-space:nowrap}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.card ul{margin:8px 0 0;padding-left:18px;display:grid;gap:4px}
+.foot{font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.node{transition:top .2s ease,left .2s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Hợp đồng dịch vụ số 614 · Phụ lục 01 · đối chiếu với khảo sát 07/11/2026 · cập nhật 14/11/2026</div>
+    <h1>Bản đồ đối chiếu VINAFOR HRM: hợp đồng và thực tế</h1>
+    <p class="lede">Mỗi nhánh là một nhóm chức năng trong Phụ lục 01, mỗi lá là một dòng của Phụ lục, tô màu theo hiện trạng trên hệ thống. Bấm một nhóm để mở các dòng và xem ghi chú. Bấm ô số liệu phía dưới để chỉ hiện những dòng ở trạng thái đó. Mã FR tham chiếu SRS bản cập nhật (mục 4.8.3 và 9.4).</p>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Số liệu theo hiện trạng"></section>
+
+  <section style="display:grid;gap:10px">
+    <div class="toolbar">
+      <div class="legend" id="legend"></div>
+      <div class="btns">
+        <button type="button" id="expandAll">Mở tất cả</button>
+        <button type="button" id="collapseAll">Thu gọn</button>
+      </div>
+    </div>
+    <div class="mapgrid">
+      <div class="mapbox" id="mapbox"><div class="map" id="map"><svg id="wires" aria-hidden="true"></svg></div></div>
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:10px">
+    <div>
+      <h2>Những điểm hợp đồng và thực tế khác nhau</h2>
+      <p class="lede" style="margin-top:2px">Khác về cách làm hoặc phạm vi, không chỉ là thiếu. Cần chủ đầu tư và nhà cung cấp chốt cách xử lý từng dòng: bổ sung, sửa hợp đồng, hoặc chấp nhận hiện trạng (SRS mục 9.4).</p>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Hạng mục</th><th>Hợp đồng nói</th><th>Thực tế đang có</th><th>Nhận định</th></tr></thead>
+        <tbody id="devTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="notes">
+    <div class="card">
+      <h2>Phụ lục 02: hạ tầng cam kết</h2>
+      <ul>
+        <li>Máy chủ Cloud: 16 vCore, RAM 64GB, SSD 500GB.</li>
+        <li>Băng thông trong và ngoài nước 300Mbps, 01 IP tĩnh.</li>
+        <li>Độ khả dụng 99,99%, vận hành và hỗ trợ 24/7.</li>
+        <li>Vận hành theo quy trình an toàn thông tin; phòng máy chống tĩnh điện, ẩm, cháy nổ, có nguồn dự phòng.</li>
+        <li>Đã đưa vào SRS thành NFR-AVL-03.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Tích hợp phụ thuộc bên A</h2>
+      <ul>
+        <li>API nhà cung cấp dịch vụ tuyển dụng (II.8): bên A cung cấp danh sách API, chỉ làm nếu có yêu cầu.</li>
+        <li>Google Form ứng viên (II.9): bên A cung cấp form.</li>
+        <li>Máy chấm công và Camera AI (VII.3): bên A cung cấp thiết bị.</li>
+        <li>Nên ghi rõ đây là điều kiện tiên quyết trong kế hoạch nghiệm thu.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Lỗi trong văn bản Phụ lục</h2>
+      <ul>
+        <li>Đánh số "XIIII", đúng là XIV.</li>
+        <li>Mục XV có hai dòng số 22 (Cấp nhân sự, Xếp loại).</li>
+        <li>Chính tả: "nhựu" (I.17), "Eport" (VII.4), "Excel;," (XIII.2).</li>
+        <li>Phụ lục 02 đánh số 1, 2, 4, thiếu mục 3.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Cách đọc trạng thái</h2>
+      <ul>
+        <li><b>Khớp</b>: SRS ghi nhận chức năng trên hệ thống.</li>
+        <li><b>Một phần / chưa xác minh</b>: có một phần, hoặc khảo sát chưa thấy đủ để kết luận.</li>
+        <li><b>Chưa thấy</b>: không thấy trên hệ thống. Có thể chưa phát triển, hoặc tài khoản khảo sát không có quyền xem.</li>
+        <li><b>Lệch</b>: hệ thống làm theo cách khác hợp đồng.</li>
+      </ul>
+    </div>
+  </section>
+
+  <p class="foot">Nguồn: Phụ lục 01 và 02 kèm Hợp đồng dịch vụ số 614; SRS – Hệ thống Quản lý Nhân sự VINAFOR HRM, bản cập nhật 14/11/2026 (khảo sát chỉ đọc bằng tài khoản quản trị ngày 07/11/2026). Bản đồ không chứa dữ liệu cá nhân của cán bộ nhân viên.</p>
+</div>
+
+<script>
+const ST={ok:"Khớp",part:"Một phần / chưa xác minh",miss:"Chưa thấy",dev:"Lệch so với HĐ",out:"Ngoài Phụ lục 01"};
+const ORDER=["ok","part","miss","dev","out"];
+const CL=[
+ {id:"c1",name:"Tổng quan & báo cáo",c:"--g1"},
+ {id:"c2",name:"Tuyển dụng, hồ sơ, hợp đồng",c:"--g2"},
+ {id:"c3",name:"Bảo hiểm, phép, công, lương",c:"--g3"},
+ {id:"c4",name:"Đánh giá, quyết định, đào tạo",c:"--g4"},
+ {id:"c5",name:"Kho số hóa & danh mục",c:"--g5"},
+ {id:"c6",name:"Ngoài Phụ lục 01",c:"--g6"}
+];
+/* items: [nhãn, trạng thái, ghi chú] */
+const P=[
+ {id:"I",cl:"c1",name:"Dashboard",fr:"FR-HRM-14",
+  dev:"Hợp đồng ghi Dashboard là trang chủ khi đăng nhập. Thực tế đăng nhập vào Launcher \"Văn phòng điện tử\", phải chọn ứng dụng Nhân sự mới tới /hrm/dashboard.",
+  items:[["Tổng số nhân sự","part","Có /hrm/dashboard, chưa đối chiếu từng chỉ tiêu"],["Số nhân sự đang làm việc","part","Chưa đối chiếu chỉ tiêu"],["Số nhân viên đã nghỉ việc","part","Chưa đối chiếu chỉ tiêu"],["Số nhân sự đang nghỉ thai sản","part","Chưa đối chiếu chỉ tiêu"],["Số HĐLĐ quá hạn","part","Chưa đối chiếu chỉ tiêu"],["Số hợp đồng sắp hết hạn","part","Trợ lý AI có gợi ý \"HĐ sắp hết hạn\"; dashboard chưa đối chiếu"],["Số nhân sự mới tuyển dụng","part","Chưa đối chiếu chỉ tiêu"],["Số khóa đào tạo nhân sự","part","Chưa đối chiếu chỉ tiêu"],["Nhân sự theo độ tuổi, nam/nữ (%)","part","Chưa đối chiếu chỉ tiêu"],["Tổng số HĐ theo loại (%)","part","Chưa đối chiếu chỉ tiêu"],["Nhân sự toàn TCT và từng công ty trực thuộc","part","Cây đơn vị có số hồ sơ theo nút; dashboard chưa đối chiếu"],["Danh sách nhân sự mới vào công ty","part","Chưa đối chiếu chỉ tiêu"],["Sinh nhật trong ngày, trong tháng","part","Có ở phân hệ Truyền thông (/media/birthday), chưa thấy trên dashboard nhân sự"],["Số cháu thiếu nhi nhận quà 1/6 (dưới 16 tuổi)","miss","Không thấy ở đâu trong hệ thống"],["Số cặp vợ chồng làm trong công ty","miss","Không thấy ở đâu trong hệ thống"],["Biểu đồ theo trình độ học vấn","part","Chưa đối chiếu chỉ tiêu"],["Biểu đồ theo độ tuổi","part","Chưa đối chiếu chỉ tiêu"],["Biểu đồ theo loại hợp đồng","part","Chưa đối chiếu chỉ tiêu"]]},
+ {id:"XIV",cl:"c1",name:"Báo cáo thống kê",fr:"FR-HRM-31",
+  dev:"",
+  items:[["Danh sách chiến dịch tuyển dụng","part","SRS chưa liệt kê báo cáo theo mẫu"],["Tổng hợp nhân sự","part","Chưa xác minh"],["Danh sách nhân sự nghỉ việc","part","Chưa xác minh"],["Danh sách hợp đồng lao động","part","Chưa xác minh"],["Danh sách đào tạo nhân sự","part","Chưa xác minh"],["Thống kê quá trình công tác","part","Chưa xác minh"],["Thống kê thâm niên công tác","part","Chưa xác minh (thâm niên có tính tự động trên hồ sơ)"],["Tổng hợp đánh giá nhân sự","part","Chưa xác minh"],["Tổng hợp nhận xét chung về đánh giá","part","Chưa xác minh"],["Danh sách các cháu nhận quà Trung thu","miss","Không thấy"],["Danh sách các cháu nhận quà 1/6","miss","Không thấy"],["Số liệu đào tạo, tuyển dụng, nghỉ việc","part","Chưa xác minh"],["Trên 20 báo cáo có sẵn","part","Có \"Báo cáo theo mẫu\" nhưng chưa đếm được số lượng"],["Báo cáo động (người dùng tự lập)","ok",""]]},
+ {id:"II",cl:"c2",name:"Tuyển dụng nhân sự",fr:"FR-HRM-15, FR-HRM-16",
+  dev:"",
+  items:[["Đề xuất tuyển dụng (cá nhân, phòng ban)","ok",""],["Phê duyệt đề xuất","part","Chiến dịch có trạng thái Chờ duyệt; duyệt đề xuất chưa thấy rõ"],["Chiến dịch tuyển dụng","ok",""],["Danh sách ứng viên","ok",""],["Danh sách lịch phỏng vấn","miss","Chỉ có email mời phỏng vấn"],["Kết quả tuyển dụng (các đợt)","part","Có trạng thái Trúng/Không trúng tuyển, chưa có màn kết quả theo đợt"],["Duyệt kết quả tuyển dụng","miss","Không thấy bước duyệt"],["API nhà cung cấp dịch vụ tuyển dụng","miss","Phụ thuộc bên A cung cấp API"],["Lấy dữ liệu ứng viên từ Google Form","miss","Phụ thuộc bên A cung cấp form"]]},
+ {id:"III",cl:"c2",name:"Hồ sơ nhân sự",fr:"FR-HRM-17 đến FR-HRM-20",
+  dev:"III.23 cảnh báo hồ sơ thiếu ngày sinh, nhưng hệ thống bắt buộc nhập ngày sinh khi lưu. Cảnh báo chỉ có ý nghĩa với dữ liệu import/cũ và trường không bắt buộc như CCCD.",
+  items:[["Danh sách hồ sơ (đang làm, nghỉ việc, thai sản, không lương, tất cả)","ok","Thực tế có thêm Nghỉ đi học, Nghỉ khác, Nghỉ hưu"],["Bộ lọc động nhiều tiêu chí","part","Có \"Tìm nâng cao\", chưa rõ các tiêu chí"],["Lý lịch mẫu chung","part","Có in hồ sơ, chưa rõ mẫu"],["Lý lịch tự thuật mẫu 2C-BNV/2008","part","Chỉ thấy trường \"Hiển thị trong mẫu 2C\""],["Profile nhân sự","part","Chưa thấy trang tổng hợp; form nhập có 7 tab"],["Quá trình công tác","ok",""],["Phân công công tác","part","Có quyết định, nút \"Chưa phân công\"; chưa có mục riêng"],["Hợp đồng lao động","ok",""],["Quyết định","ok",""],["Thu nhập và bảo hiểm","part","Có ở phân hệ Lương, Bảo hiểm; chưa thấy trong hồ sơ"],["Khen thưởng / kỷ luật","ok",""],["Chứng chỉ, bằng cấp","ok","Tab Quá trình đào tạo"],["Tài sản sử dụng","part","Có ở phân hệ Tài sản, chưa thấy liên kết với hồ sơ"],["Đào tạo","ok",""],["Chấm công tháng","part","Chưa thấy trong hồ sơ"],["Phiếu lương cá nhân","ok","Gửi phiếu lương cho từng nhân viên"],["Nghỉ phép","ok",""],["File số hóa của nhân sự","ok","Kho số hóa"],["In / kết xuất Excel, Word","part","Có Excel và in; chưa thấy Word"],["Xác nhận tiếp nhận hồ sơ","part","Tab Giấy tờ tiếp nhận"],["Đề xuất chỉnh sửa hồ sơ cá nhân","ok","Nhân viên tự cập nhật"],["Phê duyệt chỉnh sửa hồ sơ","ok","Hàng Hồ sơ chờ duyệt"],["Cảnh báo thông minh (thiếu ngày sinh, CCCD)","dev","Ngày sinh đang là trường bắt buộc"],["Thống kê nhanh bố mẹ, vợ chồng, anh chị em, con","miss","Chỉ có tab Quan hệ gia đình từng hồ sơ"]]},
+ {id:"IV",cl:"c2",name:"Hợp đồng lao động",fr:"FR-HRM-21",
+  dev:"Hợp đồng chia: còn hiệu lực / hết hiệu lực / hết hạn trong tháng. Thực tế chia: Chưa hiệu lực / Đang hiệu lực / Hết hiệu lực / Đã chấm dứt. Chi tiết hơn nhưng thiếu lọc hết hạn trong tháng.",
+  items:[["Danh sách hợp đồng lao động","ok",""],["Phân loại (còn hiệu lực, hết hiệu lực, hết hạn trong tháng)","dev","Thiếu nhóm hết hạn trong tháng"],["Kết xuất Excel","ok",""],["Tạo lập hợp đồng tự động theo mẫu","miss","Không thấy sinh văn bản HĐ từ mẫu"]]},
+ {id:"V",cl:"c3",name:"Bảo hiểm",fr:"FR-HRM-22",
+  dev:"",
+  items:[["Danh sách đóng bảo hiểm theo tháng","ok","Bảng theo dõi đóng"],["Tăng / giảm bảo hiểm","miss","Không thấy"],["Import danh sách từ Excel","miss","Import hiện chỉ có ở Tổ chức, Người dùng, Hợp đồng, Đào tạo"],["Kết xuất Excel","ok",""]]},
+ {id:"VI",cl:"c3",name:"Nghỉ phép / phép năm",fr:"FR-HRM-23",
+  dev:"",
+  items:[["Đề xuất xin nghỉ phép","ok","Đơn nghỉ phép, biểu mẫu e-Form"],["Tính ngày phép trong năm","ok",""],["Tính phép tồn theo quy định nhà nước","part","Có chuyển phép tồn; công thức chưa xác nhận"],["Theo dõi phép tồn","ok",""],["Export bảng dữ liệu phép năm","part","Chưa thấy nút export ở màn phép năm"],["Kết xuất Excel","part","Chưa thấy nút export ở màn phép năm"]]},
+ {id:"VII",cl:"c3",name:"Chấm công",fr:"FR-HRM-24",
+  dev:"",
+  items:[["Bảng chấm công tháng","ok",""],["Bảng chấm công làm thêm giờ","part","Chỉ có cấu hình OT"],["Chấm công: phần mềm, Excel, máy chấm công, Camera AI","part","Có QR/GPS/thủ công; chưa thấy Excel, máy chấm công, Camera AI"],["Import / Export bảng chấm công tháng","part","Có xuất dữ liệu; chưa thấy import"]]},
+ {id:"VIII",cl:"c3",name:"Bảng lương",fr:"FR-HRM-25",
+  dev:"Hợp đồng: import bảng lương theo mẫu từng đơn vị (lương tính bên ngoài). Thực tế: hệ thống tự tính lương theo mẫu, có cột công thức, nhưng không có import.",
+  items:[["Import bảng lương theo mẫu từng đơn vị","dev","Hệ thống tự tính, không import"],["Trình, phê duyệt số liệu bảng lương","ok",""],["Export bảng lương Excel, PDF","part","Có Excel; chưa thấy PDF"],["Tổng lương phòng ban và toàn công ty","miss","Không thấy"],["Tổng hợp lương nhân sự theo năm","ok",""]]},
+ {id:"IX",cl:"c4",name:"Đánh giá nhân sự",fr:"FR-HRM-26",
+  dev:"Hợp đồng: cá nhân tự lập phiếu đánh giá theo tháng, quý, năm; quản lý đánh giá lại; công bố. Thực tế: trưởng phòng chấm điểm tuần 01–04, điểm tháng là bình quân tuần.",
+  items:[["Khởi tạo mẫu biểu đánh giá trong form","part","Có danh mục Nhóm tiêu chí, chưa có trình tạo mẫu"],["Cá nhân tự lập form đánh giá (tháng, quý, năm)","dev","Trưởng phòng chấm; chỉ có tuần và tháng"],["Tổng hợp đánh giá","ok",""],["Trình phê duyệt cấp quản lý","ok","Tab Chờ duyệt"],["Quản lý kiểm tra, đánh giá lại, duyệt","part","Có trưởng phòng chấm điểm"],["Công bố kết quả đánh giá","miss","Không thấy"]]},
+ {id:"X",cl:"c4",name:"Quản lý quyết định",fr:"FR-HRM-27",
+  dev:"Hợp đồng có bước phát hành quyết định. Thực tế luồng dừng ở Đã duyệt.",
+  items:[["Khởi tạo mẫu quyết định (phân công, bổ nhiệm, miễn nhiệm…)","part","Có phân loại QĐ, form đổi theo loại; chưa có mẫu văn bản"],["Dự thảo quyết định theo mẫu","part","Có Dự thảo; chưa sinh văn bản theo mẫu"],["Trình phê duyệt","ok",""],["Phê duyệt","ok",""],["Phát hành quyết định","dev","Không có bước phát hành"],["Liên kết quyết định vào hồ sơ","ok","Ghi vào quá trình công tác"]]},
+ {id:"XI",cl:"c4",name:"Khen thưởng / kỷ luật",fr:"FR-HRM-28",
+  dev:"",
+  items:[["Khen thưởng cá nhân / tập thể","ok",""],["Kỷ luật cá nhân / tập thể","part","Màn hình chung /hrm/reward; form chỉ có trường khen thưởng"]]},
+ {id:"XII",cl:"c4",name:"Quản lý đào tạo",fr:"FR-HRM-29",
+  dev:"",
+  items:[["Lập đề xuất đào tạo","part","Thiếu trường: đơn vị đề xuất, nội dung, lịch học, địa điểm, chi phí"],["Tổng hợp đề xuất (dự thảo, chờ duyệt, đã duyệt, không duyệt)","part","Chưa thấy các trạng thái này"],["Danh sách đào tạo (kế hoạch, đang thực hiện, hoàn thành)","part","Chưa thấy kết quả, lịch học, tài liệu"]]},
+ {id:"XIII",cl:"c5",name:"Kho dữ liệu số hóa",fr:"FR-HRM-30",
+  dev:"",
+  items:[["Danh sách file số hóa theo nhân sự","ok",""],["Lọc, phân loại theo nhóm (PDF, Excel, Word, ảnh)","ok",""],["Tra cứu, tìm kiếm theo nhân sự","ok",""],["Xem chi tiết, tải về","part","Chưa xác minh"],["Lịch sử truy cập, khai thác","part","Chỉ có nhật ký thao tác chung"]]},
+ {id:"XV",cl:"c5",name:"Danh mục dùng chung",fr:"FR-HRM-32",
+  dev:"",
+  items:[["Địa danh (cây phân cấp)","part","Có danh mục Địa danh, chưa thấy phân cấp"],["Vòng phỏng vấn","miss",""],["Vị trí tuyển dụng","ok","Chức danh / Vị trí"],["Trình độ học vấn","ok",""],["Trình độ văn hóa","ok",""],["Chuyên ngành","ok",""],["Chứng thực cá nhân","ok","Giấy tờ tùy thân"],["Nơi cấp chứng thực","ok","Nơi cấp"],["Loại hợp đồng","ok",""],["Quốc tịch","ok",""],["Dân tộc","ok",""],["Tôn giáo","ok",""],["Ngoại ngữ","ok","Trình độ ngoại ngữ"],["Nơi đào tạo","ok",""],["Khoa (trường ĐH)","ok","Khoa chuyên ngành"],["Bằng cấp","ok",""],["Trình độ tin học","ok",""],["Ngân hàng","ok",""],["Nhóm đào tạo","miss",""],["Khóa học","miss",""],["Tiêu chí đánh giá","part","Có Nhóm tiêu chí"],["Cấp nhân sự","ok",""],["Xếp loại","miss","Chỉ là tham số lương \"Xếp loại CBNV\""],["Mô hình cơ cấu tổ chức (cây)","ok",""]]},
+ {id:"+HR",cl:"c6",name:"Nhân sự: ngoài danh mục HĐ",fr:"SRS 4.8.2",out:true,
+  dev:"",
+  items:[["Quyết toán thuế TNCN","out",""],["Quy hoạch cán bộ","out",""],["Người đại diện phần vốn","out",""],["Tổ chức: sáp nhập, giải thể đơn vị","out",""],["Danh sách đen ứng viên","out",""],["Ngân hàng câu hỏi phỏng vấn","out",""],["Email tuyển dụng theo mẫu","out",""],["Trợ lý Nhân sự AI (thử nghiệm)","out",""]]},
+ {id:"+DOC",cl:"c6",name:"Văn bản & tài liệu",fr:"SRS 4.4–4.7",out:true,dev:"",
+  items:[["Văn bản – điều hành","out",""],["Tài liệu (ECM)","out",""],["Thư viện văn bản","out",""],["Pháp chế","out","Chưa xem được giao diện"],["Ký số","out","Chưa xem được giao diện"]]},
+ {id:"+OPS",cl:"c6",name:"Điều hành & hành chính",fr:"SRS 4.2–4.13",out:true,dev:"",
+  items:[["Đề xuất (e-Form)","out",""],["Công việc – dự án","out",""],["Ngân sách nhiệm vụ","out",""],["Nhiệm vụ","out","Chưa xem được giao diện"],["Lịch biểu – phòng họp","out",""],["Tài sản","out",""],["Điều xe","out",""],["Đặt vé máy bay","out","Chưa xem được giao diện"]]},
+ {id:"+COL",cl:"c6",name:"Cộng tác & nền tảng",fr:"SRS 4.1, 4.9, 4.14",out:true,dev:"",
+  items:[["Truyền thông nội bộ","out",""],["Chat, gọi thoại","out",""],["Tiện ích cá nhân","out",""],["Quản trị hệ thống","out","Nền tảng dùng chung, HRM phụ thuộc"],["Cổng, tìm kiếm, xác thực","out",""]]}
+];
+const DEV=[
+ ["I. Dashboard","Dashboard là trang chủ khi đăng nhập","Vào Launcher \"Văn phòng điện tử\", chọn Nhân sự mới tới /hrm/dashboard","Đặt trang mặc định cho người dùng nhân sự, hoặc chấp nhận Launcher và ghi vào biên bản"],
+ ["III.23 Cảnh báo hồ sơ","Cảnh báo hồ sơ thiếu ngày sinh, CCCD","Ngày sinh bắt buộc khi lưu","Cảnh báo áp dụng cho dữ liệu import/cũ và trường không bắt buộc"],
+ ["IV.2 Phân loại HĐ","Còn hiệu lực / hết hiệu lực / hết hạn trong tháng","Chưa hiệu lực / Đang hiệu lực / Hết hiệu lực / Đã chấm dứt","Chi tiết hơn; cần thêm lọc hết hạn trong tháng"],
+ ["VIII.1 Bảng lương","Import bảng lương theo mẫu từng đơn vị","Tự tính lương theo mẫu và cột công thức","Tự động hơn nhưng thiếu import; xác nhận đơn vị nào tính lương ngoài hệ thống"],
+ ["IX. Đánh giá","Cá nhân tự đánh giá theo tháng, quý, năm; quản lý đánh giá lại; công bố","Trưởng phòng chấm điểm tuần 01–04, điểm tháng = bình quân tuần","Chủ đầu tư chọn mô hình hoặc bổ sung tự đánh giá, kỳ quý/năm"],
+ ["X.5 Quyết định","Phát hành quyết định","Luồng dừng ở Đã duyệt","Bổ sung bước phát hành"],
+ ["XI. Kỷ luật","Khen thưởng và kỷ luật là hai chức năng","Một màn hình chung, form chỉ thể hiện khen thưởng","Xác minh form kỷ luật"],
+ ["II.8–9, VII.3 Tích hợp","API tuyển dụng, Google Form, máy chấm công, Camera AI","Chưa thấy cấu hình; chấm công bằng QR, GPS, thủ công","Phụ thuộc bên A; ghi rõ điều kiện tiên quyết"],
+ ["Phạm vi","15 nhóm chức năng nhân sự","Nền tảng 23 phân hệ và nhiều chức năng HRM ngoài danh sách","Ngoài Phụ lục 01; nghiệm thu tách riêng, không coi là thiếu"],
+ ["Phụ lục 02","Uptime 99,99%, hỗ trợ 24/7, cấu hình máy chủ","SRS chưa có chỉ tiêu khả dụng","Đã bổ sung NFR-AVL-03"]
+];
+
+const cssv=v=>`var(${v})`;
+const clCol=id=>cssv(CL.find(c=>c.id===id).c);
+const stCol=s=>cssv("--s-"+s);
+const open=new Set(); let sel="I"; let filter=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const inPL=P.filter(p=>!p.out);
+const allItems=inPL.flatMap(p=>p.items);
+const count=(arr,s)=>arr.filter(i=>i[1]===s).length;
+
+function renderStats(){
+  const total=allItems.length;
+  const cells=[[null,total,"dòng chức năng trong Phụ lục 01",null]].concat(["ok","part","miss","dev"].map(s=>[s,count(allItems,s),ST[s],s]));
+  document.getElementById("stats").innerHTML=cells.map(([k,n,label,s])=>{
+    const pct=Math.round(n/total*100);
+    const bar=s?`<div class="bar"><i style="width:${pct}%;background:${stCol(s)}"></i></div>`:`<div class="bar">${["ok","part","miss","dev"].map(x=>`<i style="display:inline-block;width:${count(allItems,x)/total*100}%;background:${stCol(x)}"></i>`).join("")}</div>`;
+    return `<button type="button" class="stat" data-f="${k||""}" aria-pressed="${filter===k}"><b>${n}${s?` <span style="font-size:13px;font-weight:500">· ${pct}%</span>`:""}</b><span>${label}</span>${bar}</button>`;
+  }).join("");
+  document.querySelectorAll(".stat").forEach(b=>b.onclick=()=>{
+    const f=b.dataset.f||null; filter=(filter===f)?null:f;
+    if(filter){P.forEach(p=>{if(p.items.some(i=>i[1]===filter)) open.add(p.id); else open.delete(p.id)})}
+    refresh();
+  });
+}
+
+const W=[230,220,250,330], GAP=44, ROW=36, PAD=20;
+function visibleItems(p){return p.items.map((it,i)=>({it,i})).filter(o=>!filter||o.it[1]===filter)}
+function build(){
+  return {id:"root",lv:0,label:"VINAFOR HRM · Phụ lục 01",children:CL.map(c=>({id:c.id,lv:1,label:c.name,cl:c.id,children:P.filter(p=>p.cl===c.id).map(p=>({id:p.id,lv:2,label:p.name,cl:c.id,p,children:open.has(p.id)?visibleItems(p).map(o=>({id:p.id+"-"+o.i,lv:3,label:o.it[0],st:o.it[1],note:o.it[2],no:p.out?"":(o.i+1),cl:c.id,children:[]})):[]}))}))};
+}
+function layout(n,depth,y){
+  n.x=PAD+W.slice(0,depth).reduce((a,b)=>a+b+GAP,0);
+  if(!n.children.length){n.y=y.v; y.v+=ROW; return}
+  n.children.forEach(c=>layout(c,depth+1,y));
+  if(n.lv===1) y.v+=8;
+  n.y=(n.children[0].y+n.children[n.children.length-1].y)/2;
+}
+function mini(items){
+  const t=items.length||1;
+  return `<span class="mini" aria-hidden="true">${ORDER.map(s=>{const c=count(items,s);return c?`<i style="width:${c/t*100}%;background:${stCol(s)}"></i>`:""}).join("")}</span>`;
+}
+function renderMap(){
+  const root=build(), y={v:PAD+10}; layout(root,0,y);
+  const map=document.getElementById("map"), svg=document.getElementById("wires");
+  map.querySelectorAll(".node").forEach(e=>e.remove());
+  const depthMax=P.some(p=>open.has(p.id))?4:3;
+  const width=PAD*2+W.slice(0,depthMax).reduce((a,b)=>a+b+GAP,0)-GAP;
+  map.style.width=width+"px"; map.style.height=(y.v+PAD)+"px";
+  svg.setAttribute("width",width); svg.setAttribute("height",y.v+PAD);
+  let paths="";
+  (function walk(n){
+    const h=n.lv===0?44:30;
+    const el=document.createElement("div");
+    el.className="node lv"+n.lv+(n.id===sel?" sel":"")+(n.lv===3?" st-"+n.st:"");
+    el.style.left=n.x+"px"; el.style.top=(n.y-h/2)+"px"; el.style.width=W[n.lv]+"px";
+    if(n.cl) el.style.setProperty("--c",clCol(n.cl));
+    if(n.lv===1) el.style.background=clCol(n.cl);
+    if(n.lv===2){
+      const p=n.p;
+      el.tabIndex=0; el.setAttribute("role","button"); el.setAttribute("aria-expanded",open.has(n.id));
+      el.innerHTML=`<span class="caret">${open.has(n.id)?"▾":"▸"}</span><span class="code">${p.out?"":esc(p.id)}</span><span class="t">${esc(n.label)}</span>${mini(p.items)}<span class="n">${p.items.length}</span>`;
+      el.title=`${p.out?"":p.id+". "}${n.label} · ${p.items.length} dòng`;
+      const act=()=>{const box=document.getElementById("mapbox"), before=el.offsetTop-box.scrollTop; sel=n.id; open.has(n.id)?open.delete(n.id):open.add(n.id); renderMap(); renderPanel(); const now=document.querySelector('.node.sel'); if(now){box.scrollTop=now.offsetTop-before; now.focus({preventScroll:true})}};
+      el.onclick=act; el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();act()}};
+    } else if(n.lv===3){
+      el.innerHTML=`<span class="sd"></span><span class="t">${n.no?n.no+". ":""}${esc(n.label)}</span>`;
+      el.title=`${n.label} — ${ST[n.st]}${n.note?": "+n.note:""}`;
+    } else {
+      const ps=n.lv===1?P.filter(p=>p.cl===n.id):[];
+      el.innerHTML=`<span class="t">${esc(n.label)}</span>`+(n.lv===1?`<span class="n" style="background:rgba(255,255,255,.22);color:inherit">${ps.reduce((a,p)=>a+p.items.length,0)}</span>`:"");
+      el.title=n.label;
+    }
+    map.appendChild(el);
+    n.children.forEach(c=>{
+      const x1=n.x+W[n.lv], y1=n.y, x2=c.x, y2=c.y, mx=(x1+x2)/2;
+      const stroke=c.lv===3?stCol(c.st):clCol(c.cl);
+      paths+=`<path d="M${x1} ${y1} C${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}" style="stroke:${stroke};opacity:${c.lv===3?.55:.75}"/>`;
+      walk(c);
+    });
+  })(root);
+  svg.innerHTML=paths;
+}
+
+function renderPanel(){
+  const p=P.find(x=>x.id===sel)||P[0], c=CL.find(x=>x.id===p.cl);
+  const chips=ORDER.filter(s=>count(p.items,s)).map(s=>`<span class="chip st-${s}">${ST[s]}: ${count(p.items,s)}</span>`).join("");
+  const list=p.items.map((it,i)=>`<li><span class="no">${p.out?"•":p.id+"."+(i+1)}</span><span>${esc(it[0])}<span class="pill st-${it[1]}">${ST[it[1]]}</span></span>${it[2]?`<span class="note">${esc(it[2])}</span>`:""}</li>`).join("");
+  document.getElementById("panel").innerHTML=`
+    <div><div class="eyebrow" style="color:${clCol(p.cl)}">${esc(c.name)}</div><h3>${p.out?"":esc(p.id)+". "}${esc(p.name)}</h3><div class="foot mono">${esc(p.fr)}</div></div>
+    <div class="chips">${chips}</div>
+    ${p.dev?`<div class="devbox"><b>Điểm lệch:</b> ${esc(p.dev)}</div>`:""}
+    ${p.out?`<div class="foot">Hệ thống có nhưng Phụ lục 01 không liệt kê. Nghiệm thu tách riêng, không tính là thiếu hay lệch.</div>`:""}
+    <div><div class="sub">Các dòng trong ${p.out?"nhóm":"Phụ lục"}</div><ul class="items">${list}</ul></div>`;
+}
+
+function renderDev(){
+  document.getElementById("devTable").innerHTML=DEV.map(r=>`<tr>${r.map(t=>`<td>${esc(t)}</td>`).join("")}</tr>`).join("");
+}
+document.getElementById("expandAll").onclick=()=>{P.forEach(p=>open.add(p.id)); renderMap(); const b=document.getElementById("mapbox"); b.scrollTop=0; b.scrollLeft=0};
+document.getElementById("collapseAll").onclick=()=>{open.clear(); filter=null; refresh(); const b=document.getElementById("mapbox"); b.scrollTop=0; b.scrollLeft=0};
+document.getElementById("legend").innerHTML=ORDER.map(s=>`<span><i style="background:${stCol(s)}"></i>${ST[s]}</span>`).join("");
+function refresh(){renderStats(); renderMap(); renderPanel()}
+open.add("I"); renderDev(); refresh();
+</script>
+</body>
+</html>
